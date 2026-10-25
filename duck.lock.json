@@ -1,5 +1,5 @@
 {
-  "note": "duck/ is a verbatim copy of these Doctor Duck paths at this commit. Re-run scripts/sync-duck.mjs instead of editing it.",
+  "note": "duck/ and tests/e2e/fixtures/grad-project are verbatim copies of these Doctor Duck paths at this commit. Re-run scripts/sync-duck.mjs instead of editing them.",
   "source": {
     "repository": "JoeyWu-tech/Doctor-Duck",
     "ref": "main",
@@ -196,5 +196,12 @@
     "skills/duck-why/SKILL.md": "fd91a6c3d1a04247097171ff8e5e247f5a5059588d35eacb26f6408d561040d1",
     "skills/duck-write/agents/openai.yaml": "a4db77f3646572d984ce23bb90e172a9340435a7ea349c4f1701a12cbe45cb87",
     "skills/duck-write/SKILL.md": "798d547a9d2c53cc3105031a0d136a89988b30825fd1403919182f024a660e7e"
+  },
+  "fixture": "tests/fixtures/grad-project",
+  "fixtureFiles": {
+    "code/skip_attn.py": "b27eb5c16ef0352b8bdb5fa08a585e17200902c742aceb0f86b8d528d036415c",
+    "notes.md": "4c7864cc9ac98570546ad0337abd9f71307d23652f4d9aa429b6dee52310a1ae",
+    "paper/main.tex": "1134c1ef226557bbb1d26da3a7731d3130eeb55a2ec0e2eaf9aca0000a29d6ac",
+    "README.md": "e1a56cbfe9aa9bd50541b1d8cc2fafb83bfe69fcd3e1811bfd9256839ddd1681"
   }
 }

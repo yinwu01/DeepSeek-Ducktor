@@ -3,7 +3,8 @@
 //   node scripts/sync-duck.mjs [--from <Doctor Duck checkout>] [--ref <git ref>]
 //   node scripts/sync-duck.mjs --check     verify duck/ still matches duck.lock.json
 // duck/ is never edited by hand: the adapter adds DeepSeek Harness behavior in index.js only,
-// so the rules and commands stay the ones Claude Code and Codex users get.
+// so the rules and commands stay the ones Claude Code and Codex users get. The e2e fixture
+// project comes along from the same commit.
 import { execFileSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import { mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
@@ -17,6 +18,9 @@ const LOCK = join(HERE, 'duck.lock.json')
 // tests, evals and docs stay in Doctor Duck. package.json keeps duck/bin/duck.js CommonJS
 // inside this ESM package.
 const PATHS = ['bin', 'cards', 'handbook', 'library', 'rules', 'skills', 'LICENSE', 'LICENSES', 'package.json']
+// The grad-student fixture project the end-to-end flows run on; test-only, not published.
+const FIXTURE_SOURCE = 'tests/fixtures/grad-project'
+const FIXTURE = join(HERE, 'tests', 'e2e', 'fixtures', 'grad-project')
 
 function args(argv) {
   const out = { from: resolve(HERE, '..', 'mentor-plugin'), ref: 'main', check: false }
@@ -46,39 +50,54 @@ function hashTree(root) {
   return files
 }
 
+function compare(label, expected, root) {
+  const now = hashTree(root)
+  const problems = []
+  for (const [file, sum] of Object.entries(expected)) {
+    if (!(file in now)) problems.push(`missing: ${label}${file}`)
+    else if (now[file] !== sum) problems.push(`changed: ${label}${file}`)
+  }
+  for (const file of Object.keys(now)) if (!(file in expected)) problems.push(`extra: ${label}${file}`)
+  return { problems, count: Object.keys(now).length }
+}
+
 function check() {
   const lock = JSON.parse(readFileSync(LOCK, 'utf8'))
-  const now = hashTree(TARGET)
-  const problems = []
-  for (const [file, sum] of Object.entries(lock.files)) {
-    if (!(file in now)) problems.push(`missing: ${file}`)
-    else if (now[file] !== sum) problems.push(`changed: ${file}`)
-  }
-  for (const file of Object.keys(now)) if (!(file in lock.files)) problems.push(`extra: ${file}`)
+  const duck = compare('duck/', lock.files, TARGET)
+  const fixture = compare('tests/e2e/fixtures/grad-project/', lock.fixtureFiles, FIXTURE)
+  const problems = [...duck.problems, ...fixture.problems]
   if (problems.length > 0) {
-    console.error(`duck/ differs from duck.lock.json (Doctor Duck ${lock.source.commit.slice(0, 7)}):\n${problems.join('\n')}`)
+    console.error(`differs from duck.lock.json (Doctor Duck ${lock.source.commit.slice(0, 7)}):\n${problems.join('\n')}`)
     process.exit(1)
   }
-  console.log(`duck/ matches Doctor Duck ${lock.source.commit.slice(0, 7)} (${Object.keys(now).length} files)`)
+  console.log(`duck/ and the fixture match Doctor Duck ${lock.source.commit.slice(0, 7)} (${duck.count} + ${fixture.count} files)`)
+}
+
+// Extract paths of one commit into a fresh directory; strip drops leading path parts.
+function extract(from, commit, paths, into, strip = 0) {
+  rmSync(into, { recursive: true, force: true })
+  mkdirSync(into, { recursive: true })
+  const tar = execFileSync('git', ['-C', from, 'archive', '--format=tar', commit, '--', ...paths], { maxBuffer: 1 << 28 })
+  execFileSync('tar', ['-x', '-C', into, `--strip-components=${strip}`], { input: tar })
+  return hashTree(into)
 }
 
 function sync({ from, ref }) {
   const commit = git(from, 'rev-parse', '--verify', `${ref}^{commit}`)
   const committedAt = git(from, 'show', '-s', '--format=%cI', commit)
   const subject = git(from, 'show', '-s', '--format=%s', commit)
-  rmSync(TARGET, { recursive: true, force: true })
-  mkdirSync(TARGET, { recursive: true })
-  const tar = execFileSync('git', ['-C', from, 'archive', '--format=tar', commit, '--', ...PATHS], { maxBuffer: 1 << 28 })
-  execFileSync('tar', ['-x', '-C', TARGET], { input: tar })
-  const files = hashTree(TARGET)
+  const files = extract(from, commit, PATHS, TARGET)
+  const fixtureFiles = extract(from, commit, [FIXTURE_SOURCE], FIXTURE, FIXTURE_SOURCE.split('/').length)
   const lock = {
-    note: 'duck/ is a verbatim copy of these Doctor Duck paths at this commit. Re-run scripts/sync-duck.mjs instead of editing it.',
+    note: 'duck/ and tests/e2e/fixtures/grad-project are verbatim copies of these Doctor Duck paths at this commit. Re-run scripts/sync-duck.mjs instead of editing them.',
     source: { repository: 'JoeyWu-tech/Doctor-Duck', ref, commit, committedAt, subject },
     paths: PATHS,
     files,
+    fixture: FIXTURE_SOURCE,
+    fixtureFiles,
   }
   writeFileSync(LOCK, `${JSON.stringify(lock, null, 2)}\n`)
-  console.log(`copied ${Object.keys(files).length} files from Doctor Duck ${commit.slice(0, 7)} (${ref}) into duck/`)
+  console.log(`copied ${Object.keys(files).length} files into duck/ and ${Object.keys(fixtureFiles).length} into the e2e fixture from Doctor Duck ${commit.slice(0, 7)} (${ref})`)
 }
 
 const options = args(process.argv.slice(2))

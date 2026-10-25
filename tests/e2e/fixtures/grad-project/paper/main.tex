@@ -1,0 +1,47 @@
+\documentclass{article}
+\title{BlockSkip: Faster Long-Context Inference by Skipping Attention Blocks}
+\author{Anonymous}
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Long-context inference is slow because attention cost grows quadratically with sequence length.
+We propose BlockSkip, which skips attention blocks whose estimated contribution is small.
+BlockSkip significantly outperforms existing sparse attention methods and reduces inference time by 31\%.
+\end{abstract}
+
+\section{Introduction}
+Large language models are increasingly used on long inputs such as books and code repositories.
+Attention is the bottleneck—its cost grows quadratically with the input length.
+Prior work utilizes token-level pruning \cite{prune2023}, but token-level skipping gives little wall-clock speedup.
+In this paper, we delve into block-level skipping and show that it is a game-changer for long-context inference.
+Our method is simple, effective and general.
+
+\section{Method}
+We split queries and keys into blocks of 64 tokens.
+For each pair of blocks we estimate the attention mass from the block means and skip the pair when the estimate is below a threshold $\tau$.
+We set $\tau = 10^{-3}$ for all experiments.
+
+\section{Experiments}
+We evaluate on LongBench with a 7B model.
+Table~\ref{tab:main} shows that BlockSkip achieves the best accuracy and the largest speedup.
+BlockSkip \cite{dao2022} builds on block-wise computation.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lcc}
+Method & Accuracy & Speedup \\
+Dense attention & 70.4 & 1.00$\times$ \\
+Token pruning & 69.1 & 1.04$\times$ \\
+BlockSkip (ours) & \textbf{71.2} & \textbf{1.45$\times$} \\
+\end{tabular}
+\caption{Main results on LongBench.}
+\label{tab:main}
+\end{table}
+
+BlockSkip improves accuracy by 0.8 points over dense attention, which demonstrates that skipping low-mass blocks also removes noise.
+
+\section{Conclusion}
+BlockSkip is a simple and effective method that significantly outperforms prior work.
+
+\end{document}
