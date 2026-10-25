@@ -37,18 +37,25 @@ test('published files cover everything loaded at run time', () => {
     'duck/package.json keeps duck/bin/duck.js CommonJS inside this ESM package')
 })
 
-test('display metadata: titles, descriptions, a PNG icon under 256 KiB', () => {
+test('display metadata: titles, descriptions, detail documents, a PNG icon under 256 KiB', () => {
   for (const locale of ['en', 'zh']) {
     const { meta } = JSON.parse(readFileSync(join(HERE, 'locale', `${locale}.json`), 'utf8'))
     assert.ok(meta.title && meta.description, locale)
   }
+  // The Plugins page reads meta.detail from a subdirectory listed in files right after locale.
+  for (const locale of ['en', 'zh']) {
+    const { detail } = JSON.parse(readFileSync(join(HERE, 'locale', `${locale}.json`), 'utf8')).meta
+    assert.match(detail, /^docs\/[^/]+\.md$/u, locale)
+    assert.ok(existsSync(join(HERE, detail)), detail)
+  }
+  assert.equal(pkg.files[pkg.files.indexOf('locale/*.json') + 1], 'docs/')
   const icon = join(HERE, pkg.exports['./icon'])
   assert.ok(statSync(icon).size <= 256 * 1024)
   assert.deepEqual([...readFileSync(icon).subarray(0, 8)], [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])
 })
 
 test('adapter text has no em-dash', () => {
-  for (const file of ['README.md', 'lib/duck.js', 'locale/zh.json', 'locale/en.json', 'docs/验证记录.md']) {
+  for (const file of ['README.md', 'lib/duck.js', 'locale/zh.json', 'locale/en.json', 'docs/DETAIL.zh.md', 'docs/DETAIL.md', 'docs/验证记录.md']) {
     const path = join(HERE, file)
     if (!existsSync(path)) continue
     assert.doesNotMatch(readFileSync(path, 'utf8'), /[—―]/u, file)
