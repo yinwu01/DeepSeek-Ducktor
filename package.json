@@ -13,6 +13,7 @@
   },
   "files": [
     "index.js",
+    "lib/",
     "cordis.patch.yml",
     "locale/*.json",
     "icon.png",
@@ -37,7 +38,7 @@
     "@deepseek-ai/schemastery": "^3.18.5"
   },
   "scripts": {
-    "test": "node --test tests/",
+    "test": "node --test tests/*.test.mjs",
     "check": "node scripts/sync-duck.mjs --check",
     "sync": "node scripts/sync-duck.mjs"
   }
