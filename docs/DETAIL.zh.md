@@ -41,7 +41,7 @@ Doctor Duck 把「讲一遍」找回来：
 | `/duck-notes` | 看、改笔记本 |
 | `/duck-skill` | 管理命令和卡片：关掉或打开命令、改副本、加卡、静音卡 |
 
-前十条命令照 [Supervisor-Skills](https://github.com/HKUSTDial/Supervisor-Skills) 的原技能做，收尾讲为什么。
+从 `/duck-survey` 到 `/duck-vibe` 这九条，照 [Supervisor-Skills](https://github.com/HKUSTDial/Supervisor-Skills) 的十个原技能做（`/duck-outline` 用了技术论文、benchmark 论文两个模板），收尾讲为什么。
 
 ## 设置
 

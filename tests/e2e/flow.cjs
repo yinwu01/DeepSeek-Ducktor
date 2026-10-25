@@ -14,14 +14,19 @@
 //                                    DUCK_E2E_PAPER to a folder with its LaTeX source
 //
 // Each turn is one `dsh --profile <profile> --json` run in the project directory, continued
-// with --session-id, which is how dsh's headless mode does multi-turn work.
+// with --session-id, which is how dsh's headless mode does multi-turn work. The headless profile
+// has no ask-user tool, so the model asks in text and the one follow-up answer below applies as
+// for Claude Code and Codex. A tool call that needs approval (outside the sandbox) is refused,
+// not left waiting: headless has no approver and dsh fails closed. Needs Node 22.15 or later
+// (zstd in node:zlib) to read the session logs.
 //
 // Environment:
 //   DEEPSEEK_API_KEY  required; read by dsh itself (nothing here touches it)
 //   DSH               the dsh command (default: dsh on PATH)
 //   DSH_HOME          dsh's home; the profile below must have deepseek-ducktor installed
 //                     (dsh plugin --profile headless add <this checkout>) or a cordis.patch.yml row
-//   DUCK_E2E_PROFILE  dsh profile (default: headless)
+//   DUCK_E2E_PROFILE  dsh profile (default: headless); it must take headless's --json and
+//                     --session-id, so web or acp will not work here
 //   DUCK_E2E_MODEL    model id for provider deepseek-official (default: the profile's own,
 //                     deepseek-flash in dsh 0.2.1-rc.2); passed as a --patch overlay
 //   DUCK_E2E_WRAP     command prefix for dsh, e.g. a network or capability wrapper

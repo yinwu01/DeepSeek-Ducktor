@@ -94,8 +94,8 @@ Desktop 的 profile 名是 `desktop`：先打开一次 Desktop，完全退出，
 | 命令 | 要什么 | 测什么 |
 |---|---|---|
 | `npm test` | Node 22 以上 | 单元测试和打包检查，不需要 dsh |
-| `node tests/dsh/check.mjs --route pnpm --web`（或 `--route patch`、`--route ui`） | 装好的 dsh；`pnpm` 和 `ui` 两条还要 PATH 上有 pnpm | 在临时 HOME 里按三种方式装、用、卸，读真实的会话日志核对注入的内容和位置。不需要也不使用 API key，模型请求发出前就停下 |
-| `node tests/e2e/flow.cjs [main\|more\|loop\|paper]` | `DEEPSEEK_API_KEY`，dsh 的 headless profile 里装好插件 | 真模型跑 Doctor Duck 的整套学生流程，检查项和 Claude Code、Codex 版相同。花真钱 |
+| `node tests/dsh/check.mjs --route pnpm --web`（或 `--route patch`、`--route ui`） | Node 22.15 以上（读会话日志要 zstd），装好的 dsh；`pnpm` 和 `ui` 两条还要 PATH 上有 pnpm | 在临时 HOME 里按三种方式装、用、卸，读真实的会话日志核对注入的内容和位置。不需要也不使用 API key，模型请求发出前就停下 |
+| `node tests/e2e/flow.cjs [main\|more\|loop\|paper]` | Node 22.15 以上，`DEEPSEEK_API_KEY`，dsh 的 headless profile 里装好插件 | 真模型跑 Doctor Duck 的整套学生流程，检查项和 Claude Code、Codex 版相同。花真钱 |
 
 `check.mjs` 建议在断网的环境里跑（例如 `unshare -rn`，打开 loopback），这样能确认没有东西出本机。
 
