@@ -203,10 +203,13 @@ function mainStages() {
       ['must', 'the menu did not turn it on', () => !switchIs('on')],
       ['must', 'hook injected the plugin root', (t) => /插件根目录/.test(t.injected)],
     ] },
-    // Turning it on mid-session: the rules were not injected at session start, so the AI reads them now.
+    // Turning it on mid-session: the rules were not injected at session start, so the AI reads them
+    // now. In dsh the next step after config.md changes also carries them (a replacement context),
+    // so either one counts.
     { name: 'enable', resume: true, prompt: `${cmd('duck')} on`, checks: [
       ['must', 'config says on', () => switchIs('on')],
-      ['must', 'read the resident rules this turn', (t) => t.reads.some((r) => r && /rules\/core\.md|\.duck\/skills\/core\.md/.test(r))],
+      ['must', 'read the resident rules this turn, or the context brought them', (t) => t.reads.some((r) => r && /rules\/core\.md|\.duck\/skills\/core\.md/.test(r))
+        || /# Doctor Duck 常驻规则/.test(t.injected)],
     ] },
     { name: 'idea', resume: true, prompt: `${cmd('duck-idea')} 我想做长文本推理加速：用块均值估计注意力里每一对 64 token 的块贡献多大，贡献很小的整块跳过。目标是 7B 模型在 LongBench 上省 30% 以上时间、准确率不掉。对手是 token 级剪枝和稠密注意力。现有结果在 notes.md 里。`, checks: [
       ['must', 'read library/idea-evaluator', (t) => readOf(t, 'idea-evaluator')],

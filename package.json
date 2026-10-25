@@ -16,6 +16,7 @@
     "lib/",
     "cordis.patch.yml",
     "locale/*.json",
+    "docs/",
     "icon.png",
     "duck/",
     "duck.lock.json",

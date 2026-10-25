@@ -37,7 +37,8 @@ function fakeAgent(visibleMessages = [], meta = {}) {
 }
 const makeMessage = input => ({ id: `m${Math.random()}`, role: 'user', ...input })
 const studentMessage = { id: 'student', role: 'user', source: { kind: 'user' }, content: [{ type: 'text', text: '/duck-review 帮我看看' }] }
-const proceed = messages => ({ kind: 'proceed', messages, startsRequestSeries: true })
+// What dsh's agent loop hands the listener chain: the claimed inbox messages, then runtime context.
+const proceed = messages => ({ kind: 'enter', messages })
 
 describe('Doctor Duck root', () => {
   test('the packaged copy is found and real', () => {
@@ -132,7 +133,7 @@ describe('when a step gets the context', () => {
     assert.equal(out.messages.length, 3)
     assert.equal(out.messages[0], studentMessage)
     assert.equal(out.messages[2], later)
-    assert.equal(out.startsRequestSeries, true)
+    assert.equal(out.kind, 'enter')
     const added = out.messages[1]
     assert.deepEqual(added.source, { kind: SOURCE_KIND, form: 'instructions', identity: current.identity, root: ROOT })
     assert.equal(added.content[0].text, frameContext(current.body, false))
@@ -156,11 +157,11 @@ describe('when a step gets the context', () => {
     const decision = proceed([studentMessage, { source: { kind: SOURCE_KIND, identity: current.identity } }])
     assert.equal(withContext(decision, { agent: fakeAgent(), messages: [studentMessage] }, { root: ROOT, project: dir, makeMessage }), decision)
   })
-  test('tool continuation step with no new student message: still added, at the front', () => {
-    const toolResult = { id: 'tool', source: { kind: 'tool' } }
-    const out = withContext(proceed([toolResult]), { agent: fakeAgent(), messages: [] }, { root: ROOT, project: dir, makeMessage })
+  test('tool continuation step (tool results already in history): added before the runtime context', () => {
+    const runtime = { id: 'runtime', source: { kind: 'runtime-context' } }
+    const out = withContext(proceed([runtime]), { agent: fakeAgent(), messages: [] }, { root: ROOT, project: dir, makeMessage })
     assert.equal(out.messages[0].source.kind, SOURCE_KIND)
-    assert.equal(out.messages[1], toolResult)
+    assert.equal(out.messages[1], runtime)
   })
   test('rejected steps, empty first entries and subagents get nothing', () => {
     const agent = fakeAgent()
