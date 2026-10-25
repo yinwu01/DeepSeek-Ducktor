@@ -1,0 +1,5 @@
+interface:
+  display_name: "Doctor Duck: why"
+  short_description: "拆解刚才那一步"
+policy:
+  allow_implicit_invocation: false

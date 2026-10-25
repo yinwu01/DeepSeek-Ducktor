@@ -1,0 +1,5 @@
+interface:
+  display_name: "Doctor Duck: outline"
+  short_description: "理论文逻辑"
+policy:
+  allow_implicit_invocation: false

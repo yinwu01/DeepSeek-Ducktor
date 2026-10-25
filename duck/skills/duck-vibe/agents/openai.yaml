@@ -1,0 +1,5 @@
+interface:
+  display_name: "Doctor Duck: vibe"
+  short_description: "这块该让 AI 干到哪、用什么工具"
+policy:
+  allow_implicit_invocation: false

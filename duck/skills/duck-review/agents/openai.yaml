@@ -1,0 +1,5 @@
+interface:
+  display_name: "Doctor Duck: review"
+  short_description: "投稿前审稿"
+policy:
+  allow_implicit_invocation: false

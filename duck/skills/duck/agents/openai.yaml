@@ -1,0 +1,5 @@
+interface:
+  display_name: "Doctor Duck"
+  short_description: "总入口：菜单、开关、替你挑命令"
+policy:
+  allow_implicit_invocation: false

@@ -1,0 +1,17 @@
+{
+  "name": "doctor-duck",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Doctor Duck: a research mentor plugin built on Supervisor-Skills.",
+  "license": "CC-BY-NC-SA-4.0 AND CC-BY-4.0 AND MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "node scripts/build.js",
+    "check": "node scripts/build.js --check && node scripts/upstream.js check",
+    "test": "node --test tests/*.test.js",
+    "e2e:claude": "node tests/e2e/flow.js claude",
+    "e2e:codex": "node tests/e2e/flow.js codex"
+  }
+}

@@ -1,0 +1,5 @@
+interface:
+  display_name: "Doctor Duck: figure"
+  short_description: "设计图、出图质检"
+policy:
+  allow_implicit_invocation: false

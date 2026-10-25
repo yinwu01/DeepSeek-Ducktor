@@ -1,0 +1,5 @@
+interface:
+  display_name: "Doctor Duck: idea"
+  short_description: "评估 idea"
+policy:
+  allow_implicit_invocation: false

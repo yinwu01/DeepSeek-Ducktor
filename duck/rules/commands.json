@@ -1,0 +1,125 @@
+{
+  "_note": "The nine /duck-* commands that wrap a Supervisor-Skills skill. scripts/build.js fills rules/wrapper-template.md with each entry and writes skills/<name>/. Text here is CC BY-NC-SA 4.0 like the rest of rules/.",
+  "default_skill_block": "读 library/{{skill}}/SKILL.md，把学生的输入当作它的输入，照它从头做到尾。",
+  "commands": [
+    {
+      "name": "duck-survey",
+      "short": "survey",
+      "title": "摸方向、文献综述",
+      "description": "摸方向、做文献综述。照 Supervisor-Skills 的 deep-research 做，收尾讲为什么。",
+      "skills": [
+        "deep-research"
+      ],
+      "stage": "摸方向",
+      "card_use": "检索和综述时照卡上写的做",
+      "result_note": "引用都要能核对，查不到原文的不写。",
+      "extra": "这条命令要上网检索。宿主没有联网检索的工具时，直说，请学生提供论文列表或 PDF。"
+    },
+    {
+      "name": "duck-idea",
+      "short": "idea",
+      "title": "评估 idea",
+      "description": "评估一个研究 idea。照 Supervisor-Skills 的 idea-evaluator 做，收尾讲为什么。",
+      "skills": [
+        "idea-evaluator"
+      ],
+      "stage": "评估 idea",
+      "card_use": "评估时照卡上写的查",
+      "result_note": "原技能给 idea 打的分照常给，那是评 idea，不是评学生。",
+      "extra": ""
+    },
+    {
+      "name": "duck-outline",
+      "short": "outline",
+      "title": "理论文逻辑",
+      "description": "理清论文逻辑，技术论文和 benchmark 论文各用一个模板。照 Supervisor-Skills 的 tech-paper-template 或 benchmark-paper-template 做，收尾讲为什么。",
+      "skills": [
+        "tech-paper-template",
+        "benchmark-paper-template"
+      ],
+      "stage": "理逻辑",
+      "card_use": "理逻辑时照卡上写的做",
+      "result_note": "",
+      "extra": "",
+      "skill_block": "先判断论文类型：提出新方法、新系统的技术论文，读 library/tech-paper-template/SKILL.md；提出新 benchmark、数据集或评测框架的论文，读 library/benchmark-paper-template/SKILL.md。看不出来就问学生一句。选定以后先说一句用哪个模板，再照它从头做到尾，把学生的输入当作它的输入。"
+    },
+    {
+      "name": "duck-intro",
+      "short": "intro",
+      "title": "写引言",
+      "description": "写论文引言。照 Supervisor-Skills 的 intro-drafter 做，收尾讲为什么。",
+      "skills": [
+        "intro-drafter"
+      ],
+      "stage": "写引言",
+      "card_use": "写的时候照卡上写的做",
+      "result_note": "结果末尾单独写一行：「这是 AI 写的引言，事实、数字和引用请你逐条核对。」",
+      "extra": ""
+    },
+    {
+      "name": "duck-write",
+      "short": "write",
+      "title": "写正文",
+      "description": "写论文正文。照 Supervisor-Skills 的 paper-writer 做，收尾讲为什么。",
+      "skills": [
+        "paper-writer"
+      ],
+      "stage": "写正文",
+      "card_use": "写的时候照卡上写的做",
+      "result_note": "结果末尾单独写一行：「这是 AI 写的正文，事实、数字和引用请你逐条核对；会议或学校要求披露 AI 使用的，照要求披露。」",
+      "extra": ""
+    },
+    {
+      "name": "duck-polish",
+      "short": "polish",
+      "title": "润色",
+      "description": "润色论文语言，不改意思。照 Supervisor-Skills 的 paper-polish 做，收尾讲为什么。",
+      "skills": [
+        "paper-polish"
+      ],
+      "stage": "润色",
+      "card_use": "润色时照卡上写的做",
+      "result_note": "",
+      "extra": ""
+    },
+    {
+      "name": "duck-figure",
+      "short": "figure",
+      "title": "设计图、出图质检",
+      "description": "设计论文配图，或检查画好的图。照 Supervisor-Skills 的 figure-designer 做，收尾讲为什么。",
+      "skills": [
+        "figure-designer"
+      ],
+      "stage": "作图",
+      "card_use": "设计和检查时照卡上写的做",
+      "result_note": "",
+      "extra": ""
+    },
+    {
+      "name": "duck-review",
+      "short": "review",
+      "title": "投稿前审稿",
+      "description": "投稿前审一遍论文。照 Supervisor-Skills 的 pre-submission-reviewer 做，问题标明来源，收尾讲为什么。",
+      "skills": [
+        "pre-submission-reviewer"
+      ],
+      "stage": "投稿前",
+      "card_use": "审稿时照卡上写的查，违反了就记进问题清单",
+      "result_note": "问题清单里每条标明来源：原技能、第 4 步的加查项（标卡号），还是组里的哪张卡。",
+      "extra": ""
+    },
+    {
+      "name": "duck-vibe",
+      "short": "vibe",
+      "title": "这块该让 AI 干到哪、用什么工具",
+      "description": "判断一块研究工作该让 AI 做到哪一步、用什么工具。照 Supervisor-Skills 的 vibe-research-workflow 做，收尾讲为什么。",
+      "skills": [
+        "vibe-research-workflow"
+      ],
+      "stage": "分工",
+      "card_use": "判断时照卡上写的做",
+      "result_note": "",
+      "extra": ""
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "name": "deepseek-ducktor",
+  "version": "0.1.0",
+  "description": "Doctor Duck, the research mentor that explains why, as a native DeepSeek Harness plugin.",
+  "private": true,
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.png",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.png",
+    "duck/",
+    "duck.lock.json",
+    "LICENSE",
+    "README.md"
+  ],
+  "engines": {
+    "dsh": ">=0.2.1-rc.2 <0.3.0"
+  },
+  "license": "MIT AND CC-BY-NC-SA-4.0 AND CC-BY-4.0",
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "^4.0.5",
+    "@deepseek-ai/dsh-llm": ">=0.2.1-rc.2 <0.3.0",
+    "@deepseek-ai/dsh-skill": ">=0.2.1-rc.2 <0.3.0",
+    "@deepseek-ai/schemastery": "^3.18.5"
+  },
+  "scripts": {
+    "test": "node --test tests/",
+    "check": "node scripts/sync-duck.mjs --check",
+    "sync": "node scripts/sync-duck.mjs"
+  }
+}
