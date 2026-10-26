@@ -4,7 +4,7 @@
 
 Doctor Duck（讲为什么的科研导师）的 DeepSeek Harness 原生插件。装上以后，在 DeepSeek Harness 的 Web、Desktop 和命令行里都能敲 `/duck-review` 这类命令；在开启了鸭子的项目里，每个会话都带着 Doctor Duck 的常驻规则。规则、命令和卡片是 Doctor Duck 的原文，和 Claude Code、Codex 用户拿到的是同一份。
 
-在 Web 界面里，右侧边栏多一个「鸭子」页签（Desktop 用的是同一套网页界面，但这台机器没有 Desktop，没测过）：这次 AI 替你定了什么、你能带走的原则、该你亲手核对的地方、这个方向的背景、导师会提醒你的经验卡片，都摆在对话旁边。用 agent 做科研时一闪而过的判断，学生在这里能看见、能学到。插件在 Doctor Duck 的 23 张经验卡片之外另带 10 张（读论文、进新方向、实验习惯、和导师开会、用 AI 做研究的责任），每张都写明出处。
+在 Web 界面里，右侧边栏多一个「鸭子」页签（Desktop 用的是同一套网页界面，但这台机器没有 Desktop，没测过）：这次 AI 替你定了什么、你能带走的原则、该你亲手核对的地方、这个方向的背景、导师会提醒你的经验卡片，都摆在对话旁边。用 agent 做科研时一闪而过的判断，学生在这里能看见、能学到。插件在 Doctor Duck 的 23 张经验卡片之外另带 11 张（读论文、进新方向、实验习惯、和导师开会、用 AI 做研究和审稿的规矩），每张都写明出处，交付前另请两位审阅人逐条对过原文。
 
 ![「鸭子」页签](docs/images/sidebar.png)
 
@@ -104,7 +104,7 @@ Desktop 用户不要用这种方式：这一行对 Desktop 也生效，会盖过
 - `lib/duck.js`：和 dsh 无关的部分（找根目录、读 SKILL.md、生成和判断开场说明），单元测试直接用 Node 跑。开场说明后面那段 DeepSeek Harness 附注也在这里，附注里还写着另带的卡片在哪、参考文献要带链接、第一次摸方向时写 `background.md`。
 - `client/client.js`：「鸭子」页签，手写的浏览器端插件，不用打包；React 用页面自带的那份，文件通过 dsh 的工作区文件接口读。
 - `lib/cards.js`：读卡片（Doctor Duck 的和 `mentor/cards/` 的），服务端读好后随网页一起发给页签。
-- `mentor/cards/`：本插件另带的 10 张经验卡片，格式和 Doctor Duck 的卡一样，卡号不重；`INDEX.md` 由 `node scripts/mentor-index.mjs` 生成。
+- `mentor/cards/`：本插件另带的 11 张经验卡片，格式和 Doctor Duck 的卡一样，卡号不重；`INDEX.md` 由 `node scripts/mentor-index.mjs` 生成。
 - `duck/`：Doctor Duck 原样拷贝，不手改。`duck.lock.json` 记着来自哪个提交和每个文件的 sha256。更新 Doctor Duck：
 
   ```sh

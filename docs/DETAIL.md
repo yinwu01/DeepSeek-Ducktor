@@ -21,7 +21,7 @@ This plugin brings Doctor Duck into DeepSeek Harness unchanged. The rules, comma
 
 In the Web GUI, open the right sidebar and pick 鸭子 (Desktop uses the same web interface; not tested). It puts what the duck wrote next to the conversation: the calls the AI made for you (the ones waiting for your confirmation first), the principles to take away, what to check yourself in the latest report, background on the direction you are exploring, and the experience cards your recent steps point to. While open it checks `.duck/` every 4 seconds; it only reads local files and costs no model tokens.
 
-Besides Doctor Duck's 23 experience cards, the plugin ships 10 of its own (`mentor/cards/`, in Chinese): reading papers, entering a new area, when to switch problems, looking at data and errors, tuning baselines, traceable results, keeping the test set for the end, a research log, meeting your advisor, and responsibility when AI does the work. Each names its sources, checked against the originals.
+Besides Doctor Duck's 23 experience cards, the plugin ships 11 of its own (`mentor/cards/`, in Chinese): reading papers, entering a new area, when to switch problems, looking at data and errors, tuning baselines, traceable results, keeping the test set for the end, a research log, meeting your advisor, responsibility when AI does the work, and the rules for AI when reviewing. Each names its sources; the drafters checked them against the originals and two reviewers rechecked every claim before release. Venue rules cite the newest edition published on 2026-10-26 (ICLR 2027; ICML and NeurIPS 2026). They change every year, and each card records the date it was checked.
 
 ## Settings
 
