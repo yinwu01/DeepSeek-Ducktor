@@ -106,7 +106,7 @@ describe('session context', () => {
       const dir = project(name, config)
       const { body } = duckContext(ROOT, dir)
       assert.equal(body, `${hook.buildContext(dir)}\n\n${hostNote(dir)}`, name)
-      assert.ok(body.includes(`项目的 .duck/」都是 ${join(dir, '.duck')}，`), name)
+      assert.ok(body.includes(`项目的 .duck/」都是 \`${join(dir, '.duck')}\`，`), name)
       assert.ok(body.startsWith(`Doctor Duck 插件根目录：${ROOT}\n`), name)
     }
   })

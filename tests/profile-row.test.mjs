@@ -7,7 +7,7 @@ import { join } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { after, describe, test } from 'node:test'
 
-const { rowCheckout, rowNames } = createRequire(import.meta.url)('./e2e/profile-row.cjs')
+const { idRows, rowCheckout, rowNames } = createRequire(import.meta.url)('./e2e/profile-row.cjs')
 
 const dir = mkdtempSync(join(tmpdir(), 'ducktor-row-'))
 after(() => rmSync(dir, { recursive: true, force: true }))
@@ -36,9 +36,20 @@ describe('rowNames', () => {
       'file:///SSD1/a/very/long/parent/path/deepseek-ducktor/index.js',
     ])
   })
-  test('nested rows inside a group are found; a row without a name is skipped', () => {
-    const dump = ['- id: group', '  children:', '    - id: deepseek-ducktor', '      name: deepseek-ducktor', '- id: deepseek-ducktor', '  disabled: true'].join('\n')
-    assert.deepEqual(rowNames(dump), ['deepseek-ducktor'])
+  test('a row inside a group (dsh prints its rows under config:) is found', () => {
+    const dump = ['- id: tools', "  name: '@deepseek-ai/dsh-tools'", '  group: true', '  config:', '    - id: deepseek-ducktor',
+      '      name: file:///SSD1/x/deepseek-ducktor/index.js', '    - id: other', '      name: y'].join('\n')
+    assert.deepEqual(rowNames(dump), ['file:///SSD1/x/deepseek-ducktor/index.js'])
+  })
+  test('name before id, as the user wrote it, is the same row', () => {
+    const dump = ['# == /h/.dsh/cordis.patch.yml', '- name: file:///SSD1/x/deepseek-ducktor/index.js', '  id: deepseek-ducktor'].join('\n')
+    assert.deepEqual(rowNames(dump), ['file:///SSD1/x/deepseek-ducktor/index.js'])
+  })
+  test('an enable toggle merged into the row shows as disabled: true', () => {
+    // The shape of a row after dsh's own plugin toggle (writePluginEnabled) turned it off.
+    const dump = ['- id: deepseek-ducktor', '  name: file:///SSD1/x/deepseek-ducktor/index.js', '  disabled: true',
+      '  config:', '    subagents: true'].join('\n')
+    assert.deepEqual(idRows(dump), [{ id: 'deepseek-ducktor', name: 'file:///SSD1/x/deepseek-ducktor/index.js', disabled: true, config: null }])
   })
 })
 

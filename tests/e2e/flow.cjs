@@ -43,7 +43,7 @@ const os = require('os');
 const path = require('path');
 const { spawnSync } = require('child_process');
 const { readSessionEvents, sessionLogPath } = require('./session-log.cjs');
-const { rowCheckout, rowNames } = require('./profile-row.cjs');
+const { idRows, rowCheckout } = require('./profile-row.cjs');
 
 const REPO = path.resolve(__dirname, '..', '..');
 // Doctor Duck's own files (cards/ for the card-number checks) and the locked fixture.
@@ -121,29 +121,27 @@ function parse(stdout) {
 
 // What one run added to the session, from dsh's own session log: the Doctor Duck context
 // messages (the counterpart of a SessionStart hook's output), the assistant's text, the tool
-// calls, the models requested and the models that answered. found is false when the log has
-// no assistant output.
+// calls, and the model the requests were built for (dsh stamps the same name on the reply,
+// so the log cannot show a different model answering). found is false when the log has no
+// assistant output.
 function sessionDelta(session, seenSeq) {
-  const out = { found: false, injected: '', reply: '', tools: [], reads: [], requested: [], answered: [], lastSeq: seenSeq };
+  const out = { found: false, injected: '', reply: '', tools: [], reads: [], requested: [], lastSeq: seenSeq };
   const file = session && sessionLogPath(DSH_HOME, session);
   if (!file) return out;
   const events = readSessionEvents(file);
   const texts = [];
   const injected = [];
   const requested = new Set();
-  const answered = new Set();
   for (const e of events) {
     if (typeof e.seq !== 'number' || e.seq <= seenSeq) continue;
     out.lastSeq = Math.max(out.lastSeq, e.seq);
     const d = e.data || {};
     if (e.type === 'user/message' && d.source && d.source.kind === 'doctor-duck') injected.push(d.content.map((c) => c.text || '').join(''));
-    // The model a request was built for is recorded before it is sent, so it is there even
-    // when nothing answered; the answering model is on each assistant message.
+    // Recorded before the request is sent, so it is there even when nothing answered.
     if (e.type === 'request/header' && d.header && d.header.config && d.header.config.model) requested.add(d.header.config.model);
     if (e.type === 'assistant/message' && d.message) {
       out.found = true;
       for (const block of d.message.content || []) if (block.type === 'text' && block.text.trim()) texts.push(block.text);
-      if (d.message.source && d.message.source.model) answered.add(d.message.source.model);
     }
     if (e.type === 'tool/call') {
       out.found = true;
@@ -157,7 +155,6 @@ function sessionDelta(session, seenSeq) {
   out.injected = injected.join('\n');
   out.reply = texts.join('\n\n');
   out.requested = [...requested];
-  out.answered = [...answered];
   return out;
 }
 
@@ -176,7 +173,6 @@ function turn(prompt, sid, opts, file) {
   t.injected = delta.injected;
   if (delta.found) Object.assign(t, { reply: delta.reply, tools: delta.tools, reads: delta.reads });
   t.requested = delta.requested;
-  t.answered = delta.answered;
   t.exit = run.status;
   if (run.error) t.errors.push(String(run.error.message || run.error));
   t.completed = !run.error && run.status === 0 && t.turnReason === 'completed';
@@ -512,14 +508,35 @@ function setup() {
     fs.writeFileSync(path.join(PROJECT, '.duck', 'notebook.md'), `${LOOP_NOTEBOOK.join('\n')}\n`);
     fs.writeFileSync(path.join(PROJECT, '.duck', 'config.md'), LOOP_CONFIG);
   }
+  const install = `run: dsh plugin --profile ${PROFILE} add ${REPO}`;
+  const refuse = (why, hint = install) => {
+    console.error(`profile ${PROFILE} under ${DSH_HOME}: ${why}; ${hint}`);
+    process.exit(2);
+  };
   // The installed plugin must be this checkout, or the run tests something else. The last
   // deepseek-ducktor row wins: a package name (pnpm link in the profile) or a file.
-  const row = rowNames(host(['--profile', PROFILE, '--dump-config']).stdout || '').at(-1);
-  const target = rowCheckout(row, { dshHome: DSH_HOME, profile: PROFILE });
-  if (!target || target !== fs.realpathSync(REPO)) {
-    console.error(`profile ${PROFILE} under ${DSH_HOME} does not load this checkout (${row ? `row ${row} -> ${target || 'missing'}` : 'no deepseek-ducktor row'}); run: dsh plugin --profile ${PROFILE} add ${REPO}`);
-    process.exit(2);
-  }
+  const row = idRows(host(['--profile', PROFILE, '--dump-config']).stdout || '').at(-1);
+  if (!row) refuse('no deepseek-ducktor row');
+  if (row.disabled === true) refuse(`the deepseek-ducktor row (${row.name}) is disabled`);
+  const target = rowCheckout(row.name, { dshHome: DSH_HOME, profile: PROFILE });
+  if (!target || target !== fs.realpathSync(REPO)) refuse(`does not load this checkout (row ${row.name} -> ${target || 'missing'})`);
+  // The dump also lists a row dsh's compatibility check refuses to start. So, before any paid
+  // request, one probe run whose model row names a provider with no adapter: dsh stops before
+  // sending anything (even with a stored key), and by then the session log holds what the
+  // first request would carry. It must hold this checkout's context and the /duck command.
+  // (dsh's title model follows the request's route unless a patch names one for it.)
+  const probePatch = path.join(path.dirname(PROJECT), 'probe.patch.yml');
+  fs.writeFileSync(probePatch, "- id: agent-default-model\n  name: '@deepseek-ai/dsh-agent-default-model'\n  config:\n    provider: deepseek-ducktor-probe-no-adapter\n    model: none\n");
+  const probe = parse(host(['--profile', PROFILE, '--patch', probePatch, '--json', '/duck 菜单'], { timeout: 120000 }).stdout || '');
+  const file = probe.session && sessionLogPath(DSH_HOME, probe.session);
+  const events = file ? readSessionEvents(file) : [];
+  const sources = events.filter((e) => e.type === 'user/message').map((e) => (e.data && e.data.source) || {});
+  const context = sources.find((s) => s.kind === 'doctor-duck');
+  if (events.some((e) => e.type === 'assistant/message')) refuse('the probe run got a model reply; it must not reach a model');
+  if (!context) refuse(`the plugin did not start: the probe session (${probe.session || 'none'}) has no Doctor Duck context`,
+    `dsh may have refused it as incompatible (package.json engines.dsh against dsh --version), or apply() failed; ${install}`);
+  if (!sources.some((s) => s.kind === 'skill-invocation' && s.name === 'duck')) refuse('the probe session has no /duck command');
+  if (fs.realpathSync(context.root) !== fs.realpathSync(ROOT)) refuse(`the plugin reads Doctor Duck at ${context.root}, the checks expect ${ROOT}`);
 }
 
 function main() {
@@ -556,8 +573,8 @@ function main() {
       // a reason to call the whole stage not run.
       t = { ...t, reads: [...t.reads, ...t2.reads], tools: [...t.tools, ...t2.tools], injected: `${t.injected}\n${t2.injected}`,
         errors: [...t.errors, ...t2.errors], reply: `${t.reply}\n\n[学生] ${FOLLOWUP}\n\n${t2.reply}`, cost: t.cost + t2.cost, tokens,
-        requested: [...new Set([...t.requested, ...t2.requested])], answered: [...new Set([...t.answered, ...t2.answered])],
-        followupRun: t2 };
+        requested: [...new Set([...t.requested, ...t2.requested])],
+        followupExit: t2.exit, followupCompleted: t2.completed, followupStderr: t2.stderr };
       checks = evaluate(t);
       if (!t2.completed) checks.push({ severity: 'must', label: `the follow-up answer run completed (exit ${t2.exit}, turn ${t2.turnReason || 'did not end'})`, ok: false });
     }
@@ -565,16 +582,20 @@ function main() {
     // checks say nothing (an empty reply passes every "does not say" check). Record one
     // failure and stop, since later stages continue this session.
     const dead = !t.completed;
+    // A follow-up that did not complete leaves the stage scored, but the session it shares
+    // with later stages is in an unknown state: stop there too.
+    const halted = dead || (followup && !t.followupCompleted);
     if (dead) checks = [{ severity: 'must', label: `the dsh run completed (exit ${t.exit}, turn ${t.turnReason || 'did not end'})`, ok: false }];
     transcripts.push(t);
     results.push({ stage: stage.name, prompt: stage.prompt, seconds: Math.round((Date.now() - started) / 1000),
-      exit: t.exit, models_requested: t.requested, models_answered: t.answered, tokens: t.tokens, followup, tools: t.tools, errors: t.errors, checks, reply: t.reply });
+      exit: t.exit, ...(followup ? { followup_exit: t.followupExit } : {}), models_requested: t.requested, tokens: t.tokens, followup, tools: t.tools, errors: t.errors, checks, reply: t.reply });
     const mark = dead ? 'STOP' : checks.every((c) => c.ok) ? 'ok  ' : (checks.some((c) => !c.ok && c.severity === 'must') ? 'FAIL' : 'warn');
     console.log(`${mark} ${stage.name} (${results.at(-1).seconds}s)${followup ? ' after one follow-up answer' : ''}`);
     for (const c of checks.filter((x) => !x.ok)) console.log(`       ${c.severity}: ${c.label}`);
-    if (dead) {
+    if (halted) {
       stopped = stage.name;
-      console.error(`stopped at ${stage.name}: ${t.errors[0] || 'no error event'}\n${t.stderr.trim().slice(0, 600)}\n`
+      const stderr = dead ? t.stderr : t.followupStderr;
+      console.error(`stopped at ${stage.name}${dead ? '' : ' (follow-up)'}: ${t.errors[0] || 'no error event'}\n${stderr.trim().slice(0, 600)}\n`
         + `(session ${t.session || 'none'}; this run added ${t.injected.length} chars of Doctor Duck context)`);
       break;
     }
@@ -593,7 +614,6 @@ function main() {
   const summary = {
     host: HOST, dsh: (version.stdout || '').trim(), profile: PROFILE, flow: FLOW, model: MODEL || '(profile default)',
     models_requested: [...new Set(results.flatMap((r) => r.models_requested || []))],
-    models_answered: [...new Set(results.flatMap((r) => r.models_answered || []))],
     commit: spawnSync('git', ['-C', REPO, 'rev-parse', '--short', 'HEAD'], { encoding: 'utf8' }).stdout.trim(),
     duck: process.env.DUCK_ROOT ? ROOT : lock.source.commit.slice(0, 7),
     when: new Date().toISOString(), tokens,
@@ -605,7 +625,7 @@ function main() {
   fs.writeFileSync(path.join(OUT, 'summary.json'), `${JSON.stringify(summary, null, 2)}\n`);
   const md = [`# e2e ${HOST} ${summary.dsh} ${FLOW} ${summary.commit}, Doctor Duck ${summary.duck} (${summary.model})`, '',
     `${summary.passed}/${summary.total} checks passed; must failed ${summary.must_failed}, should failed ${summary.should_failed}`, '',
-    `Model requested: ${summary.models_requested.join(', ') || 'none'}; answered by: ${summary.models_answered.join(', ') || 'none'}. Tokens reported in the --json stream (agent steps only): ${JSON.stringify(tokens)}`, ''];
+    `Model requested: ${summary.models_requested.join(', ') || 'none'}. Tokens reported in the --json stream (agent steps only): ${JSON.stringify(tokens)}`, ''];
   for (const r of results) {
     md.push(`## ${r.stage}: \`${r.prompt}\` (${r.seconds}s${r.followup ? ', one follow-up answer' : ''})`, '');
     for (const c of r.checks) md.push(`- [${c.ok ? 'x' : ' '}] ${c.severity}: ${c.label}`);
