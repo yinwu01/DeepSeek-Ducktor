@@ -19,8 +19,13 @@
 import { realpathSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'
-import { pathToFileURL } from 'node:url'
+import { dirname, join } from 'node:path'
+import { fileURLToPath, pathToFileURL } from 'node:url'
+import { readCards } from './lib/cards.js'
 import { duckSkills, parseSkill, projectOf, PROVIDER, resolveDuckRoot, stepWantsContext, withContext } from './lib/duck.js'
+
+/** Cards this package adds to Doctor Duck's; the same id here wins over duck/cards. */
+const MENTOR_CARDS = join(dirname(fileURLToPath(import.meta.url)), 'mentor', 'cards')
 
 /**
  * Import a package dsh itself ships. Installed with `dsh plugin add` or the Plugins page, the
@@ -101,8 +106,14 @@ export async function apply(ctx, config) {
       return { ...summary, content }
     },
   }))
-  ctx.logger.info('Doctor Duck at %s: %d commands, session context %s', root, candidates.length,
-    config.sessionContext === false ? 'off' : 'on')
+  // The 鸭子 sidebar tab (client/client.js) shows the experience cards; only the Web GUI's page
+  // server emits this event, so other profiles skip it.
+  const cards = readCards([join(root, 'cards'), MENTOR_CARDS])
+  ctx.on('webserver/index-inject', (table) => {
+    table.push({ kind: 'global', name: '__DUCKTOR__', value: { cards } })
+  })
+  ctx.logger.info('Doctor Duck at %s: %d commands, %d cards, session context %s', root, candidates.length,
+    cards.length, config.sessionContext === false ? 'off' : 'on')
   if (config.sessionContext === false) return
 
   ctx.on('agent/pre-step', async ({ agent, messages, step, signal }, next) => {

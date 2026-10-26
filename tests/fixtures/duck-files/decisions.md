@@ -1,0 +1,4 @@
+- 2026-10-25 ▸ 决策：按 workshop 5 天截稿收 scope，不扩新模型（AI 定）；补 3 个 seed（你定）；加 XAttention 基线（AI 定）
+- 2026-10-25 ▸ 决策：先补结构和基线，暂不做逐句润色；这份稿子按大修处理（AI 定，你可改）
+- 2026-10-25 ▸ 决策：摘要的比较主张从 existing sparse attention methods 收窄为 dense attention 和 token pruning，删掉 significantly；等你确认是否有 block-sparse 基线（AI 定，待你确认）
+- 2026-10-25 ▸ 决策：skip_attn.py 的阈值按字面取每层块分数的 90% 分位数，保留高于阈值的块（约前 10%）；每行至少留最高分块，避免整行被跳过（AI 定，你可改）

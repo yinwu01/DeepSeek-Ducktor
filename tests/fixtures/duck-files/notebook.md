@@ -1,0 +1,7 @@
+- 10-25 评估 idea｜评估一个加速方法，先问它在最强的同类基线面前还剩什么，再问它快多少（idea-evaluator Step 2；XAttention 2025）｜这次：块均值跳块要对着 XAttention 的 antidiagonal 评分说清独立优势
+- 10-25 投稿前｜审稿先看主张和证据的差，不要先改语法；语法改得再顺，撑不住的主张还是会被拒（pre-submission-reviewer Step 1；E02）｜这次：摘要说 outperforms existing sparse attention methods，表里只有 dense 和 token pruning
+- 10-25 润色｜紧凑不是删信息，是先砍连接词和空动词，保住主语、因果和量级（pre-submission-reviewer section-guides.md；grammar-rules.md G1）｜这次：摘要第一句从 because+cost grows 改成冒号+scales，7 词版因换主语没选
+- 10-25 润色｜润色只动表达，不动证据；主张比证据强时先标出来，不要用更顺的句子把问题盖过去（paper-polish SKILL.md 的 faithfulness rule；E02）｜这次：摘要的 existing sparse attention methods 在 Table 1 里没有对应行，改成 dense 和 token pruning
+- 10-25 做实验｜分位数阈值先写清是「保留比例」还是「丢弃比例」；90% 分位数配 > 是保留前 10%，不是保留 90%（numpy.percentile 语义；本次代码）｜这次：skip_attn.py 从固定 1e-3 改成每层 90% 分位数，并加了每行至少留一个块的兜底
+- 10-25 复盘｜摸方向时先把最接近的三五篇列出来再决定做什么；搜窄了，后面补基线补不回来（T01；idea-evaluator 的 F1/F3 检索检查）｜这次：只对了 token pruning 和 dense，漏了 XAttention/MInference 这一条 block-sparse 线
+- 10-25 复盘｜只跑一次的结果先当噪声，补种子之前不要写进结论（E05；NeurIPS 投稿清单第 7 项）｜这次：71.2 对 70.4 只跑了一次，0.8 分还没有种子波动可比
