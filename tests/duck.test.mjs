@@ -7,7 +7,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { after, describe, test } from 'node:test'
 import {
-  duckContext, duckSkills, frameContext, HOST_NOTE, isSubagent, PACKAGED_ROOT, parseSkill,
+  duckContext, duckSkills, frameContext, hostNote, isSubagent, PACKAGED_ROOT, parseSkill,
   projectOf, resolveDuckRoot, SOURCE_KIND, stepWantsContext, visibleContext, withContext,
 } from '../lib/duck.js'
 
@@ -105,7 +105,8 @@ describe('session context', () => {
     for (const [name, config] of [['idle', undefined], ['on', '开关：on\n'], ['quiet', '开关：静音\n'], ['off', '开关：off\n']]) {
       const dir = project(name, config)
       const { body } = duckContext(ROOT, dir)
-      assert.equal(body, `${hook.buildContext(dir)}\n\n${HOST_NOTE}`, name)
+      assert.equal(body, `${hook.buildContext(dir)}\n\n${hostNote(dir)}`, name)
+      assert.ok(body.includes(`项目的 .duck/」都是 ${join(dir, '.duck')}，`), name)
       assert.ok(body.startsWith(`Doctor Duck 插件根目录：${ROOT}\n`), name)
     }
   })

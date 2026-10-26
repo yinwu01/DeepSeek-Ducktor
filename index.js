@@ -78,7 +78,9 @@ export const Config = z?.object({
  * @param {import('@deepseek-ai/cordis').Context} ctx
  * @param {{ duckRoot?: string, sessionContext?: boolean, subagents?: boolean }} config
  */
-export async function apply(ctx, config = {}) {
+export async function apply(ctx, config) {
+  // Without the schema an empty `config:` arrives as null.
+  config ??= {}
   if (Config === undefined) ctx.logger.warn('@deepseek-ai/schemastery not found; settings are used unchecked')
   const root = resolveDuckRoot(config.duckRoot)
   // Every dsh launcher, Desktop's included, names a file inside its own dsh package here.

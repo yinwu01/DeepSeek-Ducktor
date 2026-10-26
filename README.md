@@ -75,10 +75,10 @@ Desktop 用户不要用这种方式：这一行对 Desktop 也生效，会盖过
 |---|---|---|
 | 命令 | Claude Code 里 `/duck-review`，Codex 里 `$duck:duck-review` | `/duck-review`，输入框敲 `/` 能看到全部 14 条；只能学生敲，模型不会自己调用 |
 | 开场说明 | 开场 hook 在会话开始时注入一次 | 每个会话的第一次模型请求带上；`.duck/config.md` 改了，或者对话被压缩过，下一步再给一份。会话中途 `/duck on`，常驻规则当场就到 |
-| 生成开场说明的代码 | Doctor Duck 的 `bin/duck.js` | 同一份 `bin/duck.js`，后面加一段 DeepSeek Harness 的工具对照（read、glob、grep） |
+| 生成开场说明的代码 | Doctor Duck 的 `bin/duck.js` | 同一份 `bin/duck.js`，后面加一段 DeepSeek Harness 附注：工具对照（read、glob、grep）、项目目录的绝对路径 |
 | 读插件里的文件 | Claude Code 里插件给 Read、Glob、Grep 开了绿灯 | dsh 的每种沙箱模式都不拦读文件，不用学生批准；插件目录只读 |
 | 学生自己加的命令 | 放项目的 `.claude/skills/duck-xxx/` 或 `.agents/skills/duck-xxx/` | dsh 只读 `.agents/skills/`（和 `.dsh/skills/`），不读 `.claude/skills/`。名字别和插件的 14 条重复：dsh 里插件自带的技能优先级最低，同名的会盖过插件的命令 |
-| 项目目录 | 开场 hook 收到的目录 | 会话创建时的目录；模型在会话里换了工作目录，开场说明仍按原来的项目读 `.duck/` |
+| 项目目录 | 开场 hook 收到的目录 | 会话创建时的目录，开场说明里写明它和 `.duck/` 的绝对路径；模型在会话里换了工作目录，`.duck/` 仍是原来那个 |
 
 ## 怎么做的
 
@@ -107,7 +107,7 @@ Desktop 用户不要用这种方式：这一行对 Desktop 也生效，会盖过
 
 细节在 [docs/验证记录.md](docs/验证记录.md)。简单说：
 
-- 验证了：dsh 0.2.1-rc.2 和 rc.3 上三种安装方式都能装上、卸掉（卸掉后不再加载）；命令在 Web 和 headless 里都列出来、指向真实文件；开场说明和 Doctor Duck 开场 hook 的输出逐字相同，位置在学生消息之后、命令之前；续接会话不重复给，开关变了给替换的一份；用被测 dsh 自己的代码建出子代理会话，插件认得出它。
+- 验证了：dsh 0.2.1-rc.2 和 rc.3 上三种安装方式都能装上、卸掉（卸掉后不再加载）；命令在 Web 和 headless 里都列出来、指向真实文件；开场说明和 Doctor Duck 开场 hook 的输出逐字相同，位置在学生消息之后、命令之前；续接会话不重复给，开关变了给替换的一份；照 dsh 建子代理会话的写法、用被测 dsh 的代码建出会话，插件认得出子代理（dsh 真建子代理时这么写，是读代码确认的）。
 - 没验证：真模型下的效果（要 DeepSeek 的 key）；Desktop（只有 macOS、Windows 版，这台机器是 Linux）；插件页的点击流程本身（测的是它调用的后端接口），插件的「配置」页也没看过；对话压缩后重发、真跑一个子代理时不带（触发它们要真模型）。
 
 ## 许可
