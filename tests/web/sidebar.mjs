@@ -51,12 +51,12 @@ try {
   await page.waitForTimeout(1500)
   await snap('guide')
   await page.getByText('鸭子', { exact: true }).first().click()
-  await page.locator('.ducktor').first().waitFor({ timeout: 15000 })
+  await page.locator('.ds-supervisor').first().waitFor({ timeout: 15000 })
   await page.waitForTimeout(3000)
   await snap('duck')
-  note('panel', (await page.locator('.ducktor').first().innerText()).replace(/\n+/g, ' / ').slice(0, 1500))
+  note('panel', (await page.locator('.ds-supervisor').first().innerText()).replace(/\n+/g, ' / ').slice(0, 1500))
   // The host injects Doctor Duck's cards and the plugin's own mentor/cards into the page.
-  const ids = await page.evaluate(() => (window.__DUCKTOR__?.cards ?? []).map(card => card.id))
+  const ids = await page.evaluate(() => (window.__DEEPSEEK_SUPERVISOR__?.cards ?? []).map(card => card.id))
   note('cards', ids.length, ids.join(' '))
   if (!ids.includes('W13') || !ids.includes('I02')) failed = true
   if (steps.includes('poll')) {
@@ -66,8 +66,8 @@ try {
     if (!seen) failed = true
     await snap('polled')
   }
-  for (const summary of await page.locator('.ducktor summary').all()) await summary.click()
-  await page.locator('.ducktor').evaluate(el => { el.scrollTop = el.scrollHeight })
+  for (const summary of await page.locator('.ds-supervisor summary').all()) await summary.click()
+  await page.locator('.ds-supervisor').evaluate(el => { el.scrollTop = el.scrollHeight })
   await page.waitForTimeout(500)
   await snap('bottom')
 } catch (error) {

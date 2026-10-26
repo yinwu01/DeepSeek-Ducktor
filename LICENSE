@@ -1,4 +1,4 @@
-deepseek-ducktor is licensed by directory.
+deepseek-supervisor is licensed by directory.
 
 - Plugin code (index.js, lib/, scripts/, tests/): MIT, text below. tests/e2e/flow.cjs and
   tests/e2e/fixtures/ come from Doctor Duck's tests/, which are MIT as well.

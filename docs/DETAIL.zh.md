@@ -13,6 +13,8 @@ Doctor Duck 把「讲一遍」找回来：
 
 这个插件把 Doctor Duck 原样带进 DeepSeek Harness。规则、命令、卡片和 Claude Code、Codex 里的是同一份，固定在 Doctor Duck 的一个提交上（插件目录里的 `duck.lock.json` 写着是哪个）。
 
+deepseek-supervisor 是社区做的插件，不是 DeepSeek 官方出品，和 DeepSeek 公司没有关系。
+
 ## 怎么用
 
 - 在输入框敲 `/`，能看到全部 `/duck-*` 命令。不知道从哪开始，先敲 `/duck`。

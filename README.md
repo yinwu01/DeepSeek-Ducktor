@@ -1,4 +1,4 @@
-# deepseek-ducktor
+# deepseek-supervisor
 
 > Trust me, I'm a Ducktor.
 
@@ -9,6 +9,8 @@ Doctor Duck（讲为什么的科研导师）的 DeepSeek Harness 原生插件。
 ![「鸭子」页签](docs/images/sidebar.png)
 
 Doctor Duck 是什么、怎么用，见 [docs/DETAIL.zh.md](docs/DETAIL.zh.md)。这一页也是插件装好后在「插件」页里看到的详情（dsh 支持详情文档的版本才显示）。
+
+这是社区做的插件，不是 DeepSeek 官方出品，和 DeepSeek 公司没有关系。2026-10-26 以前它叫 deepseek-ducktor，`evals/runs/` 和 `docs/验证记录.md` 里那天以前的记录保留了旧名字。
 
 ## 要求
 
@@ -21,7 +23,7 @@ DeepSeek Harness 0.2.1-rc.2 及以上、0.3 以下（`package.json` 的 `engines
 ### 方式一：插件页（Web、Desktop）
 
 1. 把这个仓库放到本机任意位置（`git clone` 或下载解压）。
-2. 在 DeepSeek Harness 里打开侧边栏的「插件」，选「安装第三方插件」，在「包名或地址」里填仓库的绝对路径，例如 `/Users/you/deepseek-ducktor`。
+2. 在 DeepSeek Harness 里打开侧边栏的「插件」，选「安装第三方插件」，在「包名或地址」里填仓库的绝对路径，例如 `/Users/you/deepseek-supervisor`。
 3. 装好就生效，不用重启。插件卡片上显示「Doctor Duck 导师鸭」。
 
 卸载在同一页面里点「卸载」。npm 装的 dsh 用 PATH 上的 `pnpm` 装插件；Desktop 自带 pnpm。
@@ -29,13 +31,13 @@ DeepSeek Harness 0.2.1-rc.2 及以上、0.3 以下（`package.json` 的 `engines
 ### 方式二：命令行
 
 ```sh
-dsh plugin --profile web add /绝对路径/deepseek-ducktor
-dsh plugin --profile headless add /绝对路径/deepseek-ducktor
+dsh plugin --profile web add /绝对路径/deepseek-supervisor
+dsh plugin --profile headless add /绝对路径/deepseek-supervisor
 ```
 
-每个 profile 单独装，需要 PATH 上有 `pnpm`。卸载把 `add /绝对路径/deepseek-ducktor` 换成 `remove deepseek-ducktor`。
+每个 profile 单独装，需要 PATH 上有 `pnpm`。卸载把 `add /绝对路径/deepseek-supervisor` 换成 `remove deepseek-supervisor`。
 
-Desktop 的 profile 名是 `desktop`：先打开一次 Desktop，完全退出，再用 Desktop 自带的 `dsh` 命令（Desktop 菜单「管理 dsh 命令…」可以把它注册到终端）运行 `dsh plugin --profile desktop add /绝对路径/deepseek-ducktor`，然后重新打开 Desktop。
+Desktop 的 profile 名是 `desktop`：先打开一次 Desktop，完全退出，再用 Desktop 自带的 `dsh` 命令（Desktop 菜单「管理 dsh 命令…」可以把它注册到终端）运行 `dsh plugin --profile desktop add /绝对路径/deepseek-supervisor`，然后重新打开 Desktop。
 
 ### 方式三：不装 pnpm（命令行）
 
@@ -43,8 +45,8 @@ Desktop 的 profile 名是 `desktop`：先打开一次 Desktop，完全退出，
 
 ```yaml
 - insert:
-    - id: deepseek-ducktor
-      name: /绝对路径/deepseek-ducktor/index.js
+    - id: deepseek-supervisor
+      name: /绝对路径/deepseek-supervisor/index.js
 ```
 
 这一行对所有 profile 生效，下次启动 dsh 时加载。卸载就删掉这一行。
@@ -59,8 +61,8 @@ Desktop 用户不要用这种方式：这一行对 Desktop 也生效，会盖过
 
 ```yaml
 - insert:
-    - id: deepseek-ducktor
-      name: /绝对路径/deepseek-ducktor/index.js
+    - id: deepseek-supervisor
+      name: /绝对路径/deepseek-supervisor/index.js
       config:
         duckRoot: /绝对路径/Doctor-Duck
         sessionContext: true

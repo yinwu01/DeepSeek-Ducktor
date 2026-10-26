@@ -25,8 +25,8 @@ test('bundle manifest: patch, engine range, ESM, peers dsh provides', () => {
 
 test('the patch inserts one Host row named after the package', () => {
   const patch = readFileSync(join(HERE, 'cordis.patch.yml'), 'utf8')
-  assert.match(patch, /^- insert:\n {4}- id: deepseek-ducktor\n {6}name: deepseek-ducktor\n$/mu)
-  assert.equal(pkg.name, 'deepseek-ducktor')
+  assert.match(patch, /^- insert:\n {4}- id: deepseek-supervisor\n {6}name: deepseek-supervisor\n$/mu)
+  assert.equal(pkg.name, 'deepseek-supervisor')
 })
 
 test('published files cover everything loaded at run time', () => {

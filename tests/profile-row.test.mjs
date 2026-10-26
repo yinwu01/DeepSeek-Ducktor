@@ -9,7 +9,7 @@ import { after, describe, test } from 'node:test'
 
 const { idRows, rowCheckout, rowNames } = createRequire(import.meta.url)('./e2e/profile-row.cjs')
 
-const dir = mkdtempSync(join(tmpdir(), 'ducktor-row-'))
+const dir = mkdtempSync(join(tmpdir(), 'ds-supervisor-row-'))
 after(() => rmSync(dir, { recursive: true, force: true }))
 
 describe('rowNames', () => {
@@ -17,45 +17,45 @@ describe('rowNames', () => {
     const dump = [
       '- id: skill-filesystem',
       "  name: '@deepseek-ai/dsh-skill-filesystem'",
-      '- id: deepseek-ducktor',
-      '  name: deepseek-ducktor',
-      '- id: deepseek-ducktor',
+      '- id: deepseek-supervisor',
+      '  name: deepseek-supervisor',
+      '- id: deepseek-supervisor',
       "  name: 'file:///x/it''s/index.js'",
       '# == /home/u/.dsh/cordis.patch.yml',
-      '- id: deepseek-ducktor',
+      '- id: deepseek-supervisor',
       '  name: >-',
-      '    file:///SSD1/a/very/long/parent/path/deepseek-ducktor/index.js',
+      '    file:///SSD1/a/very/long/parent/path/deepseek-supervisor/index.js',
       '  config:',
       '    subagents: true',
       '- id: other',
       '  name: x',
     ].join('\n')
     assert.deepEqual(rowNames(dump), [
-      'deepseek-ducktor',
+      'deepseek-supervisor',
       "file:///x/it's/index.js",
-      'file:///SSD1/a/very/long/parent/path/deepseek-ducktor/index.js',
+      'file:///SSD1/a/very/long/parent/path/deepseek-supervisor/index.js',
     ])
   })
   test('a row inside a group (dsh prints its rows under config:) is found', () => {
-    const dump = ['- id: tools', "  name: '@deepseek-ai/dsh-tools'", '  group: true', '  config:', '    - id: deepseek-ducktor',
-      '      name: file:///SSD1/x/deepseek-ducktor/index.js', '    - id: other', '      name: y'].join('\n')
-    assert.deepEqual(rowNames(dump), ['file:///SSD1/x/deepseek-ducktor/index.js'])
+    const dump = ['- id: tools', "  name: '@deepseek-ai/dsh-tools'", '  group: true', '  config:', '    - id: deepseek-supervisor',
+      '      name: file:///SSD1/x/deepseek-supervisor/index.js', '    - id: other', '      name: y'].join('\n')
+    assert.deepEqual(rowNames(dump), ['file:///SSD1/x/deepseek-supervisor/index.js'])
   })
   test('name before id, as the user wrote it, is the same row', () => {
-    const dump = ['# == /h/.dsh/cordis.patch.yml', '- name: file:///SSD1/x/deepseek-ducktor/index.js', '  id: deepseek-ducktor'].join('\n')
-    assert.deepEqual(rowNames(dump), ['file:///SSD1/x/deepseek-ducktor/index.js'])
+    const dump = ['# == /h/.dsh/cordis.patch.yml', '- name: file:///SSD1/x/deepseek-supervisor/index.js', '  id: deepseek-supervisor'].join('\n')
+    assert.deepEqual(rowNames(dump), ['file:///SSD1/x/deepseek-supervisor/index.js'])
   })
   test('an enable toggle merged into the row shows as disabled: true', () => {
     // The shape of a row after dsh's own plugin toggle (writePluginEnabled) turned it off.
-    const dump = ['- id: deepseek-ducktor', '  name: file:///SSD1/x/deepseek-ducktor/index.js', '  disabled: true',
+    const dump = ['- id: deepseek-supervisor', '  name: file:///SSD1/x/deepseek-supervisor/index.js', '  disabled: true',
       '  config:', '    subagents: true'].join('\n')
-    assert.deepEqual(idRows(dump), [{ id: 'deepseek-ducktor', name: 'file:///SSD1/x/deepseek-ducktor/index.js', disabled: true, config: null }])
+    assert.deepEqual(idRows(dump), [{ id: 'deepseek-supervisor', name: 'file:///SSD1/x/deepseek-supervisor/index.js', disabled: true, config: null }])
   })
 })
 
 describe('rowCheckout', () => {
   test('percent-encoded file URLs (space, Chinese) resolve to the real checkout', () => {
-    const checkout = join(dir, '路径 测试', 'ducktor')
+    const checkout = join(dir, '路径 测试', 'ds-supervisor')
     mkdirSync(checkout, { recursive: true })
     writeFileSync(join(checkout, 'index.js'), '')
     const url = pathToFileURL(join(checkout, 'index.js')).href
@@ -68,9 +68,9 @@ describe('rowCheckout', () => {
     mkdirSync(modules, { recursive: true })
     const checkout = join(dir, 'linked')
     mkdirSync(checkout)
-    symlinkSync(checkout, join(modules, 'deepseek-ducktor'))
-    assert.equal(rowCheckout('deepseek-ducktor', { dshHome: dir, profile: 'headless' }), checkout)
-    assert.equal(rowCheckout('deepseek-ducktor', { dshHome: dir, profile: 'web' }), '')
+    symlinkSync(checkout, join(modules, 'deepseek-supervisor'))
+    assert.equal(rowCheckout('deepseek-supervisor', { dshHome: dir, profile: 'headless' }), checkout)
+    assert.equal(rowCheckout('deepseek-supervisor', { dshHome: dir, profile: 'web' }), '')
     assert.equal(rowCheckout(undefined, { dshHome: dir, profile: 'web' }), '')
   })
 })

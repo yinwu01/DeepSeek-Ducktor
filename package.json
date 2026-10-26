@@ -1,5 +1,5 @@
 {
-  "name": "deepseek-ducktor",
+  "name": "deepseek-supervisor",
   "version": "0.1.0",
   "description": "Doctor Duck, the research mentor that explains why, as a native DeepSeek Harness plugin.",
   "private": true,

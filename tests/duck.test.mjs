@@ -14,7 +14,7 @@ import {
 const require = createRequire(import.meta.url)
 const ROOT = resolveDuckRoot(undefined)
 const hook = require(join(ROOT, 'bin', 'duck.js'))
-const scratch = mkdtempSync(join(tmpdir(), 'ducktor-test-'))
+const scratch = mkdtempSync(join(tmpdir(), 'ds-supervisor-test-'))
 after(() => rmSync(scratch, { recursive: true, force: true }))
 
 function project(name, config) {

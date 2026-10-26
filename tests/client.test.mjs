@@ -17,7 +17,7 @@ function loadClient() {
   const createElement = (type, props, ...children) => ({ type, props: props ?? {}, children: children.flat(Infinity) })
   const react = { createElement, useState: () => { throw new Error('hooks need a page') } }
   let exports
-  const window = { __ModuleLoader__: { load: ({ id, factory }) => { assert.equal(id, 'deepseek-ducktor'); exports = factory(() => react) } } }
+  const window = { __ModuleLoader__: { load: ({ id, factory }) => { assert.equal(id, 'deepseek-supervisor'); exports = factory(() => react) } } }
   runInNewContext(readFileSync(join(repo, 'client', 'client.js'), 'utf8'), { window, globalThis: {}, console })
   return exports
 }
@@ -37,7 +37,7 @@ const plain = value => JSON.parse(JSON.stringify(value))
 
 describe('module shape', () => {
   test('the loader gets the package name and a cordis plugin', () => {
-    assert.equal(client.name, 'deepseek-ducktor')
+    assert.equal(client.name, 'deepseek-supervisor')
     assert.ok(client.inject.includes('sidebarRightTabs'))
     assert.equal(typeof client.apply, 'function')
   })
@@ -116,7 +116,7 @@ describe('model and view', () => {
     assert.deepEqual([...order].sort((a, b) => a - b), order)
     // The decision waiting for the student is drawn first.
     const items = []
-    const walk = node => { if (node && typeof node === 'object') { if (node.props['data-who'] && node.props.className === 'ducktor-item') items.push(node.props['data-who']); node.children.forEach(walk) } }
+    const walk = node => { if (node && typeof node === 'object') { if (node.props['data-who'] && node.props.className === 'ds-supervisor-item') items.push(node.props['data-who']); node.children.forEach(walk) } }
     walk(tree)
     assert.equal(items[0], 'confirm')
     assert.equal(items.length, 6)
@@ -141,7 +141,7 @@ describe('model and view', () => {
     assert.ok(decisions.every(d => d.who === 'other' && d.tag === '我定'))
     const tree = client.view.panelView(buildModel({ config: '开关：on\n', decisions: line, errors: [] }, cards), { loading: false, open: {}, toggle() {}, refresh() {} })
     const chips = []
-    const walk = node => { if (node && typeof node === 'object') { if (node.props.className === 'ducktor-chip' && !node.props['data-switch']) chips.push(textOf(node)); node.children.forEach(walk) } }
+    const walk = node => { if (node && typeof node === 'object') { if (node.props.className === 'ds-supervisor-chip' && !node.props['data-switch']) chips.push(textOf(node)); node.children.forEach(walk) } }
     walk(tree)
     assert.deepEqual(chips, ['没写清谁定的：我定', '没写清谁定的：我定'])
   })

@@ -8,6 +8,8 @@ Doctor Duck brings that step back. When the AI finishes a real piece of work, th
 
 This plugin brings Doctor Duck into DeepSeek Harness unchanged. The rules, commands and cards are the ones Claude Code and Codex users get, pinned to one Doctor Duck commit (named in `duck.lock.json` in the plugin folder). Doctor Duck itself speaks Chinese.
 
+deepseek-supervisor is a community plugin. It is not made by DeepSeek and has no connection to the company.
+
 ## Use
 
 - Type `/` in the composer to see every `/duck-*` command. Start with `/duck`.
