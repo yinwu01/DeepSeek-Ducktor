@@ -19,13 +19,10 @@
 import { realpathSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'
-import { dirname, join } from 'node:path'
-import { fileURLToPath, pathToFileURL } from 'node:url'
+import { join } from 'node:path'
+import { pathToFileURL } from 'node:url'
 import { readCards } from './lib/cards.js'
-import { duckSkills, parseSkill, projectOf, PROVIDER, resolveDuckRoot, stepWantsContext, withContext } from './lib/duck.js'
-
-/** Cards this package adds to Doctor Duck's; the same id here wins over duck/cards. */
-const MENTOR_CARDS = join(dirname(fileURLToPath(import.meta.url)), 'mentor', 'cards')
+import { duckSkills, MENTOR_CARDS, parseSkill, projectOf, PROVIDER, resolveDuckRoot, stepWantsContext, withContext } from './lib/duck.js'
 
 /**
  * Import a package dsh itself ships. Installed with `dsh plugin add` or the Plugins page, the

@@ -20,7 +20,21 @@ Doctor Duck 把「讲一遍」找回来：
 - `/duck on`：在这个项目里开启。之后平时干活也跟着讲为什么、记决策。
 - `/duck quiet`：对话里不讲，道理照样记进笔记本。
 - `/duck off`：关掉，命令也不再写记录。
-- 鸭子的东西都写在项目的 `.duck/` 下：`config.md`（开关和设定）、`notebook.md`（笔记本）、`decisions.md`（决策记录）、`reports/`（完整报告）。
+- 鸭子的东西都写在项目的 `.duck/` 下：`config.md`（开关和设定）、`notebook.md`（笔记本）、`decisions.md`（决策记录）、`reports/`（完整报告）、`background.md`（这个方向的背景）。
+
+## 网页界面的「鸭子」页签
+
+在 Web 界面里打开右侧边栏，选「鸭子」（Desktop 用同一套网页界面，没测过）。它把 `.duck/` 里的东西摆在对话旁边：
+
+- 这次 AI 替你定的：哪些板是 AI 拍的、哪些是你定的；要你确认的排在最前面。
+- 可以带走的原则：每一步留下的一条做法，写着出处和「这次」发生了什么。
+- 该你亲手核对的：最近一份报告里要你自己看的地方，点一下打开整份报告。
+- 领域背景：第一次用 `/duck-survey` 或 `/duck-idea` 摸一个方向时写下的代表作、数据集和还没定论的问题，都带链接。
+- 导师会提醒你的：最近几步点到的经验卡片，写着道理、怎么用和出处。
+
+页签打开时每 4 秒看一次 `.duck/` 有没有更新，只读本地文件，不花模型的 token。
+
+除了 Doctor Duck 自带的 23 张卡，插件另带 10 张：读论文、进新方向、换不换题、看数据和错误样本、基线调参、结果可追溯、测试集只在最后看、研究日志、和导师开会、用 AI 做研究的责任。每张都写明出处，出处都核对过原文。
 
 ## 命令
 
@@ -55,8 +69,10 @@ Doctor Duck 把「讲一遍」找回来：
 
 - 命令：14 条 `/duck-*` 命令登记成 DeepSeek Harness 的技能，只能由你敲出来，模型不会自己调用。
 - 开场说明：Claude Code、Codex 里由开场 hook 注入的那段（插件根目录、这个项目的开关、开启时的常驻规则），这里在每个会话的第一次模型请求里给出，由同一份 Doctor Duck 代码生成。`.duck/config.md` 改了，或者对话被压缩过，会再给一份。
+- 开场说明后面另有几行：另带的经验卡片在哪；鸭子开着或你敲了命令时，列论文、数据集、工具要附查到的链接；第一次摸一个方向时写 `.duck/background.md`。
+- 「鸭子」页签：浏览器里的一页，读 `.duck/` 和经验卡片来显示。
 - 插件只读本地文件，自己不联网。对话照常发给你在 DeepSeek Harness 里选的模型。
 
 ## 许可
 
-插件代码是 MIT，插件的文档是 CC BY-NC-SA 4.0。`duck/` 里的 Doctor Duck 按目录分：文字（skills/、rules/、cards/、handbook/）是 CC BY-NC-SA 4.0，不可商用；`library/` 里的原技能各自保留原来的许可；代码是 MIT。Doctor Duck 改编自 Supervisor-Skills（骆昱宇及贡献者，CC BY-NC-SA 4.0）。
+插件代码（含页签）是 MIT，插件的文档和另带的经验卡片（`mentor/`）是 CC BY-NC-SA 4.0。`duck/` 里的 Doctor Duck 按目录分：文字（skills/、rules/、cards/、handbook/）是 CC BY-NC-SA 4.0，不可商用；`library/` 里的原技能各自保留原来的许可；代码是 MIT。Doctor Duck 改编自 Supervisor-Skills（骆昱宇及贡献者，CC BY-NC-SA 4.0）。

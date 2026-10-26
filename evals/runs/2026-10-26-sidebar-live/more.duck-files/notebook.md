@@ -1,0 +1,1 @@
+- 10-26 摸方向｜先问省下的算力在哪一层变成时间，再问精度在哪个任务上失守（deep-research synthesis-framework；E02）｜这次：9 篇方法里只有 MSA 同时报 FLOPs 与两阶段 wall-clock，SeerAttention 的 7.3× kernel 落到 1.41× 端到端。

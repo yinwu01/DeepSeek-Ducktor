@@ -15,7 +15,13 @@ This plugin brings Doctor Duck into DeepSeek Harness unchanged. The rules, comma
 - `/duck on` turns it on in this project: from then on it explains and logs decisions during ordinary work too.
 - `/duck quiet` keeps the explanations out of the conversation but still writes them to the notebook.
 - `/duck off` turns it off.
-- Everything the duck writes goes under the project's `.duck/`: `config.md`, `notebook.md`, `decisions.md` and `reports/`.
+- Everything the duck writes goes under the project's `.duck/`: `config.md`, `notebook.md`, `decisions.md`, `reports/` and `background.md`.
+
+## The 鸭子 (duck) tab
+
+In the Web GUI, open the right sidebar and pick 鸭子 (Desktop uses the same web interface; not tested). It puts what the duck wrote next to the conversation: the calls the AI made for you (the ones waiting for your confirmation first), the principles to take away, what to check yourself in the latest report, background on the direction you are exploring, and the experience cards your recent steps point to. While open it checks `.duck/` every 4 seconds; it only reads local files and costs no model tokens.
+
+Besides Doctor Duck's 23 experience cards, the plugin ships 10 of its own (`mentor/cards/`, in Chinese): reading papers, entering a new area, when to switch problems, looking at data and errors, tuning baselines, traceable results, keeping the test set for the end, a research log, meeting your advisor, and responsibility when AI does the work. Each names its sources, checked against the originals.
 
 ## Settings
 
@@ -29,8 +35,10 @@ All three are optional.
 
 - The 14 `/duck-*` commands are registered as DeepSeek Harness skills that only you can run; the model does not invoke them on its own.
 - The opening context that a SessionStart hook gives Claude Code and Codex (plugin root, the project's switch, the resident rules when on) goes into the first model request of each session, built by the same Doctor Duck code. It is given again when `.duck/config.md` changes or after compaction.
+- A few lines after the opening context say where the extra cards are; that when the duck is on or you run a command, papers, datasets and tools come with links found this time; and that the first exploration of a direction writes `.duck/background.md`.
+- The 鸭子 tab is a browser-side page that reads `.duck/` and the cards.
 - The plugin only reads local files and makes no network requests of its own.
 
 ## License
 
-Plugin code: MIT; plugin documentation: CC BY-NC-SA 4.0. Doctor Duck in `duck/` is licensed by directory: its text (skills/, rules/, cards/, handbook/) is CC BY-NC-SA 4.0 (non-commercial), each original skill in `library/` keeps its own license, and its code is MIT. Doctor Duck is adapted from Supervisor-Skills by Yuyu Luo and contributors (CC BY-NC-SA 4.0).
+Plugin code (including the tab): MIT; plugin documentation and the extra cards (`mentor/`): CC BY-NC-SA 4.0. Doctor Duck in `duck/` is licensed by directory: its text (skills/, rules/, cards/, handbook/) is CC BY-NC-SA 4.0 (non-commercial), each original skill in `library/` keeps its own license, and its code is MIT. Doctor Duck is adapted from Supervisor-Skills by Yuyu Luo and contributors (CC BY-NC-SA 4.0).

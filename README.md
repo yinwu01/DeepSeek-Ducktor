@@ -4,6 +4,10 @@
 
 Doctor Duck（讲为什么的科研导师）的 DeepSeek Harness 原生插件。装上以后，在 DeepSeek Harness 的 Web、Desktop 和命令行里都能敲 `/duck-review` 这类命令；在开启了鸭子的项目里，每个会话都带着 Doctor Duck 的常驻规则。规则、命令和卡片是 Doctor Duck 的原文，和 Claude Code、Codex 用户拿到的是同一份。
 
+在 Web 界面里，右侧边栏多一个「鸭子」页签（Desktop 用的是同一套网页界面，但这台机器没有 Desktop，没测过）：这次 AI 替你定了什么、你能带走的原则、该你亲手核对的地方、这个方向的背景、导师会提醒你的经验卡片，都摆在对话旁边。用 agent 做科研时一闪而过的判断，学生在这里能看见、能学到。插件在 Doctor Duck 的 23 张经验卡片之外另带 10 张（读论文、进新方向、实验习惯、和导师开会、用 AI 做研究的责任），每张都写明出处。
+
+![「鸭子」页签](docs/images/sidebar.png)
+
 Doctor Duck 是什么、怎么用，见 [docs/DETAIL.zh.md](docs/DETAIL.zh.md)。这一页也是插件装好后在「插件」页里看到的详情（dsh 支持详情文档的版本才显示）。
 
 ## 要求
@@ -80,10 +84,27 @@ Desktop 用户不要用这种方式：这一行对 Desktop 也生效，会盖过
 | 学生自己加的命令 | 放项目的 `.claude/skills/duck-xxx/` 或 `.agents/skills/duck-xxx/` | dsh 只读 `.agents/skills/`（和 `.dsh/skills/`），不读 `.claude/skills/`。名字别和插件的 14 条重复：dsh 里插件自带的技能优先级最低，同名的会盖过插件的命令 |
 | 项目目录 | 开场 hook 收到的目录 | 会话创建时的目录。开场说明里写明它和 `.duck/` 的绝对路径，让模型在会话里换了工作目录也读写原来的 `.duck/`（模型照不照做，没用真模型验证） |
 
+## 「鸭子」页签
+
+打开右侧边栏（右上角的按钮），在「开始」里选「鸭子」。页签读的是项目 `.duck/` 下的文件：
+
+| 页签里的一块 | 来自 |
+|---|---|
+| 这次 AI 替你定的 | `decisions.md`；标着「待你确认」的排最前，「AI 定」和「你定」分开标 |
+| 可以带走的原则 | `notebook.md`；每条带阶段、出处和「这次」 |
+| 该你亲手核对的 | `reports/` 里最近一份有核对段落的报告，可以点开整份 |
+| 领域背景 | `background.md`；第一次用 `/duck-survey`、`/duck-idea` 摸一个方向时写 |
+| 导师会提醒你的 | 最近几步点到的卡片（Doctor Duck 的 `cards/` 和本插件的 `mentor/cards/`） |
+
+页签开着时每 4 秒看一次文件有没有变，变了就重画；只读本地文件，不发模型请求。项目里没开鸭子时，页签告诉你怎么开。命令行（TUI、headless）里没有这个页签，`.duck/` 里的文件照样写。
+
 ## 怎么做的
 
 - `index.js`：dsh 插件入口。把 `duck/skills/` 下的 14 条命令登记成技能（技能的基础目录就是 Doctor Duck 根目录，命令里「相对插件根目录」的路径因此对得上）；在每一步模型请求之前检查开场说明是否需要给、是否过期。
-- `lib/duck.js`：和 dsh 无关的部分（找根目录、读 SKILL.md、生成和判断开场说明），单元测试直接用 Node 跑。
+- `lib/duck.js`：和 dsh 无关的部分（找根目录、读 SKILL.md、生成和判断开场说明），单元测试直接用 Node 跑。开场说明后面那段 DeepSeek Harness 附注也在这里，附注里还写着另带的卡片在哪、参考文献要带链接、第一次摸方向时写 `background.md`。
+- `client/client.js`：「鸭子」页签，手写的浏览器端插件，不用打包；React 用页面自带的那份，文件通过 dsh 的工作区文件接口读。
+- `lib/cards.js`：读卡片（Doctor Duck 的和 `mentor/cards/` 的），服务端读好后随网页一起发给页签。
+- `mentor/cards/`：本插件另带的 10 张经验卡片，格式和 Doctor Duck 的卡一样，卡号不重；`INDEX.md` 由 `node scripts/mentor-index.mjs` 生成。
 - `duck/`：Doctor Duck 原样拷贝，不手改。`duck.lock.json` 记着来自哪个提交和每个文件的 sha256。更新 Doctor Duck：
 
   ```sh
@@ -91,7 +112,7 @@ Desktop 用户不要用这种方式：这一行对 Desktop 也生效，会盖过
   npm test
   ```
 
-插件运行时只读本地文件，自己不发网络请求；只用 dsh 自带的三个包（`@deepseek-ai/schemastery`、`@deepseek-ai/dsh-skill`、`@deepseek-ai/dsh-llm`），没有别的依赖。
+插件运行时只读本地文件，自己不发网络请求；服务端只用 dsh 自带的三个包（`@deepseek-ai/schemastery`、`@deepseek-ai/dsh-skill`、`@deepseek-ai/dsh-llm`），页签只用页面自带的 React，没有别的依赖。
 
 ## 测试
 
@@ -99,6 +120,7 @@ Desktop 用户不要用这种方式：这一行对 Desktop 也生效，会盖过
 |---|---|---|
 | `npm test` | Node 22 以上 | 单元测试和打包检查，不需要 dsh |
 | `node tests/dsh/check.mjs --route pnpm --web`（或 `--route patch`、`--route ui`） | Node 22.15 以上（读会话日志要 zstd），装好的 dsh；`pnpm` 和 `ui` 两条还要 PATH 上有 pnpm | 在临时 HOME 里按三种方式装、用、卸，读真实的会话日志核对注入的内容和位置。不需要也不使用 API key，模型请求发出前就停下 |
+| `node tests/web/sidebar.mjs <dsh web 打印的地址> <输出前缀> <项目目录> [poll] [dark]` | 一个开着的 `dsh web`（web profile 装了插件），`PLAYWRIGHT_CORE` 和 `CHROMIUM` 指向 playwright-core 和一个 Chromium | 在真的网页界面里打开「鸭子」页签、截图；带 `poll` 时往 `decisions.md` 追加一行，看页签自己刷新出来。不发模型请求 |
 | `node tests/e2e/flow.cjs [main\|more\|loop\|paper]` | Node 22.15 以上，`DEEPSEEK_API_KEY`，dsh 的 headless profile 里装好插件 | 真模型跑 Doctor Duck 的整套学生流程，检查项和 Claude Code、Codex 版相同。花真钱 |
 
 `check.mjs` 建议在断网的环境里跑（例如 `unshare -rn`，打开 loopback），这样能确认没有东西出本机。
@@ -113,8 +135,8 @@ Desktop 用户不要用这种方式：这一行对 Desktop 也生效，会盖过
 
 ## 许可
 
-- 插件代码（`index.js`、`lib/`、`scripts/`、`tests/`）：MIT。
-- 文档和展示文字（`README.md`、`docs/`、`locale/`）：CC BY-NC-SA 4.0，和 Doctor Duck 的文字一样（里面有改写自 Doctor Duck 的段落）。
+- 插件代码（`index.js`、`lib/`、`client/`、`scripts/`、`tests/`）：MIT。
+- 文档和展示文字（`README.md`、`docs/`、`locale/`）和另带的经验卡片（`mentor/`）：CC BY-NC-SA 4.0，和 Doctor Duck 的文字一样（里面有改写自 Doctor Duck 的段落）。
 - `duck/`：Doctor Duck 原样拷贝，按它自己的 `duck/LICENSE` 分目录许可：文字（skills/、rules/、cards/、handbook/）是 CC BY-NC-SA 4.0，不可商用；`library/` 里的原技能各自保留原来的许可（CC BY 4.0 或 CC BY-NC-SA 4.0）；代码是 MIT。
 - Doctor Duck 改编自 [Supervisor-Skills](https://github.com/HKUSTDial/Supervisor-Skills)（骆昱宇及贡献者，CC BY-NC-SA 4.0）。
 

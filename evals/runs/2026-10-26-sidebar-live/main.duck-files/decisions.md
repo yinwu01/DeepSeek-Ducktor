@@ -1,0 +1,1 @@
+- 2026-10-26 ▸ 决策：判 Accept with Revisions，砍掉 SOTA 主张，先补有效性和 block-sparse 基线再投（AI 定）

@@ -128,12 +128,32 @@ describe('model and view', () => {
     assert.match(text, /\/duck on/)
     assert.doesNotMatch(text, /这次 AI 替你定的/)
   })
+  test('switched on but nothing written yet: no 「/duck on」 hint', () => {
+    const text = textOf(client.view.panelView(buildModel({ config: '开关：on\n', errors: [] }, cards), { loading: false, open: {}, toggle() {}, refresh() {} }))
+    assert.match(text, /还没有记录/)
+    assert.doesNotMatch(text, /\/duck on/)
+  })
+  test('a tag that is neither 你定 nor AI 定 is shown as written', () => {
+    // A real DeepSeek turn in the Web GUI wrote this line (2026-10-26).
+    const line = '- 2026-10-26 ▸ 决策：判 Accept with Revisions、缩范围重写，不按现稿投 10-30（我定）；保留 64-token 块与免训练路线（我定）'
+    const decisions = parseDecisions(line)
+    assert.equal(decisions.length, 2)
+    assert.ok(decisions.every(d => d.who === 'other' && d.tag === '我定'))
+    const tree = client.view.panelView(buildModel({ config: '开关：on\n', decisions: line, errors: [] }, cards), { loading: false, open: {}, toggle() {}, refresh() {} })
+    const chips = []
+    const walk = node => { if (node && typeof node === 'object') { if (node.props.className === 'ducktor-chip' && !node.props['data-switch']) chips.push(textOf(node)); node.children.forEach(walk) } }
+    walk(tree)
+    assert.deepEqual(chips, ['没写清谁定的：我定', '没写清谁定的：我定'])
+  })
   test('background lines keep their links', () => {
-    const model = buildModel({ ...raw, background: '# 领域背景\n- 经典：XAttention（2025）https://arxiv.org/abs/2503.16428\n' }, cards)
+    const model = buildModel({ ...raw, background: '# 领域背景\n\n## 代表作\n- 经典：XAttention（2025）https://arxiv.org/abs/2503.16428\n' }, cards)
     const tree = client.view.panelView(model, { loading: false, open: {}, toggle() {}, refresh() {} })
     const links = []
     const walk = node => { if (node && typeof node === 'object') { if (node.type === 'a') links.push(node.props.href); node.children.forEach(walk) } }
     walk(tree)
     assert.ok(links.includes('https://arxiv.org/abs/2503.16428'))
+    // A ## heading is drawn as a label, not as raw markdown.
+    assert.match(textOf(tree), /代表作经典/)
+    assert.doesNotMatch(textOf(tree), /##/)
   })
 })

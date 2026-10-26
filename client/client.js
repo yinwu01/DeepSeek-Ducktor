@@ -199,7 +199,9 @@ function decisionView(decision, index) {
   return h('div', { key: `d${index}`, className: 'ducktor-item', 'data-who': decision.who },
     h('div', null, linkify(decision.text)),
     h('div', { className: 'ducktor-meta' },
-      decision.who !== 'other' ? h('span', { className: 'ducktor-chip', 'data-who': decision.who }, WHO_LABEL[decision.who]) : null,
+      decision.who !== 'other' ? h('span', { className: 'ducktor-chip', 'data-who': decision.who }, WHO_LABEL[decision.who])
+        // A tag outside 你定 / AI 定 (a model once wrote 我定) is shown as written, not guessed.
+        : decision.tag ? h('span', { className: 'ducktor-chip', title: decision.tag }, `没写清谁定的：${decision.tag}`) : null,
       decision.editable && decision.who !== 'confirm' ? h('span', { className: 'ducktor-chip' }, '你可改') : null,
       decision.date ? h('span', null, decision.date) : null))
 }
@@ -235,11 +237,14 @@ function panelView(model, ui) {
     h('button', { className: 'ducktor-link ducktor-refresh', type: 'button', onClick: ui.refresh, disabled: ui.loading }, ui.loading ? '读取中' : '刷新'))
   if (model === undefined) return h('div', { className: 'ducktor' }, header, h('p', { className: 'ducktor-note' }, '正在读这个项目的 .duck/ …'))
   const empty = model.decisions.length === 0 && model.notes.length === 0 && model.reports.length === 0
-  const intro = (model.switch === 'on' || model.switch === 'quiet') && !empty ? null : h('div', { className: 'ducktor-intro' },
-    h('p', null, model.hasDuck && model.switch !== 'unset'
+  const on = model.switch === 'on' || model.switch === 'quiet'
+  const intro = on && !empty ? null : h('div', { className: 'ducktor-intro' },
+    h('p', null, on || (model.hasDuck && model.switch !== 'unset')
       ? `Doctor Duck 在这个项目里${SWITCH_LABEL[model.switch] ?? model.switch}。`
       : 'Doctor Duck 还没在这个项目开启。'),
-    h('p', null, '开启以后，AI 每做一步，这里列出它替你定了什么、你能带走的原则、该你亲手核对的地方。在对话里敲 ', h('code', null, '/duck on'), ' 就开启。'))
+    on
+      ? h('p', null, '还没有记录。AI 做完一步实质性的活，这里会列出它替你定了什么、你能带走的原则、该你亲手核对的地方。')
+      : h('p', null, '开启以后，AI 每做一步，这里列出它替你定了什么、你能带走的原则、该你亲手核对的地方。在对话里敲 ', h('code', null, '/duck on'), ' 就开启。'))
   const checks = model.latestChecks
   return h('div', { className: 'ducktor' },
     header,
@@ -256,7 +261,9 @@ function panelView(model, ui) {
       ui.openReport ? h('button', { key: 'open', className: 'ducktor-link', type: 'button', onClick: () => ui.openReport(checks.path) }, `打开《${checks.title || checks.name}》`) : null,
     ]) : null,
     model.background && model.background.length > 0 ? section('领域背景', 0,
-      h('div', { className: 'ducktor-item' }, model.background.map((line, i) => h('p', { key: i }, linkify(line.replace(/^[-*]\s+/, '')))))) : null,
+      h('div', { className: 'ducktor-item' }, model.background.map((line, i) => /^#{2,6}\s+/.test(line)
+        ? h('div', { key: i, className: 'ducktor-label ducktor-subhead' }, line.replace(/^#{2,6}\s+/, ''))
+        : h('p', { key: i }, linkify(line.replace(/^[-*]\s+/, '')))))) : null,
     model.cards.length > 0 ? section('导师会提醒你的', 0, model.cards.map(cardView), '经验卡片，每张写明道理、怎么用和出处。') : null,
     model.reports.length > 0 ? section('报告', model.reports.length,
       more(model.reports, 5, (report, i) => h('div', { key: `r${i}` },
@@ -290,6 +297,8 @@ const CSS = `
 .ducktor-chip[data-switch=on]{color:var(--dsw-alias-state-success-primary);border-color:var(--dsw-alias-state-success-primary)}
 .ducktor-label{font-weight:600;color:var(--dsw-alias-label-secondary)}
 .ducktor-part{margin-top:4px}
+.ducktor-subhead{margin-top:8px}
+.ducktor-subhead:first-child{margin-top:0}
 .ducktor-part ul{margin:2px 0 0;padding-left:18px}
 .ducktor-card summary{cursor:pointer;font-weight:500;list-style-position:outside}
 .ducktor-card-id{margin-right:6px;color:var(--dsw-alias-label-tertiary);font-weight:400}

@@ -1,0 +1,1 @@
+- 10-26 评估 idea｜评估一个新方法，先把同一方向上最强的三条基线找出来，再谈自己快了多少（fatal-flaws.md F1/F3；BSFA NeurIPS 2026）｜这次：BlockSkip 只跟稠密注意力和自写 token 剪枝比，漏了 MInference、Quest、SparQ、BSFA。

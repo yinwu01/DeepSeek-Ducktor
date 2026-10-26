@@ -200,7 +200,9 @@ const projectFile = (rel) => (fs.existsSync(path.join(PROJECT, rel)) ? fs.readFi
 const notebookLines = () => text('notebook.md').split('\n').filter((l) => l.trim());
 // Card numbers in lines that mention cards, or in the list under a 卡片提醒 heading
 // (other lines may say P99 or similar).
-const PLUGIN_CARDS = new Set(fs.readdirSync(path.join(ROOT, 'cards')).filter((f) => /^[A-Z]\d{2}\.md$/.test(f)).map((f) => f.slice(0, 3)));
+const cardFiles = (dir) => (fs.existsSync(dir) ? fs.readdirSync(dir).filter((f) => /^[A-Z]\d{2}\.md$/.test(f)).map((f) => f.slice(0, 3)) : []);
+// Doctor Duck's cards and the ones deepseek-ducktor adds (mentor/cards).
+const PLUGIN_CARDS = new Set([...cardFiles(path.join(ROOT, 'cards')), ...cardFiles(path.join(REPO, 'mentor', 'cards'))]);
 const cardIds = (s) => {
   const lines = [];
   let inList = false;
@@ -351,6 +353,7 @@ function moreStages() {
     wrapped('duck-survey', 'survey', 'deep-research', '块稀疏注意力用于长文本推理加速。范围小一点：只看 2023 年以后，十篇以内，研究问题你来定两个。', [
       ['must', 'not turned on: hook injected the idle note', (t) => IDLE_ONLY(t)],
       ['should', 'cites checkable sources', (t) => /arxiv\.org|doi\.org|\b\d{4}\.\d{4,5}\b/i.test(t.reply + newestReport('survey'))],
+      ['should', 'wrote .duck/background.md with links', () => /https?:\/\//.test(text('background.md'))],
     ], { search: true, timeout: 1800000 }),
     wrapped('duck-outline', 'outline', 'tech-paper-template', 'paper/main.tex', [
       ['should', 'says it uses the technical-paper template', (t) => /技术论文|tech-paper-template/.test(t.reply)],
