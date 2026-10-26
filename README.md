@@ -45,6 +45,8 @@ Desktop 的 profile 名是 `desktop`：先打开一次 Desktop，完全退出，
 
 这一行对所有 profile 生效，下次启动 dsh 时加载。卸载就删掉这一行。
 
+Desktop 用户不要用这种方式：这一行对 Desktop 也生效，会盖过插件页装的那一份，而它在 Desktop 里能不能找到 dsh 自带的包没测过。Desktop 请用方式一。
+
 这一行和方式一、二装上的那一行 id 相同，会盖过它们，不会注册两遍。所以要改设置，也写在这一行里（见下一节）。
 
 ## 设置
@@ -75,6 +77,8 @@ Desktop 的 profile 名是 `desktop`：先打开一次 Desktop，完全退出，
 | 开场说明 | 开场 hook 在会话开始时注入一次 | 每个会话的第一次模型请求带上；`.duck/config.md` 改了，或者对话被压缩过，下一步再给一份。会话中途 `/duck on`，常驻规则当场就到 |
 | 生成开场说明的代码 | Doctor Duck 的 `bin/duck.js` | 同一份 `bin/duck.js`，后面加一段 DeepSeek Harness 的工具对照（read、glob、grep） |
 | 读插件里的文件 | Claude Code 里插件给 Read、Glob、Grep 开了绿灯 | dsh 的每种沙箱模式都不拦读文件，不用学生批准；插件目录只读 |
+| 学生自己加的命令 | 放项目的 `.claude/skills/duck-xxx/` 或 `.agents/skills/duck-xxx/` | dsh 只读 `.agents/skills/`（和 `.dsh/skills/`），不读 `.claude/skills/`。名字别和插件的 14 条重复：dsh 里插件自带的技能优先级最低，同名的会盖过插件的命令 |
+| 项目目录 | 开场 hook 收到的目录 | 会话创建时的目录；模型在会话里换了工作目录，开场说明仍按原来的项目读 `.duck/` |
 
 ## 怎么做的
 
@@ -103,12 +107,13 @@ Desktop 的 profile 名是 `desktop`：先打开一次 Desktop，完全退出，
 
 细节在 [docs/验证记录.md](docs/验证记录.md)。简单说：
 
-- 验证了：dsh 0.2.1-rc.2 和 rc.3 上三种安装方式都能装上、卸干净；命令在 Web 和 headless 里都列出来、指向真实文件；开场说明和 Doctor Duck 开场 hook 的输出逐字相同，位置在学生消息之后、命令之前；续接会话不重复给，开关变了给替换的一份。
-- 没验证：真模型下的效果（要 DeepSeek 的 key）；Desktop（只有 macOS、Windows 版，这台机器是 Linux）；插件页的点击流程本身（测的是它调用的后端接口）；对话压缩后重发、子代理不带（只有单元测试，触发它们要真模型）。
+- 验证了：dsh 0.2.1-rc.2 和 rc.3 上三种安装方式都能装上、卸掉（卸掉后不再加载）；命令在 Web 和 headless 里都列出来、指向真实文件；开场说明和 Doctor Duck 开场 hook 的输出逐字相同，位置在学生消息之后、命令之前；续接会话不重复给，开关变了给替换的一份；用被测 dsh 自己的代码建出子代理会话，插件认得出它。
+- 没验证：真模型下的效果（要 DeepSeek 的 key）；Desktop（只有 macOS、Windows 版，这台机器是 Linux）；插件页的点击流程本身（测的是它调用的后端接口），插件的「配置」页也没看过；对话压缩后重发、真跑一个子代理时不带（触发它们要真模型）。
 
 ## 许可
 
 - 插件代码（`index.js`、`lib/`、`scripts/`、`tests/`）：MIT。
+- 文档和展示文字（`README.md`、`docs/`、`locale/`）：CC BY-NC-SA 4.0，和 Doctor Duck 的文字一样（里面有改写自 Doctor Duck 的段落）。
 - `duck/`：Doctor Duck 原样拷贝，按它自己的 `duck/LICENSE` 分目录许可：文字（skills/、rules/、cards/、handbook/）是 CC BY-NC-SA 4.0，不可商用；`library/` 里的原技能各自保留原来的许可（CC BY 4.0 或 CC BY-NC-SA 4.0）；代码是 MIT。
 - Doctor Duck 改编自 [Supervisor-Skills](https://github.com/HKUSTDial/Supervisor-Skills)（骆昱宇及贡献者，CC BY-NC-SA 4.0）。
 

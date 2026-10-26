@@ -75,18 +75,24 @@ if (MODEL) {
   fs.writeFileSync(MODEL_PATCH, `- id: agent-default-model\n  name: '@deepseek-ai/dsh-agent-default-model'\n  config:\n    provider: deepseek-official\n    model: ${JSON.stringify(MODEL)}\n`);
 }
 
+// The shipped profiles read the sandbox mode from DSH_PERMISSION_MODE; pin the default so a
+// caller's environment cannot turn every write check into a sandbox refusal.
+const ENV = { ...process.env, DSH_PERMISSION_MODE: 'workspace-write' };
+const host = (args, opts = {}) => spawnSync(WRAP[0] || DSH, [...WRAP.slice(1), ...(WRAP.length ? [DSH] : []), ...args],
+  { cwd: PROJECT, env: ENV, encoding: 'utf8', maxBuffer: 1 << 28, stdio: ['ignore', 'pipe', 'pipe'], ...opts });
+
 // opts.search is ignored: web search in dsh is a profile setting, not a per-run flag.
 function runDsh(prompt, session, opts = {}) {
-  const args = ['--profile', PROFILE, ...(MODEL ? ['--patch', MODEL_PATCH] : []), '--json',
-    ...(session ? ['--session-id', session] : []), prompt];
-  return spawnSync(WRAP[0] || DSH, [...WRAP.slice(1), ...(WRAP.length ? [DSH] : []), ...args],
-    { cwd: PROJECT, encoding: 'utf8', timeout: opts.timeout || 900000, maxBuffer: 1 << 28, stdio: ['ignore', 'pipe', 'pipe'] });
+  return host(['--profile', PROFILE, ...(MODEL ? ['--patch', MODEL_PATCH] : []), '--json',
+    ...(session ? ['--session-id', session] : []), prompt], { timeout: opts.timeout || 900000 });
 }
 
 // Normalizes one `--json` event stream into { session, reply, reads, tools, injected, cost,
-// tokens }. cost stays 0: dsh reports token usage, not money; tokens holds the step usage sums.
+// tokens, turnReason }. cost stays 0: dsh reports token usage, not money; tokens holds the
+// step usage the stream reports (no compaction or title calls). The stream caps strings at
+// 8 KiB, so turn() below replaces reply, tools and reads with the session log's copies.
 function parse(stdout) {
-  const t = { session: null, reply: '', reads: [], tools: [], injected: '', cost: 0, tokens: {}, errors: [] };
+  const t = { session: null, reply: '', reads: [], tools: [], injected: '', cost: 0, tokens: {}, errors: [], turnReason: null };
   const texts = [];
   for (const line of stdout.split('\n')) {
     let ev;
@@ -103,6 +109,7 @@ function parse(stdout) {
     if (ev.type === 'status' && ev.phase === 'step_end' && ev.usage) {
       for (const [k, v] of Object.entries(ev.usage)) if (typeof v === 'number') t.tokens[k] = (t.tokens[k] || 0) + v;
     }
+    if (ev.type === 'status' && ev.phase === 'turn_end') t.turnReason = (ev.reason && ev.reason.kind) || null;
     if (ev.type === 'status' && ev.phase === 'turn_end' && ev.reason && ev.reason.kind !== 'completed') t.errors.push(JSON.stringify(ev.reason).slice(0, 300));
     if (ev.type === 'error') t.errors.push(JSON.stringify(ev).slice(0, 300));
     if (ev.type === 'final') t.session = ev.sessionId || t.session;
@@ -111,16 +118,63 @@ function parse(stdout) {
   return t;
 }
 
-// The Doctor Duck context messages this run added to the session (the deepseek-ducktor
-// counterpart of a SessionStart hook's output), read from dsh's own session log.
-function dshInjected(session, seenSeq) {
+// What one run added to the session, from dsh's own session log: the Doctor Duck context
+// messages (the counterpart of a SessionStart hook's output), the assistant's text, the tool
+// calls, and the models that answered. found is false when the log has no assistant output.
+function sessionDelta(session, seenSeq) {
+  const out = { found: false, injected: '', reply: '', tools: [], reads: [], models: [], lastSeq: seenSeq };
   const file = session && sessionLogPath(DSH_HOME, session);
-  if (!file) return { text: '', lastSeq: seenSeq };
+  if (!file) return out;
   const events = readSessionEvents(file);
-  const fresh = events.filter((e) => typeof e.seq === 'number' && e.seq > seenSeq);
-  const text = fresh.filter((e) => e.type === 'user/message' && e.data.source && e.data.source.kind === 'doctor-duck')
-    .map((e) => e.data.content.map((c) => c.text || '').join('')).join('\n');
-  return { text, lastSeq: events.reduce((m, e) => (typeof e.seq === 'number' && e.seq > m ? e.seq : m), seenSeq) };
+  const texts = [];
+  const injected = [];
+  const models = new Set();
+  for (const e of events) {
+    if (typeof e.seq !== 'number' || e.seq <= seenSeq) continue;
+    out.lastSeq = Math.max(out.lastSeq, e.seq);
+    const d = e.data || {};
+    if (e.type === 'user/message' && d.source && d.source.kind === 'doctor-duck') injected.push(d.content.map((c) => c.text || '').join(''));
+    // The model each request was built for, recorded before it is sent.
+    if (e.type === 'request/header' && d.header && d.header.config && d.header.config.model) models.add(d.header.config.model);
+    if (e.type === 'assistant/message' && d.message) {
+      out.found = true;
+      for (const block of d.message.content || []) if (block.type === 'text' && block.text.trim()) texts.push(block.text);
+    }
+    if (e.type === 'tool/call') {
+      out.found = true;
+      let input = {};
+      try { input = JSON.parse(d.arguments || '{}') || {}; } catch (err) { input = {}; }
+      const target = input.file_path || input.command || input.path || input.pattern || '';
+      out.tools.push(`${d.name} ${target}`);
+      if (d.name === 'read' || d.name === 'bash') out.reads.push(String(target));
+    }
+  }
+  out.injected = injected.join('\n');
+  out.reply = texts.join('\n\n');
+  out.models = [...models];
+  return out;
+}
+
+// Last session-log seq read per session, so a run sees only what it added itself.
+const seen = new Map();
+
+// One student turn: run dsh, then take reply, tool calls and injected context from the
+// session log. completed needs exit 0 and a completed final turn, as dsh's README asks.
+function turn(prompt, sid, opts, file) {
+  const run = runDsh(prompt, sid, opts);
+  fs.writeFileSync(file, run.stdout || '');
+  const t = parse(run.stdout || '');
+  t.session = t.session || sid;
+  const delta = sessionDelta(t.session, seen.get(t.session) ?? -1);
+  if (t.session) seen.set(t.session, delta.lastSeq);
+  t.injected = delta.injected;
+  if (delta.found) Object.assign(t, { reply: delta.reply, tools: delta.tools, reads: delta.reads });
+  t.models = delta.models;
+  t.exit = run.status;
+  if (run.error) t.errors.push(String(run.error.message || run.error));
+  t.completed = !run.error && run.status === 0 && t.turnReason === 'completed';
+  t.stderr = run.stderr || '';
+  return t;
 }
 
 // ---------- checks ----------
@@ -451,11 +505,16 @@ function setup() {
     fs.writeFileSync(path.join(PROJECT, '.duck', 'notebook.md'), `${LOOP_NOTEBOOK.join('\n')}\n`);
     fs.writeFileSync(path.join(PROJECT, '.duck', 'config.md'), LOOP_CONFIG);
   }
-  // The installed plugin must be the one in this checkout, or the run tests something else.
-  const listed = spawnSync(WRAP[0] || DSH, [...WRAP.slice(1), ...(WRAP.length ? [DSH] : []), '--profile', PROFILE, '--dump-config'],
-    { cwd: PROJECT, encoding: 'utf8', maxBuffer: 1 << 26 });
-  if (!/name: '?deepseek-ducktor'?|deepseek-ducktor\/index\.js/.test(listed.stdout || '')) {
-    console.error(`deepseek-ducktor is not in profile ${PROFILE} under ${DSH_HOME}; run: dsh plugin --profile ${PROFILE} add ${REPO}`);
+  // The installed plugin must be this checkout, or the run tests something else. The last
+  // deepseek-ducktor row wins: a package name (pnpm link in the profile) or a file path.
+  const dump = host(['--profile', PROFILE, '--dump-config']).stdout || '';
+  const row = [...dump.matchAll(/^- id: deepseek-ducktor\n\s+name: '?([^'\n]+)'?$/gm)].map((m) => m[1]).at(-1);
+  const real = (f) => { try { return fs.realpathSync(f); } catch (err) { return ''; } };
+  const target = !row ? '' : row === 'deepseek-ducktor'
+    ? real(path.join(DSH_HOME, 'profiles', PROFILE, 'node_modules', 'deepseek-ducktor'))
+    : path.dirname(real(row.replace(/^file:\/\//, '')));
+  if (target !== real(REPO)) {
+    console.error(`profile ${PROFILE} under ${DSH_HOME} does not load this checkout (${row ? `row ${row} -> ${target || 'missing'}` : 'no deepseek-ducktor row'}); run: dsh plugin --profile ${PROFILE} add ${REPO}`);
     process.exit(2);
   }
 }
@@ -466,24 +525,15 @@ function main() {
   const transcripts = [];
   let session = null;
   let stopped = null;
-  // Last session-log seq read per session, so a stage sees only the context its own run added.
-  const seen = new Map();
-  const injectedBy = (sid) => {
-    const { text: injected, lastSeq } = dshInjected(sid, seen.get(sid) ?? -1);
-    if (sid) seen.set(sid, lastSeq);
-    return injected;
-  };
   for (const stage of stages()) {
     if (ONLY.length && !ONLY.includes(stage.name)) continue;
     const before = stage.before ? stage.before() : undefined;
     const started = Date.now();
     const opts = { search: stage.search, timeout: stage.timeout };
-    const run = runDsh(stage.prompt, stage.resume ? session : null, opts);
-    fs.writeFileSync(path.join(OUT, `${String(results.length + 1).padStart(2, '0')}-${stage.name}.jsonl`), run.stdout || '');
-    let t = parse(run.stdout || '');
+    const file = (suffix) => path.join(OUT, `${String(results.length + 1).padStart(2, '0')}-${stage.name}${suffix}.jsonl`);
+    let t = turn(stage.prompt, stage.resume ? session : null, opts, file(''));
     if (stage.resume !== false && !session) session = t.session;
     if (stage.resume === false) session = t.session;
-    t.injected = injectedBy(t.session || session);
     const evaluate = (tr) => stage.checks.map(([severity, label, fn]) => {
       let ok = false;
       try { ok = Boolean(fn(tr, before)); } catch (err) { ok = false; }
@@ -494,29 +544,31 @@ function main() {
     // the questions are not always the last line. Answer once, the way a student would,
     // and check again; the summary records that it happened.
     let followup = false;
-    if (stage.name !== 'learn-ask' && checks.some((c) => !c.ok && c.severity === 'must') && /[？?]|你希望|请选择|请确认|选哪/.test(t.reply)) {
+    if (t.completed && stage.name !== 'learn-ask' && checks.some((c) => !c.ok && c.severity === 'must') && /[？?]|你希望|请选择|请确认|选哪/.test(t.reply)) {
       followup = true;
-      const again = runDsh(FOLLOWUP, session, opts);
-      fs.writeFileSync(path.join(OUT, `${String(results.length + 1).padStart(2, '0')}-${stage.name}-followup.jsonl`), again.stdout || '');
-      const t2 = parse(again.stdout || '');
-      t2.injected = injectedBy(t2.session || session);
+      const t2 = turn(FOLLOWUP, session, opts, file('-followup'));
       const tokens = { ...t.tokens };
       for (const [k, v] of Object.entries(t2.tokens)) tokens[k] = (tokens[k] || 0) + v;
       t = { ...t2, reads: [...t.reads, ...t2.reads], tools: [...t.tools, ...t2.tools], injected: `${t.injected}\n${t2.injected}`,
-        errors: [...t.errors, ...t2.errors], reply: `${t.reply}\n\n[学生] ${FOLLOWUP}\n\n${t2.reply}`, cost: t.cost + t2.cost, tokens };
+        errors: [...t.errors, ...t2.errors], reply: `${t.reply}\n\n[学生] ${FOLLOWUP}\n\n${t2.reply}`, cost: t.cost + t2.cost, tokens,
+        models: [...new Set([...t.models, ...t2.models])] };
       checks = evaluate(t);
     }
+    // No key, an unknown model, a timeout or a dead network: the stage did not run, so its
+    // checks say nothing (an empty reply passes every "does not say" check). Record one
+    // failure and stop, since later stages continue this session.
+    const dead = !t.completed;
+    if (dead) checks = [{ severity: 'must', label: `the dsh run completed (exit ${t.exit}, turn ${t.turnReason || 'did not end'})`, ok: false }];
     transcripts.push(t);
     results.push({ stage: stage.name, prompt: stage.prompt, seconds: Math.round((Date.now() - started) / 1000),
-      exit: run.status, tokens: t.tokens, followup, tools: t.tools, errors: t.errors, checks, reply: t.reply });
-    const dead = !t.reply && t.errors.length > 0;
+      exit: t.exit, models: t.models, tokens: t.tokens, followup, tools: t.tools, errors: t.errors, checks, reply: t.reply });
     const mark = dead ? 'STOP' : checks.every((c) => c.ok) ? 'ok  ' : (checks.some((c) => !c.ok && c.severity === 'must') ? 'FAIL' : 'warn');
     console.log(`${mark} ${stage.name} (${results.at(-1).seconds}s)${followup ? ' after one follow-up answer' : ''}`);
     for (const c of checks.filter((x) => !x.ok)) console.log(`       ${c.severity}: ${c.label}`);
-    // No key, an unknown model or a dead network fail every stage the same way; stop at the first.
     if (dead) {
       stopped = stage.name;
-      console.error(`stopped: ${stage.name} got no reply: ${t.errors[0]}\n${(run.stderr || '').trim().slice(0, 600)}`);
+      console.error(`stopped at ${stage.name}: ${t.errors[0] || 'no error event'}\n${t.stderr.trim().slice(0, 600)}\n`
+        + `(session ${t.session || 'none'}; this run added ${t.injected.length} chars of Doctor Duck context)`);
       break;
     }
   }
@@ -530,9 +582,10 @@ function main() {
   const tokens = {};
   for (const r of results) for (const [k, v] of Object.entries(r.tokens || {})) tokens[k] = (tokens[k] || 0) + v;
   const lock = JSON.parse(fs.readFileSync(path.join(REPO, 'duck.lock.json'), 'utf8'));
-  const version = spawnSync(WRAP[0] || DSH, [...WRAP.slice(1), ...(WRAP.length ? [DSH] : []), '--version'], { encoding: 'utf8' });
+  const version = host(['--version']);
   const summary = {
     host: HOST, dsh: (version.stdout || '').trim(), profile: PROFILE, flow: FLOW, model: MODEL || '(profile default)',
+    models_seen: [...new Set(results.flatMap((r) => r.models || []))],
     commit: spawnSync('git', ['-C', REPO, 'rev-parse', '--short', 'HEAD'], { encoding: 'utf8' }).stdout.trim(),
     duck: process.env.DUCK_ROOT ? ROOT : lock.source.commit.slice(0, 7),
     when: new Date().toISOString(), tokens,
@@ -543,7 +596,8 @@ function main() {
   if (fs.existsSync(path.join(PROJECT, '.duck'))) fs.cpSync(path.join(PROJECT, '.duck'), path.join(OUT, 'duck-files'), { recursive: true });
   fs.writeFileSync(path.join(OUT, 'summary.json'), `${JSON.stringify(summary, null, 2)}\n`);
   const md = [`# e2e ${HOST} ${summary.dsh} ${FLOW} ${summary.commit}, Doctor Duck ${summary.duck} (${summary.model})`, '',
-    `${summary.passed}/${summary.total} checks passed; must failed ${summary.must_failed}, should failed ${summary.should_failed}; tokens ${JSON.stringify(tokens)}`, ''];
+    `${summary.passed}/${summary.total} checks passed; must failed ${summary.must_failed}, should failed ${summary.should_failed}`, '',
+    `Requests built for: ${summary.models_seen.join(', ') || 'none'}. Tokens reported in the --json stream (agent steps only): ${JSON.stringify(tokens)}`, ''];
   for (const r of results) {
     md.push(`## ${r.stage}: \`${r.prompt}\` (${r.seconds}s${r.followup ? ', one follow-up answer' : ''})`, '');
     for (const c of r.checks) md.push(`- [${c.ok ? 'x' : ' '}] ${c.severity}: ${c.label}`);

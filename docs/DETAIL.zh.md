@@ -59,4 +59,4 @@ Doctor Duck 把「讲一遍」找回来：
 
 ## 许可
 
-插件代码是 MIT。`duck/` 里的 Doctor Duck 按目录分：文字（skills/、rules/、cards/、handbook/）是 CC BY-NC-SA 4.0，不可商用；`library/` 里的原技能各自保留原来的许可；代码是 MIT。Doctor Duck 改编自 Supervisor-Skills（骆昱宇及贡献者，CC BY-NC-SA 4.0）。
+插件代码是 MIT，插件的文档是 CC BY-NC-SA 4.0。`duck/` 里的 Doctor Duck 按目录分：文字（skills/、rules/、cards/、handbook/）是 CC BY-NC-SA 4.0，不可商用；`library/` 里的原技能各自保留原来的许可；代码是 MIT。Doctor Duck 改编自 Supervisor-Skills（骆昱宇及贡献者，CC BY-NC-SA 4.0）。

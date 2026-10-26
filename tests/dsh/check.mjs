@@ -16,13 +16,13 @@
 // Environment: DSH, the dsh command (default: dsh on PATH). Run it without network, e.g. under
 // `unshare -rn` with loopback up, to be sure nothing leaves the machine.
 import { spawn, spawnSync } from 'node:child_process'
-import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
+import { existsSync, lstatSync, mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { createServer } from 'node:net'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { duckContext, duckSkills, frameContext, resolveDuckRoot, SOURCE_KIND } from '../../lib/duck.js'
+import { duckContext, duckSkills, frameContext, isSubagent, projectOf, resolveDuckRoot, SOURCE_KIND } from '../../lib/duck.js'
 
 const require = createRequire(import.meta.url)
 const { readSessionEvents, sessionLogPath } = require('../e2e/session-log.cjs')
@@ -44,6 +44,8 @@ const HOME = join(scratch, 'home')
 const DSH_HOME = join(HOME, '.dsh')
 const PROJECT = join(scratch, 'project')
 mkdirSync(join(PROJECT, '.duck'), { recursive: true })
+// A repository root, so dsh looks for AGENTS.md and CLAUDE.md here and not in the folders above.
+spawnSync('git', ['init', '-q', PROJECT])
 const env = {
   ...process.env, HOME, DSH_HOME,
   XDG_CONFIG_HOME: join(HOME, '.config'), XDG_DATA_HOME: join(HOME, '.local', 'share'),
@@ -75,6 +77,33 @@ function headless(task, session) {
 }
 const textOf = message => message.content.map(c => c.text ?? '').join('')
 const kinds = users => users.map(m => (m.source?.kind === 'skill-invocation' ? `skill:${m.source.name}` : m.source?.kind)).join(' ')
+// The student's message first, then the context, before the command. Other injections (dsh's
+// runtime context, an AGENTS.md, the web presets' time) may sit around them.
+const contextBefore = (users, command) => {
+  const order = kinds(users).split(' ')
+  const context = order.indexOf(SOURCE_KIND)
+  return order[0] === 'user' && context > 0 && order.lastIndexOf(SOURCE_KIND) === context && order.indexOf(`skill:${command}`) > context
+}
+
+// ---------- the session objects of the dsh under test ----------
+
+// Subagent sessions and the project come from session.header in dsh; build two real sessions
+// with that dsh's own SessionStore and ask lib/duck.js about them.
+async function sessionShape() {
+  const command = DSH.includes('/') ? [DSH] : (process.env.PATH ?? '').split(':').map(dir => join(dir, DSH))
+  const entry = command.map(file => { try { return realpathSync(file) } catch { return undefined } }).find(Boolean)
+  try {
+    const { SessionStore } = await import(createRequire(entry).resolve('@deepseek-ai/dsh-session'))
+    const store = { store: new Map(), counter: 0, projections: undefined }
+    const child = SessionStore.prototype.prepare.call(store, 'session-child', { meta: { cwd: PROJECT, origin: 'subagent', delegationDepth: 1 } })
+    const top = SessionStore.prototype.prepare.call(store, 'session-top', { meta: { cwd: PROJECT } })
+    check('real dsh sessions: subagent flag and project are read from session.header',
+      isSubagent({ session: child }) && !isSubagent({ session: top }) && projectOf({ session: top }) === PROJECT)
+  } catch (error) {
+    check('real dsh sessions: subagent flag and project are read from session.header', false, error)
+  }
+}
+await sessionShape()
 
 // ---------- install ----------
 
@@ -101,7 +130,7 @@ function headlessChecks() {
 setSwitch('on')
 const first = headless('/duck 菜单')
 check('keyless run stops at MISSING_CREDENTIAL (no model was asked)', first.run.status === 1 && /MISSING_CREDENTIAL/u.test(first.run.stdout + first.run.stderr), first.run.stderr)
-check('order: student message, Doctor Duck context, runtime context, /duck skill', kinds(first.users) === `user ${SOURCE_KIND} runtime-context skill:duck`, kinds(first.users))
+check('the context comes after the student message, once, before the /duck skill', contextBefore(first.users, 'duck'), kinds(first.users))
 const context = first.users.find(m => m.source?.kind === SOURCE_KIND)
 check('the context is Doctor Duck\'s own opening text for this project, verbatim', context && textOf(context) === frameContext(duckContext(ROOT, PROJECT).body, false))
 check('the context carries the resident rules (switch is on)', context && /# Doctor Duck 常驻规则/u.test(textOf(context)))
@@ -193,10 +222,8 @@ async function web() {
       const file = sessionLogPath(DSH_HOME, sessionId)
       users = file ? readSessionEvents(file).filter(e => e.type === 'user/message').map(e => e.data) : []
     }
-    const order = kinds(users).split(' ')
-    // The web presets add their own time context after the skill; only the relative order matters.
-    check('web: the standard preset agent gets the context right after the student, before the /duck-review skill',
-      order[0] === 'user' && order[1] === SOURCE_KIND && order.indexOf('skill:duck-review') > 1, kinds(users))
+    check('web: the standard preset agent gets the context after the student, before the /duck-review skill',
+      contextBefore(users, 'duck-review'), kinds(users))
     if (ROUTE === 'ui') {
       const removed = await callArgs('pluginManager/removeBundle', { name: 'deepseek-ducktor' })
       check('Plugins page call: removeBundle', removed.result?.ok === true, JSON.stringify(removed))
@@ -225,6 +252,11 @@ if (ROUTE === 'pnpm') {
   for (const profile of PROFILES) {
     const remove = dsh(['plugin', '--profile', profile, 'remove', 'deepseek-ducktor'])
     check(`dsh plugin --profile ${profile} remove deepseek-ducktor`, remove.status === 0, remove.stderr || remove.stdout)
+    // Not a failure: pnpm may keep the link in the profile's node_modules after the row is gone.
+    const link = join(DSH_HOME, 'profiles', profile, 'node_modules', 'deepseek-ducktor')
+    let left = false
+    try { left = lstatSync(link).isSymbolicLink() || existsSync(link) } catch { left = false }
+    console.log(`     note: ${profile} profile node_modules/deepseek-ducktor ${left ? 'still there (pnpm leaves it)' : 'removed'}`)
   }
 } else {
   rmSync(join(DSH_HOME, 'cordis.patch.yml'))

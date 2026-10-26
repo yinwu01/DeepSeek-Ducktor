@@ -33,4 +33,4 @@ All three are optional.
 
 ## License
 
-Plugin code: MIT. Doctor Duck in `duck/` is licensed by directory: its text (skills/, rules/, cards/, handbook/) is CC BY-NC-SA 4.0 (non-commercial), each original skill in `library/` keeps its own license, and its code is MIT. Doctor Duck is adapted from Supervisor-Skills by Yuyu Luo and contributors (CC BY-NC-SA 4.0).
+Plugin code: MIT; plugin documentation: CC BY-NC-SA 4.0. Doctor Duck in `duck/` is licensed by directory: its text (skills/, rules/, cards/, handbook/) is CC BY-NC-SA 4.0 (non-commercial), each original skill in `library/` keeps its own license, and its code is MIT. Doctor Duck is adapted from Supervisor-Skills by Yuyu Luo and contributors (CC BY-NC-SA 4.0).

@@ -8,7 +8,7 @@ import { join } from 'node:path'
 import { after, describe, test } from 'node:test'
 import {
   duckContext, duckSkills, frameContext, HOST_NOTE, isSubagent, PACKAGED_ROOT, parseSkill,
-  resolveDuckRoot, SOURCE_KIND, stepWantsContext, visibleContext, withContext,
+  projectOf, resolveDuckRoot, SOURCE_KIND, stepWantsContext, visibleContext, withContext,
 } from '../lib/duck.js'
 
 const require = createRequire(import.meta.url)
@@ -24,12 +24,13 @@ function project(name, config) {
   return dir
 }
 
-// A dsh-shaped agent whose visible history (surface) holds the given user messages.
-function fakeAgent(visibleMessages = [], meta = {}) {
+// A dsh-shaped agent: session.header is dsh's session header record (cwd, origin,
+// delegationDepth), and the visible history (surface) holds the given user messages.
+function fakeAgent(visibleMessages = [], header = {}) {
   const events = visibleMessages.map(data => ({ type: 'user/message', data }))
   return {
     session: {
-      meta,
+      header,
       surface: { nodes: events.map((_, seq) => seq) },
       eventAt: seq => events[seq],
     },
@@ -172,6 +173,10 @@ describe('when a step gets the context', () => {
     assert.equal(stepWantsContext({ agent: fakeAgent([], { delegationDepth: 1 }), step: 1, decision: proceed([studentMessage]) }), false)
     assert.equal(stepWantsContext({ agent: fakeAgent([], { origin: 'subagent' }), step: 1, decision: proceed([studentMessage]), subagents: true }), true)
     assert.equal(isSubagent(fakeAgent([], { delegationDepth: 0 })), false)
+  })
+  test('the project is the directory the session was created in, not where the model moved', () => {
+    assert.equal(projectOf(fakeAgent([], { cwd: dir })), dir)
+    assert.equal(projectOf(fakeAgent()), process.cwd())
   })
   test('the newest visible context decides, not the first', () => {
     const agent = fakeAgent([

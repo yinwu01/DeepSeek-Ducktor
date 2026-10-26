@@ -20,27 +20,43 @@ import { realpathSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import { pathToFileURL } from 'node:url'
-import { duckSkills, parseSkill, PROVIDER, resolveDuckRoot, stepWantsContext, withContext } from './lib/duck.js'
+import { duckSkills, parseSkill, projectOf, PROVIDER, resolveDuckRoot, stepWantsContext, withContext } from './lib/duck.js'
 
 /**
- * Import a package dsh itself ships. Installed with `dsh plugin add`, the plugin resolves it
- * through dsh's peer handling; loaded by absolute path from a cordis.patch.yml row (no pnpm),
- * plain resolution finds nothing, so resolve it from the running dsh installation instead.
+ * Import a package dsh itself ships. Installed with `dsh plugin add` or the Plugins page, the
+ * plugin resolves it through dsh's peer handling. Loaded by absolute path from a
+ * cordis.patch.yml row, plain resolution finds nothing, so resolve it from files inside the
+ * running dsh installation instead, first anchor that works.
  * @param {string} specifier - package name.
+ * @param {readonly (string | undefined)[]} anchors - absolute paths of files inside dsh.
  */
-async function hostImport(specifier) {
+async function hostImport(specifier, anchors) {
   try {
     return await import(specifier)
   } catch (error) {
-    if (error?.code !== 'ERR_MODULE_NOT_FOUND' || !process.argv[1]) throw error
-    const fromDsh = createRequire(realpathSync(process.argv[1])).resolve(specifier)
-    return import(pathToFileURL(fromDsh).href)
+    if (error?.code !== 'ERR_MODULE_NOT_FOUND') throw error
+    for (const anchor of anchors) {
+      const file = resolveFrom(anchor, specifier)
+      if (file !== undefined) return import(pathToFileURL(file).href)
+    }
+    throw error
   }
 }
 
-const { default: z } = await hostImport('@deepseek-ai/schemastery')
-const { BUNDLED_SKILL_RANK } = await hostImport('@deepseek-ai/dsh-skill')
-const { createUserMessage } = await hostImport('@deepseek-ai/dsh-llm')
+function resolveFrom(anchor, specifier) {
+  if (!anchor) return undefined
+  try {
+    return createRequire(realpathSync(anchor)).resolve(specifier)
+  } catch {
+    return undefined
+  }
+}
+
+// Only the settings schema is needed before apply(). Without it (no anchor found) the plugin
+// still loads; the row's settings then arrive unchecked, and apply() treats missing ones as
+// their defaults.
+const z = await hostImport('@deepseek-ai/schemastery', [process.argv[1]])
+  .then(module => module.default, () => undefined)
 
 /** Cordis plugin identity. */
 export const name = 'deepseek-ducktor'
@@ -48,7 +64,7 @@ export const name = 'deepseek-ducktor'
 export const inject = ['skills', 'agents']
 
 /** Row configuration; every field is optional. */
-export const Config = z.object({
+export const Config = z?.object({
   duckRoot: z.string().min(1)
     .description('Absolute path of a Doctor Duck checkout to use instead of the copy shipped in this package.'),
   sessionContext: z.boolean().default(true)
@@ -62,8 +78,15 @@ export const Config = z.object({
  * @param {import('@deepseek-ai/cordis').Context} ctx
  * @param {{ duckRoot?: string, sessionContext?: boolean, subagents?: boolean }} config
  */
-export function apply(ctx, config = {}) {
+export async function apply(ctx, config = {}) {
+  if (Config === undefined) ctx.logger.warn('@deepseek-ai/schemastery not found; settings are used unchecked')
   const root = resolveDuckRoot(config.duckRoot)
+  // Every dsh launcher, Desktop's included, names a file inside its own dsh package here.
+  const anchors = [ctx.get('profileContext')?.installAnchor, process.argv[1]]
+  const { BUNDLED_SKILL_RANK } = await hostImport('@deepseek-ai/dsh-skill', anchors)
+  // dsh-llm is a peer of dsh-skill, so it sits next to wherever dsh-skill was found.
+  const { createUserMessage } = await hostImport('@deepseek-ai/dsh-llm',
+    [...anchors.map(anchor => resolveFrom(anchor, '@deepseek-ai/dsh-skill')), ...anchors])
   const candidates = duckSkills(root, BUNDLED_SKILL_RANK)
   ctx.skills.registerProvider(() => ({
     name: PROVIDER,
@@ -83,11 +106,6 @@ export function apply(ctx, config = {}) {
   ctx.on('agent/pre-step', async ({ agent, messages, step, signal }, next) => {
     const decision = await next()
     if (signal.aborted || !stepWantsContext({ agent, step, decision, subagents: config.subagents })) return decision
-    const workingDirectory = ctx.get('workingDirectory')
-    const project = workingDirectory !== undefined
-      ? await workingDirectory.ensure(agent, signal)
-      : agent.session.meta?.cwd ?? process.cwd()
-    signal.throwIfAborted()
-    return withContext(decision, { agent, messages }, { root, project, makeMessage: createUserMessage })
+    return withContext(decision, { agent, messages }, { root, project: projectOf(agent), makeMessage: createUserMessage })
   })
 }
