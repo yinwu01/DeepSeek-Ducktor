@@ -73,7 +73,7 @@ deepseek-supervisor 是社区做的插件，不是 DeepSeek 官方出品，和 D
 - 开场说明：Claude Code、Codex 里由开场 hook 注入的那段（插件根目录、这个项目的开关、开启时的常驻规则），这里在每个会话的第一次模型请求里给出，由同一份 Doctor Duck 代码生成。`.duck/config.md` 改了，或者对话被压缩过，会再给一份。
 - 开场说明后面另有几行：另带的经验卡片在哪；鸭子开着或你敲了命令时，列论文、数据集、工具要附查到的链接；第一次摸一个方向时写 `.duck/background.md`。
 - 「鸭子」页签：浏览器里的一页，读 `.duck/` 和经验卡片来显示。
-- 插件只读本地文件，自己不联网。对话照常发给你在 DeepSeek Harness 里选的模型。
+- 插件只读本地文件，自己不联网。对话照常发给你在 DeepSeek Harness 里选的模型。`/duck-survey`、`/duck-idea` 这类命令会让 AI 上网查文献。
 
 ## 许可
 

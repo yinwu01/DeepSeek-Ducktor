@@ -39,7 +39,7 @@ All three are optional.
 - The opening context that a SessionStart hook gives Claude Code and Codex (plugin root, the project's switch, the resident rules when on) goes into the first model request of each session, built by the same Doctor Duck code. It is given again when `.duck/config.md` changes or after compaction.
 - A few lines after the opening context say where the extra cards are; that when the duck is on or you run a command, papers, datasets and tools come with links found this time; and that the first exploration of a direction writes `.duck/background.md`.
 - The 鸭子 tab is a browser-side page that reads `.duck/` and the cards.
-- The plugin only reads local files and makes no network requests of its own.
+- The plugin only reads local files and makes no network requests of its own. Commands such as `/duck-survey` and `/duck-idea` make the AI search the web.
 
 ## License
 

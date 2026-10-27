@@ -111,11 +111,11 @@ Desktop 的 profile 名是 `desktop`：先打开一次 Desktop，完全退出，
 
 Desktop 用户不要用这种方式：这一行对 Desktop 也生效，会盖过插件页装的那一份，而它在 Desktop 里能不能找到 dsh 自带的包没测过。Desktop 请用方式一。
 
-这一行和方式一、二装上的那一行 id 相同，会盖过它们，不会注册两遍。所以要改设置，也写在这一行里（见下一节）。
+这一行和方式一、二装上的那一行 id 相同，会盖过它们，不会注册两遍。所以要改设置，也写在这一行里（见「设置」）。
 
 ### 装好以后
 
-开一个新会话（方式三要先重启 dsh，Desktop 要重新打开），在输入框里敲 `/`，能看到全部 14 条命令。从 `/duck` 开始：鸭子 quack 一声，列出菜单。
+开一个新会话，在输入框里敲 `/`，能看到全部 14 条命令。方式一装好就生效；方式二、方式三装好以后，先重启一次 dsh（Desktop 要重新打开）。从 `/duck` 开始：鸭子 quack 一声，列出菜单。
 
 刚装好时，鸭子在每个项目里都没开启，只在你敲 `/duck-*` 命令时说话。在一个项目里敲 `/duck on`，鸭子就在这个项目里一直跟着：
 
@@ -191,7 +191,7 @@ Desktop 用户不要用这种方式：这一行对 Desktop 也生效，会盖过
 
 - 验证了：dsh 0.2.1-rc.2 和 rc.3 上三种安装方式都能装上、卸掉（卸掉后不再加载）；命令在 Web 和 headless 里都列出来、指向真实文件；开场说明和 Doctor Duck 开场 hook 的输出逐字相同，位置在学生消息之后、命令之前；续接会话不重复给，开关变了给替换的一份；照 dsh 建子代理会话的写法、用被测 dsh 的代码建出会话，插件认得出子代理（dsh 真建子代理时这么写，是读代码确认的）。
 - 真模型：在 dsh rc.2 上用 DeepSeek（默认的 `deepseek-flash`）跑完 Doctor Duck 的四套学生流程，必须项全过；建议项里有一条没过：参考文献没给链接（10-26 只重跑了 survey 这一段，这一条过了）。运行里模型起的真子代理都没拿到开场说明；调低压缩阈值后，对话压缩掉开场说明，插件在下一步补发了。
-- 没验证：rc.3 和 `deepseek-v4-pro` 上的真模型流程，真模型结果的波动（每套只跑了一次）；改名以后的真模型流程（改名只动了名字）；Desktop（只有 macOS、Windows 版，我们只在 Linux 上测过）；插件页的点击流程本身（测的是它调用的后端接口），插件的「配置」页也没看过；模型换了工作目录后照不照附注里的路径读写 `.duck/`（流程里模型没换过目录）。
+- 没验证：rc.3 和 `deepseek-v4-pro` 上的真模型流程，真模型结果的波动（每套只跑了一次）；改名以后的真模型流程（改名只动了名字）；红队改过的 11 张卡还没被真模型读过；Desktop（只有 macOS、Windows 版，我们只在 Linux 上测过）；插件页的点击流程本身（测的是它调用的后端接口），插件的「配置」页也没看过；模型换了工作目录后照不照附注里的路径读写 `.duck/`（流程里模型没换过目录）。
 
 ## 常见问题
 
@@ -209,11 +209,11 @@ Desktop 用户不要用这种方式：这一行对 Desktop 也生效，会盖过
 
 ## 许可
 
-- 插件代码（`index.js`、`lib/`、`client/`、`scripts/`、`tests/`）：MIT。
-- 文档、展示文字和图（`README.md`、`docs/`、`locale/`、`assets/`、`icon.png`）和另带的经验卡片（`mentor/`）：CC BY-NC-SA 4.0，和 Doctor Duck 的文字一样（里面有改写自 Doctor Duck 的段落）。
+- 插件代码和配置（`index.js`、`lib/`、`client/`、`scripts/`、`tests/`、`cordis.patch.yml`）：MIT。
+- 文档、展示文字和图（`README.md`、`docs/`、`locale/`、`assets/`、`icon.png`）、运行记录（`evals/`）和另带的经验卡片（`mentor/`）：CC BY-NC-SA 4.0，和 Doctor Duck 的文字一样（里面有改写自 Doctor Duck 的段落）。
 - `duck/`：Doctor Duck 原样拷贝，按它自己的 `duck/LICENSE` 分目录许可：文字（skills/、rules/、cards/、handbook/）是 CC BY-NC-SA 4.0，不可商用；`library/` 里的原技能各自保留原来的许可（CC BY 4.0 或 CC BY-NC-SA 4.0）；代码是 MIT。
 - Doctor Duck 改编自 [Supervisor-Skills](https://github.com/HKUSTDial/Supervisor-Skills)（骆昱宇及贡献者，CC BY-NC-SA 4.0）。
-- 动图左边滚过的 LaTeX 行，取自一次 Claude Code 运行写的论文；论文数字取自《Attention Is All You Need》（[arXiv 1706.03762](https://arxiv.org/abs/1706.03762)）的表 2 和表 3。
+- 动图里两个窗口滚过的 LaTeX 行，取自一次 Claude Code 运行写的论文；论文数字取自《Attention Is All You Need》（[arXiv 1706.03762](https://arxiv.org/abs/1706.03762)）的表 2 和表 3。
 - 截图里的 DeepSeek Harness 界面归其所有者，不在本许可内。
 
 详见 [LICENSE](LICENSE)。
