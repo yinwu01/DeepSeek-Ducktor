@@ -258,7 +258,7 @@ function mainStages() {
       ['must', 'hook injected the idle note, not the resident rules', (t) => IDLE_ONLY(t)],
       ['must', 'no .duck/ folder', () => !fs.existsSync(path.join(PROJECT, '.duck'))],
       ['must', 'no decision line', (t) => !/▸ ?决策/.test(t.reply)],
-      ['should', 'does not bring up the duck', (t) => !/duck-|Doctor Duck|鸭子/i.test(t.reply)],
+      ['should', 'does not bring up the duck', (t) => !/duck-|Doctor Duck|Ducktor|鸭子/i.test(t.reply)],
       ['should', 'paper/main.tex untouched', () => projectFile('paper/main.tex') === fixture('paper/main.tex')],
     ] },
     { name: 'menu', resume: false, prompt: cmd('duck'), checks: [

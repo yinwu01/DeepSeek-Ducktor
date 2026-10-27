@@ -1,6 +1,6 @@
 window.__ModuleLoader__.load({ id: 'deepseek-supervisor', factory: (require) => {
 var module = { exports: {} }
-// deepseek-supervisor, browser half: the 鸭子 tab in the right sidebar of the dsh Web GUI.
+// deepseek-supervisor, browser half: the Ducktor tab in the right sidebar of the dsh Web GUI.
 //
 // It shows what Doctor Duck already writes into the session's project, so a student sees
 // what an agent doing the research would otherwise keep to itself:
@@ -232,7 +232,7 @@ function cardView(card) {
  */
 function panelView(model, ui) {
   const header = h('header', { className: 'ds-supervisor-head' },
-    h('strong', null, '鸭子'),
+    h('strong', null, 'Ducktor'),
     model ? h('span', { className: 'ds-supervisor-chip', 'data-switch': model.switch }, SWITCH_LABEL[model.switch] ?? model.switch) : null,
     h('button', { className: 'ds-supervisor-link ds-supervisor-refresh', type: 'button', onClick: ui.refresh, disabled: ui.loading }, ui.loading ? '读取中' : '刷新'))
   if (model === undefined) return h('div', { className: 'ds-supervisor' }, header, h('p', { className: 'ds-supervisor-note' }, '正在读这个项目的 .duck/ …'))
@@ -440,8 +440,8 @@ module.exports = {
       id: TAB_ID,
       kind: TAB_KIND,
       keepMounted: false,
-      title: () => '鸭子',
-      guide: [{ id: 'duck', order: 40, title: () => '鸭子', description: () => 'AI 替你定了什么、能带走的原则、该你核对的' }],
+      title: () => 'Ducktor',
+      guide: [{ id: 'duck', order: 40, title: () => 'Ducktor', description: () => 'AI 替你定了什么、能带走的原则、该你核对的' }],
     }), 'deepseek-supervisor: tab type')
     const Body = makeBody(createReader(ctx.remote))
     ctx.effect(() => ctx.slots.inject('sidebar.right.pane.tab', () => ctx.slots.register(

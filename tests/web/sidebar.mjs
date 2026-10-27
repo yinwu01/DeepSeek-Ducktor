@@ -1,11 +1,11 @@
-// The 鸭子 tab in a real `dsh web`, driven by headless Chromium. Sends no prompt.
+// The Ducktor tab in a real `dsh web`, driven by headless Chromium. Sends no prompt.
 //
 //   node tests/web/sidebar.mjs <launch-url> <outprefix> <project-dir> [poll] [dark]
 //
 // Start `dsh web --no-open --host 127.0.0.1 --port <p>` in a dsh home whose web profile has this
 // plugin, pass the tokenized URL it prints, and a project whose .duck/ has something in it (for
 // example tests/fixtures/duck-files copied to <project>/.duck with 开关：on). The script registers
-// the project as a workspace, opens a new Session there, opens the right sidebar and the 鸭子 tab,
+// the project as a workspace, opens a new Session there, opens the right sidebar and the Ducktor tab,
 // and saves screenshots and the panel text under <outprefix>. With `poll` it then appends a line
 // to .duck/decisions.md and checks the open panel shows it within 15 seconds. Exit code 1 when a
 // step fails.
@@ -50,7 +50,7 @@ try {
   await page.getByRole('button', { name: '打开右侧边栏' }).click()
   await page.waitForTimeout(1500)
   await snap('guide')
-  await page.getByText('鸭子', { exact: true }).first().click()
+  await page.getByText('Ducktor', { exact: true }).first().click()
   await page.locator('.ds-supervisor').first().waitFor({ timeout: 15000 })
   await page.waitForTimeout(3000)
   await snap('duck')

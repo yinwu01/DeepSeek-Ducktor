@@ -103,7 +103,7 @@ export async function apply(ctx, config) {
       return { ...summary, content }
     },
   }))
-  // The 鸭子 sidebar tab (client/client.js) shows the experience cards; only the Web GUI's page
+  // The Ducktor sidebar tab (client/client.js) shows the experience cards; only the Web GUI's page
   // server emits this event, so other profiles skip it.
   const cards = readCards([join(root, 'cards'), MENTOR_CARDS])
   ctx.on('webserver/index-inject', (table) => {

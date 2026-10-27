@@ -8,7 +8,7 @@
 <h1 align="center">deepseek-supervisor</h1>
 
 <p align="center">
-  <em>AI 做研究。鸭子讲为什么。道理你带走。</em>
+  <em>AI 做研究。Ducktor 讲为什么。道理你带走。</em>
 </p>
 
 <p align="center">
@@ -21,13 +21,13 @@
 </p>
 
 <p align="center">
-  <img src="assets/demo.zh-CN.gif" width="880" alt="示意动图，不是录屏。两个 DeepSeek Harness 对话窗口做同一件事：「实验都做完了，结果在 results/ 里。帮我写成一篇 NeurIPS 论文。」左边没有鸭子：AI 读完结果，写完 paper/main.tex，说都做完了，又说为了不夸大，消融只跑了一次，0.1 到 0.3 的差没下结论。你拿到一篇论文。右边装了这个插件，鸭子没在这个项目打开：同样写完以后，发 /duck 看到菜单，再发「/duck 可不可以告诉我这个内容里我要学什么？」鸭子说按复盘处理（/duck-learn），先问哪一步是你自己定的，你跳过。然后它讲本来想干什么、实际怎样、顶级导师会盯哪里。这篇是怎么写的：三条贡献是 AI 挑的，动笔之前，先把贡献写成一到三条（卡 W01）。怎么写好：AI 写明 0.1 到 0.3 的差不下结论，用词的强度，跟证据的强度对齐（卡 W11）。怎么让审稿人信服：英德上 base 只比 MoE 高 1.3，差距要大过种子间的波动（卡 E05）。鸭子没开，没有决策记录；看论文，贡献、措辞、跟谁比，都是 AI 定的。三条原则记进 .duck/notebook.md，右侧「鸭子」页签能看到。">
+  <img src="assets/demo.zh-CN.gif" width="880" alt="示意动图，不是录屏。两个 DeepSeek Harness 对话窗口做同一件事：「实验都做完了，结果在 results/ 里。帮我写成一篇 NeurIPS 论文。」左边没装 Doctor Duck：AI 读完结果，写完 paper/main.tex，说都做完了，又说为了不夸大，消融只跑了一次，0.1 到 0.3 的差没下结论。你拿到一篇论文。右边装了这个插件，没在这个项目打开 Doctor Duck：同样写完以后，发 /duck 看到菜单，再发「/duck 可不可以告诉我这个内容里我要学什么？」Ducktor 说按复盘处理（/duck-learn），先问哪一步是你自己定的，你跳过。然后它讲本来想干什么、实际怎样、顶级导师会盯哪里。这篇是怎么写的：三条贡献是 AI 挑的，动笔之前，先把贡献写成一到三条（卡 W01）。怎么写好：AI 写明 0.1 到 0.3 的差不下结论，用词的强度，跟证据的强度对齐（卡 W11）。怎么让审稿人信服：英德上 base 只比 MoE 高 1.3，差距要大过种子间的波动（卡 E05）。没开 Doctor Duck，没有决策记录；看论文，贡献、措辞、跟谁比，都是 AI 定的。三条原则记进 .duck/notebook.md，右侧「Ducktor」页签能看到。">
 </p>
 
 <p align="center">
   <strong><a href="https://github.com/JoeyWu-tech/Doctor-Duck">Doctor Duck</a> 的 DeepSeek Harness 原生插件。</strong><br>
-  <strong>贡献怎么定、话说多满、跟谁比，AI 替你定了。鸭子把这些判断拆开，一条一条讲给你。</strong><br>
-  <strong>Web 界面里，鸭子讲到的原则和 AI 替你定的事，摆在对话旁边的「鸭子」页签里。</strong><br>
+  <strong>贡献怎么定、话说多满、跟谁比，AI 替你定了。Ducktor 把这些判断拆开，一条一条讲给你。</strong><br>
+  <strong>Web 界面里，Ducktor 讲到的原则和 AI 替你定的事，摆在对话旁边的「Ducktor」页签里。</strong><br>
   <sub>社区做的插件，不是 DeepSeek 官方出品，和 DeepSeek 公司没有关系。</sub>
 </p>
 
@@ -39,21 +39,21 @@
 
 你认识它：程序员桌上那只黄色的橡皮鸭。程序出了 bug，你把代码一行一行讲给它听，讲着讲着，自己就找到了 bug。
 
-现在 AI 替你做研究，轮不到你讲了。Doctor Duck 反过来：鸭子把 AI 做过的判断讲给你听。这个插件把 [Doctor Duck](https://github.com/JoeyWu-tech/Doctor-Duck) 原样装进 DeepSeek Harness：Web 和命令行里都能敲 `/duck-review` 这类命令。规则、命令和卡片是 Doctor Duck 的原文，和 Claude Code、Codex 用户拿到的是同一份，固定在 Doctor Duck 的一个提交上（`duck.lock.json` 写着是哪个）。
+现在 AI 替你做研究，轮不到你讲了。Doctor Duck 反过来：导师 Ducktor 把 AI 做过的判断讲给你听。这个插件把 [Doctor Duck](https://github.com/JoeyWu-tech/Doctor-Duck) 原样装进 DeepSeek Harness：Web 和命令行里都能敲 `/duck-review` 这类命令。规则、命令和卡片是 Doctor Duck 的原文，和 Claude Code、Codex 用户拿到的是同一份，固定在 Doctor Duck 的一个提交上（`duck.lock.json` 写着是哪个）。
 
 ## 之前 / 之后
 
-你把实验结果交给 AI，让它写成论文。没有鸭子，AI 一口气写完。贡献怎么定、话说多满、拿什么比，这些判断都是 AI 做的。它也许在最后提几句，但不拆成道理，不给出处，也不记下来。
+你把实验结果交给 AI，让它写成论文。没有 Doctor Duck，AI 一口气写完。贡献怎么定、话说多满、拿什么比，这些判断都是 AI 做的。它也许在最后提几句，但不拆成道理，不给出处，也不记下来。
 
-装了插件，AI 照样写完。你发 `/duck`，后面直接接问题，比如 `/duck 可不可以告诉我这个内容里我要学什么？`。鸭子先说按哪条命令处理，再照那条命令讲；上面动图里，它挑的是复盘（`/duck-learn`）。讲到的原则记进 `.duck/notebook.md`，也出现在「鸭子」页签里。
+装了插件，AI 照样写完。你发 `/duck`，后面直接接问题，比如 `/duck 可不可以告诉我这个内容里我要学什么？`。Ducktor 先说按哪条命令处理，再照那条命令讲；上面动图里，它挑的是复盘（`/duck-learn`）。讲到的原则记进 `.duck/notebook.md`，也出现在「Ducktor」页签里。
 
-## 「鸭子」页签
+## 「Ducktor」页签
 
 <p align="center">
-  <img src="docs/images/sidebar.png" width="720" alt="真实截图：DeepSeek Harness Web 界面右侧的「鸭子」页签。截图来自另一个项目（一个块稀疏注意力的 idea），不是动图里那篇论文。页签开着，能看到四块：这次 AI 替你定的，两条，模型把谁定的写成了「我定」，页签照原样标「没写清谁定的：我定」；可以带走的原则，一条，出处写着 five-dimensions 第 10 节和卡 E05；该你亲手核对的；领域背景，列着代表作和链接。导师会提醒你的在更下面。">
+  <img src="docs/images/sidebar.png" width="720" alt="真实截图：DeepSeek Harness Web 界面右侧的「Ducktor」页签。截图来自另一个项目（一个块稀疏注意力的 idea），不是动图里那篇论文。页签开着，能看到四块：这次 AI 替你定的，两条，模型把谁定的写成了「我定」，页签照原样标「没写清谁定的：我定」；可以带走的原则，一条，出处写着 five-dimensions 第 10 节和卡 E05；该你亲手核对的；领域背景，列着代表作和链接。导师会提醒你的在更下面。">
 </p>
 
-用 agent 做科研时，AI 一路替你做了很多判断，一闪就过去了。Web 界面右侧边栏的「鸭子」页签把它们摆在对话旁边。打开右侧边栏（右上角的按钮），在「开始」里选「鸭子」。页签读的是项目 `.duck/` 下的文件：
+用 agent 做科研时，AI 一路替你做了很多判断，一闪就过去了。Web 界面右侧边栏的「Ducktor」页签把它们摆在对话旁边。打开右侧边栏（右上角的按钮），在「开始」里选「Ducktor」。页签读的是项目 `.duck/` 下的文件：
 
 | 页签里的一块 | 来自 |
 |---|---|
@@ -64,11 +64,11 @@
 | 导师会提醒你的 | 最近几步点到的卡片（Doctor Duck 的 `cards/` 和本插件的 `mentor/cards/`） |
 | 报告 | `reports/` 里的报告，可以点开 |
 
-页签开着时每 4 秒看一次文件有没有变，变了就重画。它只读本地文件，不发模型请求。项目里没开鸭子时，页签告诉你怎么开。命令行（TUI、headless）里没有这个页签，`.duck/` 里的文件照样写。Desktop 用的是同一套网页界面，我们没在 Desktop 上测过。
+页签开着时每 4 秒看一次文件有没有变，变了就重画。它只读本地文件，不发模型请求。项目里没开 Doctor Duck 时，页签告诉你怎么开。命令行（TUI、headless）里没有这个页签，`.duck/` 里的文件照样写。Desktop 用的是同一套网页界面，我们没在 Desktop 上测过。
 
 ## 道理从哪来
 
-规则要求鸭子：讲道理时，名家和出处只从经验卡和科研手册（`handbook/`）的具体章节里取；找不到出处，就直说这是它自己的判断。
+规则要求 Ducktor：讲道理时，名家和出处只从经验卡和科研手册（`handbook/`）的具体章节里取；找不到出处，就直说这是它自己的判断。
 
 经验卡有两组。Doctor Duck 带 23 张。这个插件另带 11 张（`mentor/cards/`），讲读论文、进新方向、实验习惯、和导师开会、用 AI 做研究和审稿的规矩。每张写明出处，附原文链接。写卡时对过原文，发布前又让两个独立的模型会话当红队逐条复核过（不是人工审）。
 
@@ -82,7 +82,7 @@
 
 1. 把这个仓库放到本机任意位置（`git clone` 或下载解压）。
 2. 在 DeepSeek Harness 里打开侧边栏的「插件」，选「安装第三方插件」，在「包名或地址」里填仓库的绝对路径，例如 `/Users/you/deepseek-supervisor`。
-3. 装好就生效，不用重启。插件卡片上显示「Doctor Duck 导师鸭」。
+3. 装好就生效，不用重启。插件卡片上显示「Doctor Duck」。
 
 卸载在同一页面里点「卸载」。npm 装的 dsh 用 PATH 上的 `pnpm` 装插件；Desktop 自带 pnpm。
 
@@ -115,13 +115,13 @@ Desktop 用户不要用这种方式：这一行对 Desktop 也生效，会盖过
 
 ### 装好以后
 
-开一个新会话，在输入框里敲 `/`，能看到全部 14 条命令。方式一装好就生效；方式二、方式三装好以后，先重启一次 dsh（Desktop 要重新打开）。从 `/duck` 开始：鸭子 quack 一声，列出菜单。
+开一个新会话，在输入框里敲 `/`，能看到全部 14 条命令。方式一装好就生效；方式二、方式三装好以后，先重启一次 dsh（Desktop 要重新打开）。从 `/duck` 开始，它会列出菜单。
 
-刚装好时，鸭子在每个项目里都没开启，只在你敲 `/duck-*` 命令时说话。在一个项目里敲 `/duck on`，鸭子就在这个项目里一直跟着：
+刚装好时，Doctor Duck 在每个项目里都没开启，Ducktor 只在你敲 `/duck-*` 命令时说话。在一个项目里敲 `/duck on`，它就在这个项目里一直跟着：
 
-- AI 做完一步实质性的工作，比如定了方法、改了实验、写完一段，鸭子在回复末尾讲一句为什么。
+- AI 做完一步实质性的工作，比如定了方法、改了实验、写完一段，Ducktor 在回复末尾讲一句为什么。
 - 会改变做法的决定，AI 动手之前先问你，一次最多问三件。
-- 有取舍时，鸭子记一行决策，写明是你定的还是 AI 定的。
+- 有取舍时，Ducktor 记一行决策，写明是你定的还是 AI 定的。
 
 `/duck quiet` 照样先问、照样记，只是不在对话里讲。`/duck off` 关掉。
 
@@ -162,7 +162,7 @@ Desktop 用户不要用这种方式：这一行对 Desktop 也生效，会盖过
 
 - `index.js`：dsh 插件入口。把 `duck/skills/` 下的 14 条命令登记成技能（技能的基础目录就是 Doctor Duck 根目录，命令里「相对插件根目录」的路径因此对得上）；在每一步模型请求之前检查开场说明是否需要给、是否过期。
 - `lib/duck.js`：和 dsh 无关的部分（找根目录、读 SKILL.md、生成和判断开场说明），单元测试直接用 Node 跑。开场说明后面那段 DeepSeek Harness 附注也在这里，附注里还写着另带的卡片在哪、参考文献要带链接、第一次摸方向时写 `background.md`。
-- `client/client.js`：「鸭子」页签，手写的浏览器端插件，不用打包；React 用页面自带的那份，文件通过 dsh 的工作区文件接口读。
+- `client/client.js`：「Ducktor」页签，手写的浏览器端插件，不用打包；React 用页面自带的那份，文件通过 dsh 的工作区文件接口读。
 - `lib/cards.js`：读卡片（Doctor Duck 的和 `mentor/cards/` 的），服务端读好后随网页一起发给页签。
 - `mentor/cards/`：本插件另带的 11 张经验卡片，格式和 Doctor Duck 的卡一样，卡号不重；`INDEX.md` 由 `node scripts/mentor-index.mjs` 生成。
 - `duck/`：Doctor Duck 原样拷贝，不手改。`duck.lock.json` 记着来自哪个提交和每个文件的 sha256。更新 Doctor Duck：
@@ -180,7 +180,7 @@ Desktop 用户不要用这种方式：这一行对 Desktop 也生效，会盖过
 |---|---|---|
 | `npm test` | Node 22 以上 | 单元测试和打包检查，不需要 dsh |
 | `node tests/dsh/check.mjs --route pnpm --web`（或 `--route patch`、`--route ui`） | Node 22.15 以上（读会话日志要 zstd），装好的 dsh；`pnpm` 和 `ui` 两条还要 PATH 上有 pnpm | 在临时 HOME 里按三种方式装、用、卸，读真实的会话日志核对注入的内容和位置。不需要也不使用 API key，模型请求发出前就停下 |
-| `node tests/web/sidebar.mjs <dsh web 打印的地址> <输出前缀> <项目目录> [poll] [dark]` | 一个开着的 `dsh web`（web profile 装了插件），`PLAYWRIGHT_CORE` 和 `CHROMIUM` 指向 playwright-core 和一个 Chromium | 在真的网页界面里打开「鸭子」页签、截图；带 `poll` 时往 `decisions.md` 追加一行，看页签自己刷新出来。不发模型请求 |
+| `node tests/web/sidebar.mjs <dsh web 打印的地址> <输出前缀> <项目目录> [poll] [dark]` | 一个开着的 `dsh web`（web profile 装了插件），`PLAYWRIGHT_CORE` 和 `CHROMIUM` 指向 playwright-core 和一个 Chromium | 在真的网页界面里打开「Ducktor」页签、截图；带 `poll` 时往 `decisions.md` 追加一行，看页签自己刷新出来。不发模型请求 |
 | `node tests/e2e/flow.cjs [main\|more\|loop\|paper]` | Node 22.15 以上，`DEEPSEEK_API_KEY`，dsh 的 headless profile 里装好插件 | 真模型跑 Doctor Duck 的整套学生流程，检查项和 Claude Code、Codex 版相同。花真钱 |
 
 `check.mjs` 建议在断网的环境里跑（例如 `unshare -rn`，打开 loopback），这样能确认没有东西出本机。
@@ -199,10 +199,10 @@ Desktop 用户不要用这种方式：这一行对 Desktop 也生效，会盖过
 不是。这是社区做的插件，和 DeepSeek 公司没有关系。
 
 **和 Doctor Duck 是什么关系？**
-`duck/` 是 Doctor Duck 的原样拷贝，`duck.lock.json` 记着它来自哪个提交。这个插件加的是 DeepSeek Harness 的接入、「鸭子」页签和另带的 11 张卡。
+`duck/` 是 Doctor Duck 的原样拷贝，`duck.lock.json` 记着它来自哪个提交。这个插件加的是 DeepSeek Harness 的接入、「Ducktor」页签和另带的 11 张卡。
 
 **会把我的东西发出去吗？**
-插件自己不发网络请求，页签只读项目里的本地文件。AI 读到的内容照常发给模型。`/duck-survey`、`/duck-idea` 这类命令会让 AI 上网查文献；鸭子开着或你敲命令时，AI 给论文、数据集附的链接也要上网查。
+插件自己不发网络请求，页签只读项目里的本地文件。AI 读到的内容照常发给模型。`/duck-survey`、`/duck-idea` 这类命令会让 AI 上网查文献；Doctor Duck 开着或你敲命令时，AI 给论文、数据集附的链接也要上网查。
 
 **以前叫什么？**
 2026-10-26 以前它叫 deepseek-ducktor。`evals/runs/` 和 `docs/验证记录.md` 里那天以前的记录保留了旧名字。

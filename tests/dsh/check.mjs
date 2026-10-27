@@ -204,7 +204,7 @@ async function web() {
       const bundles = await callArgs('pluginManager/listBundles', {})
       const listed = JSON.stringify(bundles)
       check('Plugins page call: listBundles shows deepseek-supervisor with its own title and description',
-        listed.includes('"deepseek-supervisor"') && listed.includes('Doctor Duck 导师鸭') && listed.includes('A research mentor that explains why'), listed.slice(0, 400))
+        listed.includes('"deepseek-supervisor"') && listed.includes('"Doctor Duck"') && listed.includes('讲为什么的科研导师') && listed.includes('A research mentor that explains why'), listed.slice(0, 400))
     }
     const created = await call('session/create', { cwd: PROJECT })
     const sessionId = JSON.stringify(created).match(/"sessionId":"([^"]+)"/u)?.[1]

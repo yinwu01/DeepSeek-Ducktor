@@ -1,4 +1,4 @@
-// client/client.js (the 鸭子 sidebar tab) outside a browser: its parsers against the .duck/ files
+// client/client.js (the Ducktor sidebar tab) outside a browser: its parsers against the .duck/ files
 // a real DeepSeek run wrote, and its view against a stub createElement.
 import assert from 'node:assert/strict'
 import { readFileSync, readdirSync } from 'node:fs'
