@@ -1,6 +1,6 @@
-# 经验卡片目录（deepseek-supervisor）
+# 经验卡片目录（DeepSeek-Doctor）
 
-deepseek-supervisor 在 Doctor Duck 自带的卡片之外加的卡，讲正常科研节奏里导师会教、插件根目录 cards/ 没讲的事：读论文、进新方向、实验习惯、和导师开会、用 AI 做研究和审稿。格式、认同程度三档和 cards/INDEX.md 一样；卡号和那边不重。项目里 .duck/cards/ 的卡是学生和课题组的规矩，同号时以那边为准。
+DeepSeek-Doctor 在 Ducktor 自带的卡片之外加的卡，讲正常科研节奏里导师会教、插件根目录 cards/ 没讲的事：读论文、进新方向、实验习惯、和导师开会、用 AI 做研究和审稿。格式、认同程度三档和 cards/INDEX.md 一样；卡号和那边不重。项目里 .duck/cards/ 的卡是学生和课题组的规矩，同号时以那边为准。
 
 | 卡号 | 标题 | 认同程度 | 什么时候用 | 文件 |
 |---|---|---|---|---|

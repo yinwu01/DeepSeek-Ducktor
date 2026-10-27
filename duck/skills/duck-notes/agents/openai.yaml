@@ -1,5 +1,5 @@
 interface:
-  display_name: "Doctor Duck: notes"
+  display_name: "Ducktor: notes"
   short_description: "看、改笔记本"
 policy:
   allow_implicit_invocation: false

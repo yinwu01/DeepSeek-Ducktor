@@ -1,5 +1,5 @@
 interface:
-  display_name: "Doctor Duck: why"
-  short_description: "拆解刚才那一步"
+  display_name: "Ducktor: why"
+  short_description: "讲刚才那一步能学到什么"
 policy:
   allow_implicit_invocation: false

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Audit dsh session logs after an e2e run. Per dsh home: top-level and subagent sessions, which
-// of them got Doctor Duck context, and for each successful compaction whether the context is
+// of them got Ducktor context, and for each successful compaction whether the context is
 // still in what the model sees (rebuilt with dsh's own foldSurface) and, if not, whether it was
 // given again before the next model reply.
 //   DSH=<path to the dsh command> node tests/e2e/sessions-audit.cjs <home holding .dsh>...
@@ -12,7 +12,7 @@ const path = require('path');
 const { createRequire } = require('module');
 const { readSessionEvents } = require('./session-log.cjs');
 
-const isContext = (e) => e && e.type === 'user/message' && e.data && e.data.source && e.data.source.kind === 'doctor-duck';
+const isContext = (e) => e && e.type === 'user/message' && e.data && e.data.source && e.data.source.kind === 'ducktor';
 
 async function foldSurfaceOf(dsh) {
   if (!dsh) return undefined;

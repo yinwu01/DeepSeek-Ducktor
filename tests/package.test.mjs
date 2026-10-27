@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url'
 const HERE = join(dirname(fileURLToPath(import.meta.url)), '..')
 const pkg = JSON.parse(readFileSync(join(HERE, 'package.json'), 'utf8'))
 
-test('duck/ is exactly the locked Doctor Duck commit', () => {
+test('duck/ is exactly the locked Ducktor commit', () => {
   execFileSync(process.execPath, [join(HERE, 'scripts', 'sync-duck.mjs'), '--check'], { stdio: 'pipe' })
 })
 
@@ -25,8 +25,8 @@ test('bundle manifest: patch, engine range, ESM, peers dsh provides', () => {
 
 test('the patch inserts one Host row named after the package', () => {
   const patch = readFileSync(join(HERE, 'cordis.patch.yml'), 'utf8')
-  assert.match(patch, /^- insert:\n {4}- id: deepseek-supervisor\n {6}name: deepseek-supervisor\n$/mu)
-  assert.equal(pkg.name, 'deepseek-supervisor')
+  assert.match(patch, /^- insert:\n {4}- id: deepseek-doctor\n {6}name: deepseek-doctor\n$/mu)
+  assert.equal(pkg.name, 'deepseek-doctor')
 })
 
 test('published files cover everything loaded at run time', () => {

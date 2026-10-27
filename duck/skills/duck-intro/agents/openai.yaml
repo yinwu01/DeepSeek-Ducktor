@@ -1,5 +1,5 @@
 interface:
-  display_name: "Doctor Duck: intro"
+  display_name: "Ducktor: intro"
   short_description: "写引言"
 policy:
   allow_implicit_invocation: false

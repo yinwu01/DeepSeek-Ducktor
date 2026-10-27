@@ -1,5 +1,5 @@
 interface:
-  display_name: "Doctor Duck: survey"
+  display_name: "Ducktor: survey"
   short_description: "摸方向、文献综述"
 policy:
   allow_implicit_invocation: false

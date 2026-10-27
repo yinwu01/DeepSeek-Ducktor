@@ -1,5 +1,5 @@
 interface:
-  display_name: "Doctor Duck: polish"
+  display_name: "Ducktor: polish"
   short_description: "润色"
 policy:
   allow_implicit_invocation: false

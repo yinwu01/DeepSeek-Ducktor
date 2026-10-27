@@ -1,4 +1,4 @@
-# Doctor Duck 设定
+# Ducktor 设定
 
 开关：off
 

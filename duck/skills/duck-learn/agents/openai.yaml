@@ -1,5 +1,5 @@
 interface:
-  display_name: "Doctor Duck: learn"
+  display_name: "Ducktor: learn"
   short_description: "阶段复盘"
 policy:
   allow_implicit_invocation: false

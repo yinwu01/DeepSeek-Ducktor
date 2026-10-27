@@ -31,7 +31,7 @@
     {
       "name": "duck-outline",
       "short": "outline",
-      "title": "理论文逻辑",
+      "title": "理清论文逻辑",
       "description": "理清论文逻辑，技术论文和 benchmark 论文各用一个模板。照 Supervisor-Skills 的 tech-paper-template 或 benchmark-paper-template 做，收尾讲为什么。",
       "skills": [
         "tech-paper-template",

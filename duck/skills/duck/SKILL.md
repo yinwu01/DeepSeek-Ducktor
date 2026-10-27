@@ -1,6 +1,6 @@
 ---
 name: duck
-description: Doctor Duck 总入口。列出全部 /duck-* 命令；/duck on、quiet、off 切换报告开关；后面接一句话时，替学生挑一条命令照做。
+description: Ducktor 总入口。列出全部 /duck-* 命令；/duck on、quiet、off 切换报告开关；后面接一句话时，替学生挑一条命令照做。
 disable-model-invocation: true
 ---
 
@@ -14,30 +14,35 @@ disable-model-invocation: true
 
 ## 一、后面什么都没有：列菜单
 
-先 quack 一声，只说一句，比如「Quack！我是 Doctor Duck。Trust me, I'm a Ducktor.」，再列出这张表：
+不自我介绍，不学鸭叫。先说一句最省事的用法：「不用记命令：/duck 后面直接说要干什么，比如 /duck 帮我审一下 paper/main.tex，我替你挑。」然后列出这张表，按研究阶段分组，组名那几行照写：
 
 | 命令 | 做什么 |
 |---|---|
+| **动笔前** | |
 | /duck-survey | 摸方向、文献综述 |
-| /duck-idea | 评估 idea |
-| /duck-outline | 理论文逻辑，技术论文和 benchmark 论文自动区分 |
+| /duck-idea | 评估 idea 值不值得做 |
+| /duck-vibe | 这块活该让 AI 干到哪、你自己把关哪些 |
+| **写论文** | |
+| /duck-outline | 理清论文逻辑 |
 | /duck-intro | 写引言 |
 | /duck-write | 写正文 |
-| /duck-polish | 润色 |
 | /duck-figure | 设计图、出图质检 |
-| /duck-review | 投稿前审稿 |
-| /duck-vibe | 这块该让 AI 干到哪、用什么工具 |
-| /duck-why | 拆解刚才那一步，或者指定的文件、提交、段落 |
-| /duck-learn | 阶段复盘 |
-| /duck-notes | 看、改笔记本 |
-| /duck-skill | 管理命令和卡片 |
+| /duck-polish | 润色 |
+| **投稿前** | |
+| /duck-review | 按审稿人的眼光审自己的稿子 |
+| **学东西** | |
+| /duck-why | 刚才那一步能学到什么（也可以指定文件、git 提交、段落） |
+| /duck-learn | 一段做完，复盘 |
+| /duck-notes | 看、改学习笔记 |
+| **设置** | |
+| /duck-skill | 关掉命令、加你们组自己的经验卡 |
 
-在 Codex 里，表里的命令写成 $duck:duck-review 这样。
+在 Codex 里，命令写成 $duck:duck-review 这样，最省事的用法写成 $duck:duck 帮我审一下 paper/main.tex。
 
 列完再做三件事：
-- 读项目的 .duck/config.md，说一句鸭子在这个项目开没开、开在哪一档。没有这个文件，文件里没有「开关：」那一行，或者写的不是 on、quiet、off，就是没开启：平时不出声，只有敲命令时才动。config.md 里关掉的命令，在表里标「已关」。
-- 项目的 .claude/skills/ 和 .agents/skills/ 下，名字以 duck- 开头的文件夹是学生自己加的命令，接在表后面列出来。
-- 最后一句：「/duck on 在这个项目开启（/duck quiet 只记不说，/duck off 关掉报告）；/duck 后面接一句话，我替你挑命令。」
+- 读项目的 .duck/config.md，用一句话说 Ducktor 在这个项目开没开、开在哪一档，不用提文件名。没有这个文件，文件里没有「开关：」那一行，或者写的不是 on、quiet、off，就是没开启：平时不出声，只有敲命令时才动。config.md 里关掉的命令，在表里标「已关」；一条都没关，就不提。
+- 项目的 .claude/skills/ 和 .agents/skills/ 下，名字以 duck- 开头的文件夹是学生自己加的命令，接在表后面列出来；一个都没有，就不提。
+- 最后照写这两句：「想让我平时也跟着（要紧的决定先问你，做完一步讲一句为什么），在这个项目敲 /duck on。/duck quiet 照样先问，讲解只记不说；/duck off 连命令收尾的讲解也关掉。」已经是 on 或 quiet 的，这两句换成一句怎么换档或关掉。
 
 ## 二、后面是 on、quiet 或 off：切开关
 
@@ -51,7 +56,7 @@ disable-model-invocation: true
 新建 config.md 用这个格式：
 
 ```
-# Doctor Duck 设定
+# Ducktor 设定
 
 开关：on
 
@@ -70,4 +75,4 @@ disable-model-invocation: true
 3. 然后读那条命令的说明文件「插件根目录/skills/duck-xxx/SKILL.md」，把学生这句话当作敲在命令后面的内容，照说明从头做到尾，开头和收尾的步骤一步都不跳。
 4. 学生自己加的命令（.claude/skills/duck-xxx/ 或 .agents/skills/duck-xxx/）也在挑选范围里，挑中了就读那一份。
 5. 说明文件不存在，就告诉学生这条命令还没装好，照常帮学生做这件事。
-6. 表里没有合适的命令，就直说没有，照常帮学生做；鸭子在这个项目开着时，按常驻规则附「为什么」。
+6. 表里没有合适的命令，就直说没有，照常帮学生做；Ducktor 在这个项目开着时，按常驻规则附「为什么」。

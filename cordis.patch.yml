@@ -1,5 +1,5 @@
 # One Host row. It uses the skill registry and the agent registry, which every shipped
 # dsh profile mounts on the Host, so no agent preset needs to change.
 - insert:
-    - id: deepseek-supervisor
-      name: deepseek-supervisor
+    - id: deepseek-doctor
+      name: deepseek-doctor

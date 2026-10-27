@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Doctor Duck hook script. Code in bin/ is MIT; see LICENSES/README.md.
+// Ducktor hook script. Code in bin/ is MIT; see LICENSES/README.md.
 // Two jobs:
 //   session-start  tell the AI where the plugin lives and pass along the project's
 //                  .duck/config.md; load the resident rules only when the project has
@@ -83,11 +83,11 @@ function basics() {
 function buildContext(project) {
   const config = readText(path.join(project, '.duck', 'config.md'));
   const { mode, note } = modeOf(config);
-  const parts = [`Doctor Duck 插件根目录：${ROOT}`];
+  const parts = [`Ducktor 插件根目录：${ROOT}`];
 
   if (mode === 'unset' || mode === 'off') {
     const note = mode === 'unset'
-      ? readText(path.join(ROOT, 'rules', 'idle.md')) || 'Doctor Duck 没在这个项目开启。'
+      ? readText(path.join(ROOT, 'rules', 'idle.md')) || 'Ducktor 没在这个项目开启。'
       : readText(path.join(ROOT, 'rules', 'off.md')) || '开关：off。';
     parts.push(note);
     const b = basics();
@@ -161,7 +161,7 @@ function allowRead() {
     hookSpecificOutput: {
       hookEventName: 'PreToolUse',
       permissionDecision: 'allow',
-      permissionDecisionReason: 'Doctor Duck reads its own plugin files',
+      permissionDecisionReason: 'Ducktor reads its own plugin files',
     },
   }));
 }
@@ -175,7 +175,7 @@ function main(command) {
   try {
     if (command === 'session-start') context = sessionStart();
   } catch (err) {
-    context = `Doctor Duck 插件根目录：${ROOT}\n\n（开场脚本出错，常驻规则这次没加载：${err.message}）`;
+    context = `Ducktor 插件根目录：${ROOT}\n\n（开场脚本出错，常驻规则这次没加载：${err.message}）`;
   }
   if (!context) return;
   // Claude Code and Codex read hookSpecificOutput; Cursor reads additional_context.

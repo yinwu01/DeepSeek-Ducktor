@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// End-to-end run of a grad student's session with Doctor Duck in DeepSeek Harness, on a real
-// DeepSeek model. Ported from Doctor Duck's tests/e2e/flow.js at the commit in duck.lock.json:
+// End-to-end run of a grad student's session with Ducktor in DeepSeek Harness, on a real
+// DeepSeek model. Ported from Ducktor's tests/e2e/flow.js at the commit in duck.lock.json:
 // the stages and checks are the same; what changed is how the host runs, how its output is
 // read, and where the injected context is found. Code here is MIT. It costs real tokens.
 //
@@ -23,7 +23,7 @@
 // Environment:
 //   DEEPSEEK_API_KEY  required; read by dsh itself (nothing here touches it)
 //   DSH               the dsh command (default: dsh on PATH)
-//   DSH_HOME          dsh's home; the profile below must have deepseek-supervisor installed
+//   DSH_HOME          dsh's home; the profile below must have deepseek-doctor installed
 //                     (dsh plugin --profile headless add <this checkout>) or a cordis.patch.yml row
 //   DUCK_E2E_PROFILE  dsh profile (default: headless); it must take headless's --json and
 //                     --session-id, so web or acp will not work here
@@ -46,7 +46,7 @@ const { readSessionEvents, sessionLogPath } = require('./session-log.cjs');
 const { idRows, rowCheckout } = require('./profile-row.cjs');
 
 const REPO = path.resolve(__dirname, '..', '..');
-// Doctor Duck's own files (cards/ for the card-number checks) and the locked fixture.
+// Ducktor's own files (cards/ for the card-number checks) and the locked fixture.
 const ROOT = process.env.DUCK_ROOT ? path.resolve(process.env.DUCK_ROOT) : path.join(REPO, 'duck');
 const FIXTURE = path.join(__dirname, 'fixtures', 'grad-project');
 const HOST = 'dsh';
@@ -63,7 +63,7 @@ const ONLY = (process.env.DUCK_E2E_ONLY || '').split(',').filter(Boolean);
 const DSH_HOME = process.env.DSH_HOME || path.join(os.homedir(), '.dsh');
 const STAMP = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
 const OUT = path.join(REPO, 'evals', 'results', `e2e-${HOST}-${FLOW}-${STAMP}`);
-const PROJECT = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'doctor-duck-e2e-dsh-')), 'project');
+const PROJECT = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'ducktor-e2e-dsh-')), 'project');
 
 // In dsh the commands keep Claude Code's short names.
 const cmd = (name) => `/${name}`;
@@ -119,7 +119,7 @@ function parse(stdout) {
   return t;
 }
 
-// What one run added to the session, from dsh's own session log: the Doctor Duck context
+// What one run added to the session, from dsh's own session log: the Ducktor context
 // messages (the counterpart of a SessionStart hook's output), the assistant's text, the tool
 // calls, and the model the requests were built for (dsh stamps the same name on the reply,
 // so the log cannot show a different model answering). found is false when the log has no
@@ -136,7 +136,7 @@ function sessionDelta(session, seenSeq) {
     if (typeof e.seq !== 'number' || e.seq <= seenSeq) continue;
     out.lastSeq = Math.max(out.lastSeq, e.seq);
     const d = e.data || {};
-    if (e.type === 'user/message' && d.source && d.source.kind === 'doctor-duck') injected.push(d.content.map((c) => c.text || '').join(''));
+    if (e.type === 'user/message' && d.source && d.source.kind === 'ducktor') injected.push(d.content.map((c) => c.text || '').join(''));
     // Recorded before the request is sent, so it is there even when nothing answered.
     if (e.type === 'request/header' && d.header && d.header.config && d.header.config.model) requested.add(d.header.config.model);
     if (e.type === 'assistant/message' && d.message) {
@@ -201,7 +201,7 @@ const notebookLines = () => text('notebook.md').split('\n').filter((l) => l.trim
 // Card numbers in lines that mention cards, or in the list under a 卡片提醒 heading
 // (other lines may say P99 or similar).
 const cardFiles = (dir) => (fs.existsSync(dir) ? fs.readdirSync(dir).filter((f) => /^[A-Z]\d{2}\.md$/.test(f)).map((f) => f.slice(0, 3)) : []);
-// Doctor Duck's cards and the ones deepseek-supervisor adds (mentor/cards).
+// Ducktor's cards and the ones deepseek-doctor adds (mentor/cards).
 const PLUGIN_CARDS = new Set([...cardFiles(path.join(ROOT, 'cards')), ...cardFiles(path.join(REPO, 'mentor', 'cards'))]);
 const cardIds = (s) => {
   const lines = [];
@@ -220,7 +220,7 @@ const cardIds = (s) => {
 };
 // The hook injected the not-turned-on note and not the resident rules. Matches idle.md's first
 // words, which no command file contains (Codex's rollout also holds the command files it read).
-const IDLE_ONLY = (t) => /Doctor Duck 没在这个项目开启：/.test(t.injected) && !/# Doctor Duck 常驻规则/.test(t.injected);
+const IDLE_ONLY = (t) => /Ducktor 没在这个项目开启：/.test(t.injected) && !/# Ducktor 常驻规则/.test(t.injected);
 // Every file under .duck/ with its size, to see whether a turn wrote anything there.
 const duckSnapshot = () => {
   const out = [];
@@ -258,7 +258,7 @@ function mainStages() {
       ['must', 'hook injected the idle note, not the resident rules', (t) => IDLE_ONLY(t)],
       ['must', 'no .duck/ folder', () => !fs.existsSync(path.join(PROJECT, '.duck'))],
       ['must', 'no decision line', (t) => !/▸ ?决策/.test(t.reply)],
-      ['should', 'does not bring up the duck', (t) => !/duck-|Doctor Duck|Ducktor|鸭子/i.test(t.reply)],
+      ['should', 'does not bring up the duck', (t) => !/duck-|Ducktor|鸭子/i.test(t.reply)],
       ['should', 'paper/main.tex untouched', () => projectFile('paper/main.tex') === fixture('paper/main.tex')],
     ] },
     { name: 'menu', resume: false, prompt: cmd('duck'), checks: [
@@ -273,7 +273,7 @@ function mainStages() {
     { name: 'enable', resume: true, prompt: `${cmd('duck')} on`, checks: [
       ['must', 'config says on', () => switchIs('on')],
       ['must', 'read the resident rules this turn, or the context brought them', (t) => t.reads.some((r) => r && /rules\/core\.md|\.duck\/skills\/core\.md/.test(r))
-        || /# Doctor Duck 常驻规则/.test(t.injected)],
+        || /# Ducktor 常驻规则/.test(t.injected)],
     ] },
     { name: 'idea', resume: true, prompt: `${cmd('duck-idea')} 我想做长文本推理加速：用块均值估计注意力里每一对 64 token 的块贡献多大，贡献很小的整块跳过。目标是 7B 模型在 LongBench 上省 30% 以上时间、准确率不掉。对手是 token 级剪枝和稠密注意力。现有结果在 notes.md 里。`, checks: [
       ['must', 'read library/idea-evaluator', (t) => readOf(t, 'idea-evaluator')],
@@ -330,7 +330,7 @@ function mainStages() {
     ] },
     { name: 'off-new-session', resume: false, prompt: `${cmd('duck-polish')} 润色 paper/main.tex 的结论一节`,
       before: () => ({ reports: allReports().length, notebook: text('notebook.md') }), checks: [
-        ['must', 'hook injected the off note', (t) => /鸭子现在是 off/.test(t.injected)],
+        ['must', 'hook injected the off note', (t) => /Ducktor 现在是 off/.test(t.injected)],
         ['must', 'no new report', (t, before) => allReports().length === before.reports],
         ['must', 'notebook untouched', (t, before) => text('notebook.md') === before.notebook],
       ] },
@@ -396,7 +396,7 @@ const LOOP_NOTEBOOK = [
 ];
 
 // The loop flow's .duck/config.md: the format /duck on writes (skills/duck/SKILL.md, section 二).
-const LOOP_CONFIG = '# Doctor Duck 设定\n\n开关：on\n\n## 按类静音\n学生说「这类我懂了」时，在这里记一行。\n\n## 静音的卡\n\n## 关掉的命令\n';
+const LOOP_CONFIG = '# Ducktor 设定\n\n开关：on\n\n## 按类静音\n学生说「这类我懂了」时，在这里记一行。\n\n## 静音的卡\n\n## 关掉的命令\n';
 
 // The knowledge loop and the resident rules: /duck picks a command, old notebook entries come
 // back in later commands, a free conversation about a single-run result, and 「这类我懂了」.
@@ -517,10 +517,10 @@ function setup() {
     process.exit(2);
   };
   // The installed plugin must be this checkout, or the run tests something else. The last
-  // deepseek-supervisor row wins: a package name (pnpm link in the profile) or a file.
+  // deepseek-doctor row wins: a package name (pnpm link in the profile) or a file.
   const row = idRows(host(['--profile', PROFILE, '--dump-config']).stdout || '').at(-1);
-  if (!row) refuse('no deepseek-supervisor row');
-  if (row.disabled === true) refuse(`the deepseek-supervisor row (${row.name}) is disabled`);
+  if (!row) refuse('no deepseek-doctor row');
+  if (row.disabled === true) refuse(`the deepseek-doctor row (${row.name}) is disabled`);
   const target = rowCheckout(row.name, { dshHome: DSH_HOME, profile: PROFILE });
   if (!target || target !== fs.realpathSync(REPO)) refuse(`does not load this checkout (row ${row.name} -> ${target || 'missing'})`);
   // The dump also lists a row dsh's compatibility check refuses to start. So, before any paid
@@ -529,17 +529,17 @@ function setup() {
   // first request would carry. It must hold this checkout's context and the /duck command.
   // (dsh's title model follows the request's route unless a patch names one for it.)
   const probePatch = path.join(path.dirname(PROJECT), 'probe.patch.yml');
-  fs.writeFileSync(probePatch, "- id: agent-default-model\n  name: '@deepseek-ai/dsh-agent-default-model'\n  config:\n    provider: deepseek-supervisor-probe-no-adapter\n    model: none\n");
+  fs.writeFileSync(probePatch, "- id: agent-default-model\n  name: '@deepseek-ai/dsh-agent-default-model'\n  config:\n    provider: deepseek-doctor-probe-no-adapter\n    model: none\n");
   const probe = parse(host(['--profile', PROFILE, '--patch', probePatch, '--json', '/duck 菜单'], { timeout: 120000 }).stdout || '');
   const file = probe.session && sessionLogPath(DSH_HOME, probe.session);
   const events = file ? readSessionEvents(file) : [];
   const sources = events.filter((e) => e.type === 'user/message').map((e) => (e.data && e.data.source) || {});
-  const context = sources.find((s) => s.kind === 'doctor-duck');
+  const context = sources.find((s) => s.kind === 'ducktor');
   if (events.some((e) => e.type === 'assistant/message')) refuse('the probe run got a model reply; it must not reach a model');
-  if (!context) refuse(`the plugin did not start: the probe session (${probe.session || 'none'}) has no Doctor Duck context`,
+  if (!context) refuse(`the plugin did not start: the probe session (${probe.session || 'none'}) has no Ducktor context`,
     `dsh may have refused it as incompatible (package.json engines.dsh against dsh --version), or apply() failed; ${install}`);
   if (!sources.some((s) => s.kind === 'skill-invocation' && s.name === 'duck')) refuse('the probe session has no /duck command');
-  if (fs.realpathSync(context.root) !== fs.realpathSync(ROOT)) refuse(`the plugin reads Doctor Duck at ${context.root}, the checks expect ${ROOT}`);
+  if (fs.realpathSync(context.root) !== fs.realpathSync(ROOT)) refuse(`the plugin reads Ducktor at ${context.root}, the checks expect ${ROOT}`);
 }
 
 function main() {
@@ -599,7 +599,7 @@ function main() {
       stopped = stage.name;
       const stderr = dead ? t.stderr : t.followupStderr;
       console.error(`stopped at ${stage.name}${dead ? '' : ' (follow-up)'}: ${t.errors[0] || 'no error event'}\n${stderr.trim().slice(0, 600)}\n`
-        + `(session ${t.session || 'none'}; this run added ${t.injected.length} chars of Doctor Duck context)`);
+        + `(session ${t.session || 'none'}; this run added ${t.injected.length} chars of Ducktor context)`);
       break;
     }
   }
@@ -626,7 +626,7 @@ function main() {
   };
   if (fs.existsSync(path.join(PROJECT, '.duck'))) fs.cpSync(path.join(PROJECT, '.duck'), path.join(OUT, 'duck-files'), { recursive: true });
   fs.writeFileSync(path.join(OUT, 'summary.json'), `${JSON.stringify(summary, null, 2)}\n`);
-  const md = [`# e2e ${HOST} ${summary.dsh} ${FLOW} ${summary.commit}, Doctor Duck ${summary.duck} (${summary.model})`, '',
+  const md = [`# e2e ${HOST} ${summary.dsh} ${FLOW} ${summary.commit}, Ducktor ${summary.duck} (${summary.model})`, '',
     `${summary.passed}/${summary.total} checks passed; must failed ${summary.must_failed}, should failed ${summary.should_failed}`, '',
     `Model requested: ${summary.models_requested.join(', ') || 'none'}. Tokens reported in the --json stream (agent steps only): ${JSON.stringify(tokens)}`, ''];
   for (const r of results) {

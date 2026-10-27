@@ -1,18 +1,18 @@
 /**
- * deepseek-supervisor: Doctor Duck as a native DeepSeek Harness (dsh) plugin.
+ * DeepSeek-Doctor: Ducktor as a native DeepSeek Harness (dsh) plugin.
  *
- * Two pieces, both reading the Doctor Duck copy in duck/ (or Config.duckRoot):
+ * Two pieces, both reading the Ducktor copy in duck/ (or Config.duckRoot):
  *   commands  the /duck-* skills through a skill provider. The base directory dsh shows
- *             the model is the Doctor Duck root, so the instruction dsh adds ("resolve
+ *             the model is the Ducktor root, so the instruction dsh adds ("resolve
  *             relative paths against the base directory") agrees with the commands' own
  *             "paths are relative to the plugin root".
- *   context   what Doctor Duck's SessionStart hook gives Claude Code and Codex (plugin root,
+ *   context   what Ducktor's SessionStart hook gives Claude Code and Codex (plugin root,
  *             the project's switch, the resident rules when the duck is on), built by the
  *             same duck/bin/duck.js. It enters the first model request of a session, and
  *             again when it changes or compaction drops it, the way dsh's own AGENTS.md
  *             loader does. Subagents do not get it: they cannot ask the student.
  *
- * duck/ is a verbatim copy of Doctor Duck (scripts/sync-duck.mjs); host differences live in
+ * duck/ is a verbatim copy of Ducktor (scripts/sync-duck.mjs); host differences live in
  * this file and lib/duck.js.
  */
 
@@ -61,16 +61,16 @@ const z = await hostImport('@deepseek-ai/schemastery', [process.argv[1]])
   .then(module => module.default, () => undefined)
 
 /** Cordis plugin identity. */
-export const name = 'deepseek-supervisor'
+export const name = 'deepseek-doctor'
 /** Skill registry for the commands, agent registry for the session context. */
 export const inject = ['skills', 'agents']
 
 /** Row configuration; every field is optional. */
 export const Config = z?.object({
   duckRoot: z.string().min(1)
-    .description('Absolute path of a Doctor Duck checkout to use instead of the copy shipped in this package.'),
+    .description('Absolute path of a Ducktor checkout to use instead of the copy shipped in this package.'),
   sessionContext: z.boolean().default(true)
-    .description('Give each session Doctor Duck\'s opening context (plugin root, switch, resident rules). Off leaves only the commands.'),
+    .description('Give each session Ducktor\'s opening context (plugin root, switch, resident rules). Off leaves only the commands.'),
   subagents: z.boolean().default(false)
     .description('Also give the opening context to subagent sessions.'),
 })
@@ -107,9 +107,9 @@ export async function apply(ctx, config) {
   // server emits this event, so other profiles skip it.
   const cards = readCards([join(root, 'cards'), MENTOR_CARDS])
   ctx.on('webserver/index-inject', (table) => {
-    table.push({ kind: 'global', name: '__DEEPSEEK_SUPERVISOR__', value: { cards } })
+    table.push({ kind: 'global', name: '__DEEPSEEK_DOCTOR__', value: { cards } })
   })
-  ctx.logger.info('Doctor Duck at %s: %d commands, %d cards, session context %s', root, candidates.length,
+  ctx.logger.info('Ducktor at %s: %d commands, %d cards, session context %s', root, candidates.length,
     cards.length, config.sessionContext === false ? 'off' : 'on')
   if (config.sessionContext === false) return
 

@@ -1,4 +1,4 @@
-// mentor/cards: the experience cards this package adds to Doctor Duck's. Same shape as
+// mentor/cards: the experience cards this package adds to Ducktor's. Same shape as
 // duck/cards, ids that never collide with them, an index that matches the files, and the
 // host note that points the model at them.
 import assert from 'node:assert/strict'
@@ -22,7 +22,7 @@ describe('mentor cards', () => {
       assert.equal(`${card.id}.md`, name)
     }
   })
-  test('no id is also a Doctor Duck card, and no letter the e2e checker reads as a line number', () => {
+  test('no id is also a Ducktor card, and no letter the e2e checker reads as a line number', () => {
     const duckIds = new Set(duck.map(card => card.id))
     for (const card of mentor) {
       assert.ok(!duckIds.has(card.id), `${card.id} is also in duck/cards`)

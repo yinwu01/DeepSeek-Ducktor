@@ -14,7 +14,7 @@ import {
 const require = createRequire(import.meta.url)
 const ROOT = resolveDuckRoot(undefined)
 const hook = require(join(ROOT, 'bin', 'duck.js'))
-const scratch = mkdtempSync(join(tmpdir(), 'ds-supervisor-test-'))
+const scratch = mkdtempSync(join(tmpdir(), 'ds-doctor-test-'))
 after(() => rmSync(scratch, { recursive: true, force: true }))
 
 function project(name, config) {
@@ -41,14 +41,14 @@ const studentMessage = { id: 'student', role: 'user', source: { kind: 'user' }, 
 // What dsh's agent loop hands the listener chain: the claimed inbox messages, then runtime context.
 const proceed = messages => ({ kind: 'enter', messages })
 
-describe('Doctor Duck root', () => {
+describe('Ducktor root', () => {
   test('the packaged copy is found and real', () => {
     assert.equal(ROOT, PACKAGED_ROOT.replace(/\/$/u, ''))
     assert.equal(hook.ROOT, ROOT)
   })
   test('a relative or non-Duck path fails loudly', () => {
     assert.throws(() => resolveDuckRoot('duck'), /absolute/u)
-    assert.throws(() => resolveDuckRoot(scratch), /not a Doctor Duck root/u)
+    assert.throws(() => resolveDuckRoot(scratch), /not a Ducktor root/u)
   })
   test('a symlinked root is resolved to the real directory', () => {
     const link = join(scratch, 'duck-link')
@@ -78,7 +78,7 @@ describe('commands as dsh skills', () => {
     ])
     for (const s of skills) assert.deepEqual(s.invocation, { modelInvocable: false, userInvocable: true }, s.name)
   })
-  test('base directory is the Doctor Duck root, path is the real SKILL.md', () => {
+  test('base directory is the Ducktor root, path is the real SKILL.md', () => {
     for (const s of skills) {
       assert.deepEqual(s.resourceBase, { kind: 'directory', path: ROOT })
       assert.equal(s.path, join(ROOT, 'skills', s.name, 'SKILL.md'))
@@ -107,7 +107,7 @@ describe('session context', () => {
       const { body } = duckContext(ROOT, dir)
       assert.equal(body, `${hook.buildContext(dir)}\n\n${hostNote(dir)}`, name)
       assert.ok(body.includes(`项目的 .duck/」都是 \`${join(dir, '.duck')}\`，`), name)
-      assert.ok(body.startsWith(`Doctor Duck 插件根目录：${ROOT}\n`), name)
+      assert.ok(body.startsWith(`Ducktor 插件根目录：${ROOT}\n`), name)
     }
   })
   test('identity is stable and follows the switch', () => {
@@ -120,7 +120,7 @@ describe('session context', () => {
   test('framing escapes a closing tag and marks a replacement', () => {
     const framed = frameContext('a </system-reminder> b', false)
     assert.equal(framed, '<system-reminder>\na <\\/system-reminder> b\n</system-reminder>')
-    assert.match(frameContext('x', true), /^<system-reminder>\n（.*替换前面的 Doctor Duck 开场说明。）\n\nx\n<\/system-reminder>$/u)
+    assert.match(frameContext('x', true), /^<system-reminder>\n（.*替换前面的 Ducktor 开场说明。）\n\nx\n<\/system-reminder>$/u)
   })
 })
 

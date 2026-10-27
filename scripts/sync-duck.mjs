@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// Copy Doctor Duck's content into duck/ from one exact commit, and record it in duck.lock.json.
-//   node scripts/sync-duck.mjs [--from <Doctor Duck checkout>] [--ref <git ref>]
+// Copy Ducktor's content into duck/ from one exact commit, and record it in duck.lock.json.
+//   node scripts/sync-duck.mjs [--from <Ducktor checkout>] [--ref <git ref>]
 //   node scripts/sync-duck.mjs --check     verify duck/ still matches duck.lock.json
 // duck/ is never edited by hand: the adapter adds DeepSeek Harness behavior in index.js only,
 // so the rules and commands stay the ones Claude Code and Codex users get. The e2e fixture
@@ -15,7 +15,7 @@ const HERE = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const TARGET = join(HERE, 'duck')
 const LOCK = join(HERE, 'duck.lock.json')
 // What the commands and the session context read at run time. Host manifests, hooks,
-// tests, evals and docs stay in Doctor Duck. package.json keeps duck/bin/duck.js CommonJS
+// tests, evals and docs stay in Ducktor. package.json keeps duck/bin/duck.js CommonJS
 // inside this ESM package.
 const PATHS = ['bin', 'cards', 'handbook', 'library', 'rules', 'skills', 'LICENSE', 'LICENSES', 'package.json']
 // The grad-student fixture project the end-to-end flows run on; test-only, not published.
@@ -67,10 +67,10 @@ function check() {
   const fixture = compare('tests/e2e/fixtures/grad-project/', lock.fixtureFiles, FIXTURE)
   const problems = [...duck.problems, ...fixture.problems]
   if (problems.length > 0) {
-    console.error(`differs from duck.lock.json (Doctor Duck ${lock.source.commit.slice(0, 7)}):\n${problems.join('\n')}`)
+    console.error(`differs from duck.lock.json (Ducktor ${lock.source.commit.slice(0, 7)}):\n${problems.join('\n')}`)
     process.exit(1)
   }
-  console.log(`duck/ and the fixture match Doctor Duck ${lock.source.commit.slice(0, 7)} (${duck.count} + ${fixture.count} files)`)
+  console.log(`duck/ and the fixture match Ducktor ${lock.source.commit.slice(0, 7)} (${duck.count} + ${fixture.count} files)`)
 }
 
 // Extract paths of one commit into a fresh directory; strip drops leading path parts.
@@ -89,15 +89,15 @@ function sync({ from, ref }) {
   const files = extract(from, commit, PATHS, TARGET)
   const fixtureFiles = extract(from, commit, [FIXTURE_SOURCE], FIXTURE, FIXTURE_SOURCE.split('/').length)
   const lock = {
-    note: 'duck/ and tests/e2e/fixtures/grad-project are verbatim copies of these Doctor Duck paths at this commit. Re-run scripts/sync-duck.mjs instead of editing them.',
-    source: { repository: 'JoeyWu-tech/Doctor-Duck', ref, commit, committedAt, subject },
+    note: 'duck/ and tests/e2e/fixtures/grad-project are verbatim copies of these Ducktor paths at this commit. Re-run scripts/sync-duck.mjs instead of editing them.',
+    source: { repository: 'JoeyWu-tech/Ducktor', ref, commit, committedAt, subject },
     paths: PATHS,
     files,
     fixture: FIXTURE_SOURCE,
     fixtureFiles,
   }
   writeFileSync(LOCK, `${JSON.stringify(lock, null, 2)}\n`)
-  console.log(`copied ${Object.keys(files).length} files into duck/ and ${Object.keys(fixtureFiles).length} into the e2e fixture from Doctor Duck ${commit.slice(0, 7)} (${ref})`)
+  console.log(`copied ${Object.keys(files).length} files into duck/ and ${Object.keys(fixtureFiles).length} into the e2e fixture from Ducktor ${commit.slice(0, 7)} (${ref})`)
 }
 
 const options = args(process.argv.slice(2))

@@ -1,28 +1,28 @@
-# Doctor Duck
+# DeepSeek-Doctor
 
 > Trust me, I'm a Ducktor.
 
 用 AI agent 做科研，文献、实验、引言都能交给 AI，「讲一遍」这一步却很容易省掉。组会上有人问一句「为什么只比这两个 baseline」，你可能答不上来：这个决定不是你做的，AI 做的时候也没人记下来。
 
-Doctor Duck 把「讲一遍」找回来：
+Ducktor 把「讲一遍」找回来：
 
 - AI 做完一步实质性的活，Ducktor 讲一句为什么。有取舍时再记一行：选了什么，放弃了什么，是你定的还是 AI 拍的板。
 - 碰到会改变做法的决定，它先停下来问你。
 - 想看清 AI 刚才那一步是怎么做的，敲 `/duck-why`。
 - 一段做完，敲 `/duck-learn` 复盘。
 
-这个插件把 Doctor Duck 原样带进 DeepSeek Harness。规则、命令、卡片和 Claude Code、Codex 里的是同一份，固定在 Doctor Duck 的一个提交上（插件目录里的 `duck.lock.json` 写着是哪个）。
+这个插件把 Ducktor 原样带进 DeepSeek Harness。规则、命令、卡片和 Claude Code、Codex 里的是同一份，固定在 Ducktor 的一个提交上（插件目录里的 `duck.lock.json` 写着是哪个）。
 
-deepseek-supervisor 是社区做的插件，不是 DeepSeek 官方出品，和 DeepSeek 公司没有关系。
+DeepSeek-Doctor 是社区做的插件，不是 DeepSeek 官方出品，和 DeepSeek 公司没有关系。
 
 ## 怎么用
 
 - 在输入框敲 `/`，能看到全部 `/duck-*` 命令。不知道从哪开始，先敲 `/duck`。
-- 刚装好时，Doctor Duck 在哪个项目里都没开启，Ducktor 只在你敲 `/duck-*` 命令时出声。
+- 刚装好时，Ducktor 在哪个项目里都没开启，只在你敲 `/duck-*` 命令时出声。
 - `/duck on`：在这个项目里开启。之后平时干活也跟着讲为什么、记决策。
 - `/duck quiet`：对话里不讲，道理照样记进笔记本。
 - `/duck off`：关掉，命令也不再写记录。
-- Doctor Duck 的东西都写在项目的 `.duck/` 下：`config.md`（开关和设定）、`notebook.md`（笔记本）、`decisions.md`（决策记录）、`reports/`（完整报告）、`background.md`（这个方向的背景）。
+- Ducktor 的东西都写在项目的 `.duck/` 下：`config.md`（开关和设定）、`notebook.md`（笔记本）、`decisions.md`（决策记录）、`reports/`（完整报告）、`background.md`（这个方向的背景）。
 
 ## 网页界面的「Ducktor」页签
 
@@ -36,7 +36,7 @@ deepseek-supervisor 是社区做的插件，不是 DeepSeek 官方出品，和 D
 
 页签打开时每 4 秒看一次 `.duck/` 有没有更新，只读本地文件，不花模型的 token。
 
-除了 Doctor Duck 自带的 23 张卡，插件另带 11 张：读论文、进新方向、换不换题、看数据和错误样本、基线调参、结果可追溯、测试集只在最后看、研究日志、和导师开会、用 AI 做研究的责任、审稿时用 AI 的规矩。每张都写明出处；起草时对过原文，交付前另开两个模型会话当红队逐条重查（不是人工审阅）。会议规则引的是 2026-10-26 能查到的最新一届（ICLR 2027，ICML 和 NeurIPS 2026），每年会变，卡上写了核对日期。
+除了 Ducktor 自带的 23 张卡，插件另带 11 张：读论文、进新方向、换不换题、看数据和错误样本、基线调参、结果可追溯、测试集只在最后看、研究日志、和导师开会、用 AI 做研究的责任、审稿时用 AI 的规矩。每张都写明出处；起草时对过原文，交付前另开两个模型会话当红队逐条重查（不是人工审阅）。会议规则引的是 2026-10-26 能查到的最新一届（ICLR 2027，ICML 和 NeurIPS 2026），每年会变，卡上写了核对日期。
 
 ## 命令
 
@@ -63,18 +63,18 @@ deepseek-supervisor 是社区做的插件，不是 DeepSeek 官方出品，和 D
 
 插件的设置页有三项，都可以不填：
 
-- `duckRoot`：用你自己的 Doctor Duck 目录（绝对路径），不用插件自带的那份。
+- `duckRoot`：用你自己的 Ducktor 目录（绝对路径），不用插件自带的那份。
 - `sessionContext`：默认开。关掉以后只剩命令，会话不再带开场说明和常驻规则。
 - `subagents`：默认关。打开后子代理会话也带开场说明；默认不带，因为子代理没法停下来问你。
 
 ## 它做了什么
 
 - 命令：14 条 `/duck-*` 命令登记成 DeepSeek Harness 的技能，只能由你敲出来，模型不会自己调用。
-- 开场说明：Claude Code、Codex 里由开场 hook 注入的那段（插件根目录、这个项目的开关、开启时的常驻规则），这里在每个会话的第一次模型请求里给出，由同一份 Doctor Duck 代码生成。`.duck/config.md` 改了，或者对话被压缩过，会再给一份。
-- 开场说明后面另有几行：另带的经验卡片在哪；Doctor Duck 开着或你敲了命令时，列论文、数据集、工具要附查到的链接；第一次摸一个方向时写 `.duck/background.md`。
+- 开场说明：Claude Code、Codex 里由开场 hook 注入的那段（插件根目录、这个项目的开关、开启时的常驻规则），这里在每个会话的第一次模型请求里给出，由同一份 Ducktor 代码生成。`.duck/config.md` 改了，或者对话被压缩过，会再给一份。
+- 开场说明后面另有几行：另带的经验卡片在哪；Ducktor 开着或你敲了命令时，列论文、数据集、工具要附查到的链接；第一次摸一个方向时写 `.duck/background.md`。
 - 「Ducktor」页签：浏览器里的一页，读 `.duck/` 和经验卡片来显示。
 - 插件只读本地文件，自己不联网。对话照常发给你在 DeepSeek Harness 里选的模型。`/duck-survey`、`/duck-idea` 这类命令会让 AI 上网查文献。
 
 ## 许可
 
-插件代码（含页签）是 MIT，插件的文档和另带的经验卡片（`mentor/`）是 CC BY-NC-SA 4.0。`duck/` 里的 Doctor Duck 按目录分：文字（skills/、rules/、cards/、handbook/）是 CC BY-NC-SA 4.0，不可商用；`library/` 里的原技能各自保留原来的许可；代码是 MIT。Doctor Duck 改编自 Supervisor-Skills（骆昱宇及贡献者，CC BY-NC-SA 4.0）。
+插件代码（含页签）是 MIT，插件的文档和另带的经验卡片（`mentor/`）是 CC BY-NC-SA 4.0。`duck/` 里的 Ducktor 按目录分：文字（skills/、rules/、cards/、handbook/）是 CC BY-NC-SA 4.0，不可商用；`library/` 里的原技能各自保留原来的许可；代码是 MIT。Ducktor 改编自 Supervisor-Skills（骆昱宇及贡献者，CC BY-NC-SA 4.0）。

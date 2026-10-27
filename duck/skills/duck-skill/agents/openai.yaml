@@ -1,5 +1,5 @@
 interface:
-  display_name: "Doctor Duck: skill"
+  display_name: "Ducktor: skill"
   short_description: "管理命令和卡片"
 policy:
   allow_implicit_invocation: false

@@ -1,25 +1,25 @@
-deepseek-supervisor is licensed by directory.
+DeepSeek-Doctor is licensed by directory.
 
 - Plugin code and config (index.js, lib/, client/, scripts/, tests/, cordis.patch.yml): MIT,
-  text below. tests/e2e/flow.cjs and tests/e2e/fixtures/ come from Doctor Duck's tests/, which
+  text below. tests/e2e/flow.cjs and tests/e2e/fixtures/ come from Ducktor's tests/, which
   are MIT as well.
 - Documentation, display text and images (README.md, docs/, locale/, assets/, icon.png), the run
-  records (evals/) and the extra experience cards (mentor/): CC BY-NC-SA 4.0, like Doctor Duck's
+  records (evals/) and the extra experience cards (mentor/): CC BY-NC-SA 4.0, like Ducktor's
   own text, which parts of it are adapted from (duck/LICENSES/CC-BY-NC-SA-4.0.txt).
   The README animation is an illustration, not a screen recording. The screenshots in
   docs/images/ show the DeepSeek Harness interface, which belongs to its owners and is not
   covered by this license.
-- duck/: a verbatim copy of Doctor Duck, licensed as duck/LICENSE says: text in skills/,
+- duck/: a verbatim copy of Ducktor, licensed as duck/LICENSE says: text in skills/,
   rules/, cards/ and handbook/ is CC BY-NC-SA 4.0 (duck/LICENSES/CC-BY-NC-SA-4.0.txt); each
   original skill in library/ keeps its own license (CC BY 4.0 or CC BY-NC-SA 4.0); code in
   bin/ is MIT.
 
-Doctor Duck is adapted from Supervisor-Skills (https://github.com/HKUSTDial/Supervisor-Skills),
+Ducktor is adapted from Supervisor-Skills (https://github.com/HKUSTDial/Supervisor-Skills),
 Copyright (c) 2026 Yuyu Luo (methodology) and contributors, licensed under CC BY-NC-SA 4.0.
 
 MIT License
 
-Copyright (c) 2026 Doctor Duck contributors
+Copyright (c) 2026 Ducktor contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

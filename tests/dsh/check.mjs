@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Checks deepseek-supervisor against an installed DeepSeek Harness without an API key: nothing
+// Checks deepseek-doctor against an installed DeepSeek Harness without an API key: nothing
 // reaches a model, because with no key dsh stops at MISSING_CREDENTIAL right before the request
 // (the session log already holds every message the request would have carried). Everything
 // happens in a fresh temporary HOME; DEEPSEEK_API_KEY is removed from the environment.
@@ -39,7 +39,7 @@ if (!['pnpm', 'patch', 'ui'].includes(ROUTE)) {
 const DSH = process.env.DSH || 'dsh'
 const ROOT = resolveDuckRoot(undefined)
 
-const scratch = realpathSync(mkdtempSync(join(tmpdir(), 'ds-supervisor-dsh-')))
+const scratch = realpathSync(mkdtempSync(join(tmpdir(), 'ds-doctor-dsh-')))
 const HOME = join(scratch, 'home')
 const DSH_HOME = join(HOME, '.dsh')
 const PROJECT = join(scratch, 'project')
@@ -61,7 +61,7 @@ function check(label, ok, detail = '') {
   console.log(`${ok ? 'ok  ' : 'FAIL'} ${label}${ok || !detail ? '' : `\n       ${String(detail).slice(0, 400)}`}`)
 }
 const dsh = (args, cwd = PROJECT) => spawnSync(DSH, args, { cwd, env, encoding: 'utf8', maxBuffer: 1 << 26, timeout: 300000 })
-const setSwitch = (mode) => writeFileSync(join(PROJECT, '.duck', 'config.md'), `# Doctor Duck 设定\n\n开关：${mode}\n`)
+const setSwitch = (mode) => writeFileSync(join(PROJECT, '.duck', 'config.md'), `# Ducktor 设定\n\n开关：${mode}\n`)
 
 // User messages a headless run added to its session, in order.
 const seen = new Map()
@@ -117,11 +117,11 @@ if (ROUTE === 'pnpm') {
   }
 } else {
   mkdirSync(DSH_HOME, { recursive: true })
-  writeFileSync(join(DSH_HOME, 'cordis.patch.yml'), `- insert:\n    - id: deepseek-supervisor\n      name: ${join(REPO, 'index.js')}\n`)
+  writeFileSync(join(DSH_HOME, 'cordis.patch.yml'), `- insert:\n    - id: deepseek-doctor\n      name: ${join(REPO, 'index.js')}\n`)
   check('home-level cordis.patch.yml row written', true)
 }
 const dump = dsh(['--profile', 'headless', '--dump-config'])
-check('the composed headless profile has the deepseek-supervisor row', /- id: deepseek-supervisor\n/u.test(dump.stdout), dump.stderr)
+check('the composed headless profile has the deepseek-doctor row', /- id: deepseek-doctor\n/u.test(dump.stdout), dump.stderr)
 }
 
 // ---------- headless: first request, resume, switch change ----------
@@ -132,10 +132,10 @@ const first = headless('/duck 菜单')
 check('keyless run stops at MISSING_CREDENTIAL (no model was asked)', first.run.status === 1 && /MISSING_CREDENTIAL/u.test(first.run.stdout + first.run.stderr), first.run.stderr)
 check('the context comes after the student message, once, before the /duck skill', contextBefore(first.users, 'duck'), kinds(first.users))
 const context = first.users.find(m => m.source?.kind === SOURCE_KIND)
-check('the context is Doctor Duck\'s own opening text for this project, verbatim', context && textOf(context) === frameContext(duckContext(ROOT, PROJECT).body, false))
-check('the context carries the resident rules (switch is on)', context && /# Doctor Duck 常驻规则/u.test(textOf(context)))
+check('the context is Ducktor\'s own opening text for this project, verbatim', context && textOf(context) === frameContext(duckContext(ROOT, PROJECT).body, false))
+check('the context carries the resident rules (switch is on)', context && /# Ducktor 常驻规则/u.test(textOf(context)))
 const skill = first.users.find(m => m.source?.kind === 'skill-invocation')
-check('the /duck skill\'s base directory is the Doctor Duck root', skill && textOf(skill).includes(`Base directory for this skill: ${ROOT}\n`))
+check('the /duck skill\'s base directory is the Ducktor root', skill && textOf(skill).includes(`Base directory for this skill: ${ROOT}\n`))
 
 const again = headless('/duck-why', first.id)
 check('resume with nothing changed: no second context', again.users.length > 0 && !again.users.some(m => m.source?.kind === SOURCE_KIND)
@@ -149,7 +149,7 @@ check('switch changed to quiet: a replacement context enters', replacement && te
 setSwitch('off')
 const off = headless('/duck-polish 润色摘要')
 const offContext = off.users.find(m => m.source?.kind === SOURCE_KIND)
-check('a new session with the switch off gets the off note', offContext && /鸭子现在是 off/u.test(textOf(offContext)))
+check('a new session with the switch off gets the off note', offContext && /Ducktor 现在是 off/u.test(textOf(offContext)))
 }
 
 // ---------- web: the surface Desktop also runs ----------
@@ -203,8 +203,8 @@ async function web() {
       check('Plugins page call: installBundle with the checkout path', installed.result?.ok === true, JSON.stringify(installed))
       const bundles = await callArgs('pluginManager/listBundles', {})
       const listed = JSON.stringify(bundles)
-      check('Plugins page call: listBundles shows deepseek-supervisor with its own title and description',
-        listed.includes('"deepseek-supervisor"') && listed.includes('"Doctor Duck"') && listed.includes('讲为什么的科研导师') && listed.includes('A research mentor that explains why'), listed.slice(0, 400))
+      check('Plugins page call: listBundles shows deepseek-doctor with its own title and description',
+        listed.includes('"deepseek-doctor"') && listed.includes('"DeepSeek-Doctor"') && listed.includes('讲为什么的科研导师 Ducktor') && listed.includes('Ducktor, a research mentor that explains why'), listed.slice(0, 400))
     }
     const created = await call('session/create', { cwd: PROJECT })
     const sessionId = JSON.stringify(created).match(/"sessionId":"([^"]+)"/u)?.[1]
@@ -225,7 +225,7 @@ async function web() {
     check('web: the standard preset agent gets the context after the student, before the /duck-review skill',
       contextBefore(users, 'duck-review'), kinds(users))
     if (ROUTE === 'ui') {
-      const removed = await callArgs('pluginManager/removeBundle', { name: 'deepseek-supervisor' })
+      const removed = await callArgs('pluginManager/removeBundle', { name: 'deepseek-doctor' })
       check('Plugins page call: removeBundle', removed.result?.ok === true, JSON.stringify(removed))
       const later = await call('session/create', { cwd: PROJECT })
       const laterId = JSON.stringify(later).match(/"sessionId":"([^"]+)"/u)?.[1]
@@ -246,24 +246,24 @@ if (WEB) await web()
 
 if (ROUTE === 'ui') {
   const after = dsh(['web', '--dump-config'])
-  check('after removal the web profile has no deepseek-supervisor', after.status === 0 && !/deepseek-supervisor/u.test(after.stdout), after.stderr)
+  check('after removal the web profile has no deepseek-doctor', after.status === 0 && !/deepseek-doctor/u.test(after.stdout), after.stderr)
 } else {
 if (ROUTE === 'pnpm') {
   for (const profile of PROFILES) {
-    const remove = dsh(['plugin', '--profile', profile, 'remove', 'deepseek-supervisor'])
-    check(`dsh plugin --profile ${profile} remove deepseek-supervisor`, remove.status === 0, remove.stderr || remove.stdout)
+    const remove = dsh(['plugin', '--profile', profile, 'remove', 'deepseek-doctor'])
+    check(`dsh plugin --profile ${profile} remove deepseek-doctor`, remove.status === 0, remove.stderr || remove.stdout)
     // Not a failure: pnpm may keep the link in the profile's node_modules after the row is gone.
-    const link = join(DSH_HOME, 'profiles', profile, 'node_modules', 'deepseek-supervisor')
+    const link = join(DSH_HOME, 'profiles', profile, 'node_modules', 'deepseek-doctor')
     let left = false
     try { left = lstatSync(link).isSymbolicLink() || existsSync(link) } catch { left = false }
-    console.log(`     note: ${profile} profile node_modules/deepseek-supervisor ${left ? 'still there (pnpm leaves it)' : 'removed'}`)
+    console.log(`     note: ${profile} profile node_modules/deepseek-doctor ${left ? 'still there (pnpm leaves it)' : 'removed'}`)
   }
 } else {
   rmSync(join(DSH_HOME, 'cordis.patch.yml'))
 }
 for (const profile of PROFILES) {
   const after = dsh(profile === 'web' ? ['web', '--dump-config'] : ['--profile', profile, '--dump-config'])
-  check(`after removal the ${profile} profile has no deepseek-supervisor`, after.status === 0 && !/deepseek-supervisor/u.test(after.stdout), after.stderr)
+  check(`after removal the ${profile} profile has no deepseek-doctor`, after.status === 0 && !/deepseek-doctor/u.test(after.stdout), after.stderr)
 }
 setSwitch('on')
 const gone = headless('/duck 菜单')
