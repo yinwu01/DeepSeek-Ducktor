@@ -27,7 +27,7 @@ disable-model-invocation: true
 - 学生指了论文、结果表或笔记的话，读一下。
 
 ## 4. 写复盘
-五段，对话里控制在 15 行左右：
+五段，对话里控制在 15 行左右（学生用英文时，五段标题写成 What we set out to do、What happened、Where a top advisor would look、Judgments left to AI、Next steps）：
 - **本来想干什么**：从记录里找最早写下的目标。
 - **实际怎样**：结果和数字，只用记录里有的，没有的直说没有。
 - **顶级导师会盯哪里**：挑一到三处，每处讲清为什么要紧，带出处（卡片、名家文章的转述 cards/MENTORS.md、手册的具体章节、原技能里的说明，或投稿清单这类公开规范）；没有出处的，直说是自己的判断。

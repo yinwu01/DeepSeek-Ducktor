@@ -344,7 +344,7 @@ const unknownTitles = (reply) => {
 };
 const OLD_OR_NEW_LABELS = /^[ \t]*>\s*\**(用的思路|要核对的话|放弃了什么|这次的过程|为什么|名家怎么看|回到这次|新手常怎么做|有经验的人怎么想|最值得学的|你能带走的一条|过程还原)\**[：:]/m;
 const whyChecks = () => [
-  ['must', 'says the account of this step is worked out from the records, not known', (t) => /没法确认|can(no|')t (be )?confirm|no way to (know|confirm)/i.test(t.reply)],
+  ['must', 'says the account of this step is worked out from the records, not known', (t) => /没法确认|can(no|')t (be )?(confirm|know)|no way to (know|confirm)/i.test(t.reply)],
   ['should', 'one blockquote with an all-bold line and a 下次 line', (t) => WHY_BLOCK.test(t.reply)],
   ['should', 'no section labels like 用的思路： or 名家怎么看：', (t) => !OLD_OR_NEW_LABELS.test(t.reply)],
   ['should', 'names a researcher or says it is its own judgment', (t) => [...MENTOR_NAMES].some((n) => t.reply.includes(n)) || /陈天奇|自己的判断/.test(t.reply)],

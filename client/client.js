@@ -24,8 +24,12 @@ const REPORTS = '.duck/reports'
 
 // ---------------------------------------------------------------- parsing (pure)
 
-// The 「谁定的」 tag at the end of a decision: （你定）、（AI 定） or, in English, (you decided).
-const TAG = /[（(]([^（）()]*(?:定|decided)[^（）()]*)[）)]\s*$/i
+// The 「谁定的」 tag at the end of a decision: （你定）、（AI 定）, or in English (you decided).
+// The full-width form is tried first; a half-width one counts only when it says "decided",
+// so 「学习率 (固定)」 is not a tag.
+const TAG_ZH = /（([^（）]*定[^（）]*)）\s*$/
+const TAG_EN = /\(([^()]*\bdecided\b[^()]*)\)\s*$/i
+const tagOf = (segment) => TAG_ZH.exec(segment) ?? TAG_EN.exec(segment)
 const CARD_REF = /\b[A-Z]\d{2}\b/g
 const CJK = /[\u3400-\u9fff]/
 const URL_RE = /https?:\/\/[^\s）)，。；、<>"']+/g
@@ -67,9 +71,9 @@ function parseDecisions(text) {
     const date = match[1] ?? ''
     const body = match[2].trim()
     const segments = body.split(/；|;\s+/).map(segment => segment.trim()).filter(Boolean)
-    const each = segments.length > 1 && segments.every(segment => TAG.test(segment))
+    const each = segments.length > 1 && segments.every(segment => tagOf(segment) !== null)
     for (const segment of each ? segments : [body]) {
-      const tagMatch = TAG.exec(segment)
+      const tagMatch = tagOf(segment)
       const tag = tagMatch === null ? '' : tagMatch[1]
       out.push({ date, text: tagMatch === null ? segment : segment.slice(0, tagMatch.index).trim(), tag, who: whoOf(tag), editable: /你可改|学生可改|you can change/i.test(tag) })
     }
@@ -89,9 +93,11 @@ function parseNotebook(text) {
     const head = /^(\d{4}-\d{2}-\d{2}|\d{1,2}-\d{1,2})?\s*(.*)$/.exec(parts[0].trim())
     let principle = parts[1].trim()
     let source = ''
-    // A full-width （出处） first; a half-width (source) only on an English line, where one
-    // level of nesting is allowed: (card E05 (seeds)).
-    const sourceMatch = /（([^（）]*)）\s*$/.exec(principle) ?? (CJK.test(principle) ? null : /\(((?:[^()]|\([^()]*\))*)\)\s*$/.exec(principle))
+    // A full-width （出处） first. Then a half-width (source), one level of nesting allowed:
+    // on an English line any, on a Chinese line only one that holds Chinese, so
+    // 「先在小模型上复现 (Qwen2.5-7B)」 keeps its brackets and 「(自己的判断)」 is a source.
+    const half = /\(((?:[^()]|\([^()]*\))*)\)\s*$/.exec(principle)
+    const sourceMatch = /（([^（）]*)）\s*$/.exec(principle) ?? (half !== null && (!CJK.test(principle) || CJK.test(half[1])) ? half : null)
     if (sourceMatch !== null) {
       source = sourceMatch[1]
       principle = principle.slice(0, sourceMatch.index).trim()
@@ -102,8 +108,10 @@ function parseNotebook(text) {
   return out.reverse()
 }
 
-const CHECK_HEADING = /核对|自己先做|导师会盯|交给 ?AI ?的判断|\bcheck|\bverify|yourself|advisor/i
-const CARD_HEADING = /卡片提醒|\bcards?\b/i
+// Chinese headings as Ducktor writes them; English ones are the fixed titles in Ducktor's
+// rules (wrapper-template step 4, /duck-learn step 4).
+const CHECK_HEADING = /核对|自己先做|导师会盯|交给 ?AI ?的判断|^(?:\d+[.)]?\s*)?(?:next time\b|where a top advisor would look|judgments? left to AI)/i
+const CARD_HEADING = /卡片提醒|^(?:\d+[.)]?\s*)?card reminders?\b/i
 
 /** One report: its title, its check sections, and the cards its 卡片提醒 section names. */
 function parseReport(text) {

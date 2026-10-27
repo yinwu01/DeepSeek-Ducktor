@@ -26,9 +26,10 @@ const MODES = {
 // Leading list marks, quotes, headings and bold are allowed.
 const SWITCH_LINE = /^[\s>#*-]*\**(?:开关|switch)\**\s*[:：=]\s*(.*)$/gim;
 
+// Line ends are made \n and a BOM is dropped, so a file saved on Windows reads the same.
 function readText(file) {
   try {
-    return fs.readFileSync(file, 'utf8');
+    return fs.readFileSync(file, 'utf8').replace(/^\uFEFF/, '').replace(/\r\n?/g, '\n');
   } catch (err) {
     return null;
   }
@@ -73,7 +74,7 @@ function coreRules(project) {
   const own = readText(copy);
   if (own !== null) {
     const parts = [own];
-    if (!own.includes(EVERY_TIME)) {
+    if (!EVERY_TIME.test(own)) {
       const section = sectionOf(readText(path.join(ROOT, 'rules', 'core.md')) || '', EVERY_TIME);
       if (section) parts.push(`${section}\n\n（上面「每次都照做」一节来自插件原版 rules/core.md：学生的副本里没有这一节。）`);
     }
@@ -87,20 +88,27 @@ function coreRules(project) {
 // how to read and write them, the skill-name table, and the few rules that hold in every mode
 // (the student's language, checking facts, pushback). Commands need them even when the
 // resident rules are not loaded.
-const EVERY_TIME = '## 每次都照做\n';
-const BASIC_SECTIONS = ['## 东西在哪\n', EVERY_TIME];
+const EVERY_TIME = /^##[ \t]*每次都照做[ \t]*$/m;
+const BASIC_SECTIONS = [/^##[ \t]*东西在哪[ \t]*$/m, EVERY_TIME];
+// Said right under 「每次都照做」 when the resident rules are not loaded.
+const EVERY_TIME_SCOPE = '（Ducktor 没开启或是 off：下面几条在学生敲 /duck-xxx 时照做；平时干活照宿主自己的规矩，只有「回复：短」平时也算数。）';
 
 // One "## " section of a rules file, heading included; '' when it is not there.
 function sectionOf(text, heading) {
-  const start = text.indexOf(heading);
-  if (start < 0) return '';
-  const end = text.indexOf('\n## ', start + 1);
-  return text.slice(start, end < 0 ? undefined : end).trim();
+  const m = heading.exec(text);
+  if (m === null) return '';
+  const end = text.indexOf('\n## ', m.index + 1);
+  return text.slice(m.index, end < 0 ? undefined : end).trim();
 }
 
 function basics() {
   const core = readText(path.join(ROOT, 'rules', 'core.md')) || '';
-  return BASIC_SECTIONS.map((heading) => sectionOf(core, heading)).filter(Boolean).join('\n\n');
+  return BASIC_SECTIONS.map((heading) => {
+    const section = sectionOf(core, heading);
+    if (!section || heading !== EVERY_TIME) return section;
+    const firstBreak = section.indexOf('\n');
+    return firstBreak < 0 ? section : `${section.slice(0, firstBreak)}\n${EVERY_TIME_SCOPE}${section.slice(firstBreak)}`;
+  }).filter(Boolean).join('\n\n');
 }
 
 function buildContext(project) {
@@ -132,9 +140,11 @@ function buildContext(project) {
 
 function sessionStart() {
   const input = readInput();
-  // Claude Code and Codex send cwd; Cursor sends workspace_roots.
+  // Claude Code sets CLAUDE_PROJECT_DIR; Claude Code and Codex send cwd; Cursor sends workspace_roots.
   const roots = Array.isArray(input.workspace_roots) ? input.workspace_roots : [];
-  const project = [input.cwd, roots[0], process.env.CLAUDE_PROJECT_DIR]
+  // Claude Code's project root first: after `cd paper` the hook input's cwd moves, and a
+  // hook rerun on compact, clear or resume would read paper/.duck/ instead.
+  const project = [process.env.CLAUDE_PROJECT_DIR, input.cwd, roots[0]]
     .find((p) => typeof p === 'string' && p);
   return buildContext(project || process.cwd());
 }
@@ -224,18 +234,30 @@ function realPathOf(p) {
   }
 }
 
-// True when the edit only adds text: every replacement keeps what it replaces at its start.
+// True when the write leaves the old file as it was and only adds after its end. Edits are
+// applied here the way the host applies them (each old_string must occur exactly once;
+// replace_all is refused), and the result is compared byte for byte with the old file.
 function onlyAdds(input, target, stat) {
   const toolInput = input.tool_input || {};
+  if (!stat || stat.size === 0) return true;
+  const old = fs.readFileSync(target);
+  let result;
   if (input.tool_name === 'Write') {
-    if (!stat || stat.size === 0) return true;
-    const content = toolInput.content;
-    return typeof content === 'string' && content.startsWith(fs.readFileSync(target, 'utf8'));
+    result = toolInput.content;
+  } else {
+    const edits = input.tool_name === 'MultiEdit' ? toolInput.edits : [toolInput];
+    if (!Array.isArray(edits) || edits.length === 0) return false;
+    result = old.toString('utf8');
+    for (const e of edits) {
+      if (!e || e.replace_all || typeof e.old_string !== 'string' || typeof e.new_string !== 'string' || e.old_string === '') return false;
+      const at = result.indexOf(e.old_string);
+      if (at < 0 || result.indexOf(e.old_string, at + 1) >= 0) return false;
+      result = result.slice(0, at) + e.new_string + result.slice(at + e.old_string.length);
+    }
   }
-  const edits = input.tool_name === 'MultiEdit' ? toolInput.edits : [toolInput];
-  return Array.isArray(edits) && edits.length > 0 && edits.every((e) => e
-    && typeof e.old_string === 'string' && typeof e.new_string === 'string'
-    && e.old_string !== '' && e.new_string.startsWith(e.old_string));
+  if (typeof result !== 'string') return false;
+  const bytes = Buffer.from(result, 'utf8');
+  return bytes.length >= old.length && bytes.subarray(0, old.length).equals(old);
 }
 
 function allowRecord(input) {
