@@ -10,11 +10,12 @@ disable-model-invocation: true
 
 插件根目录：开场注入的第一行写着。没有这一行时，就是这份文件往上两级的目录，因为这份文件在「插件根目录/skills/duck/SKILL.md」。下面提到的 skills/ 都在插件根目录下。
 
-按学生敲的内容，分三种情况。
+按学生敲的内容，分三种情况。下面写给学生的话和表都照学生的语言说：学生写英文，就全部译成英文。
+
 
 ## 一、后面什么都没有：列菜单
 
-不自我介绍，不学鸭叫。先说一句最省事的用法：「不用记命令：/duck 后面直接说要干什么，比如 /duck 帮我审一下 paper/main.tex，我替你挑。」然后列出这张表，按研究阶段分组，组名那几行照写：
+不自我介绍，不学鸭叫。先说一句最省事的用法：「不用记命令：/duck 后面直接说要干什么，比如 /duck 我想做 LLM agent，还没方向，或者 /duck 帮我审一下 paper/main.tex，我替你挑。」然后列出这张表，按研究阶段分组，组名那几行照写：
 
 | 命令 | 做什么 |
 |---|---|
@@ -39,18 +40,22 @@ disable-model-invocation: true
 
 在 Codex 里，命令写成 $duck:duck-review 这样，最省事的用法写成 $duck:duck 帮我审一下 paper/main.tex。
 
+学生只敲了 /duck，这次会话里也没有学生写的别的话时，.duck/config.md 是英文写的就用英文列；也看不出来，用中文列，最后加一行英文：「Prefer English? Write to me in English and I will answer in English.」
+
 列完再做三件事：
-- 读项目的 .duck/config.md，用一句话说 Ducktor 在这个项目开没开、开在哪一档，不用提文件名。没有这个文件，文件里没有「开关：」那一行，或者写的不是 on、quiet、off，就是没开启：平时不出声，只有敲命令时才动。config.md 里关掉的命令，在表里标「已关」；一条都没关，就不提。
+- 读项目的 .duck/config.md，用一句话说 Ducktor 在这个项目开没开、开在哪一档，不用提文件名。没有这个文件，文件里没有「开关：」那一行（英文写的 config 里是「Switch:」），或者写的不是 on、quiet、off，就是没开启：平时不出声，只有敲命令时才动。config.md 里关掉的命令，在表里标「已关」；一条都没关，就不提。
 - 项目的 .claude/skills/ 和 .agents/skills/ 下，名字以 duck- 开头的文件夹是学生自己加的命令，接在表后面列出来；一个都没有，就不提。
-- 最后照写这两句：「想让我平时也跟着（要紧的决定先问你，做完一步讲一句为什么），在这个项目敲 /duck on。/duck quiet 照样先问，讲解只记不说；/duck off 连命令收尾的讲解也关掉。」已经是 on 或 quiet 的，这两句换成一句怎么换档或关掉。
+- 最后照写这两句（学生用英文时译成英文）：「想让我平时也跟着（要紧的决定先问你，做完一步讲一句为什么），在这个项目敲 /duck on。/duck quiet 照样先问，讲解只记不说；/duck off 连命令收尾的讲解也关掉。」已经是 on 或 quiet 的，这两句换成一句怎么换档或关掉。
 
 ## 二、后面是 on、quiet 或 off：切开关
 
-1. 改项目 .duck/config.md 里「开关：」那一行。没有这个文件，就照下面的格式新建。这是学生明确要的，不用再问。
-2. 告诉学生改成了什么，以及这一档的意思：
+1. 改项目 .duck/config.md 里「开关：」那一行（英文 config 里是「Switch:」）：有这一行就改这一行，不另加一行。没有这个文件，就照下面的格式新建。这是学生明确要的，不用再问。
+2. 告诉学生改了哪一行、改成了什么，以及这一档的意思：
    - on：平时干活也按常驻规则来（讲为什么、记决策、结果进论文前对标准），每次命令跑完出「为什么」报告，对话里放短版，完整版存进 .duck/reports/；
    - quiet：照记照存，对话里不放；平时干活用到的原则也照样记进笔记本；
    - off：常驻规则不再加载。/duck-xxx 命令照样能用，只是不附「为什么」报告，也不自动记决策行、报告和笔记；学生自己要求的改动照做。/duck-why、/duck-learn 照常讲。
+   学生只说「安静点」「别啰嗦」、没说哪一档时：现在是 on，就切到 quiet，说清 quiet 照样记；项目还没开启，就别切到 quiet（quiet 比没开启管得多），告诉学生没开启时平时本来就不出声，再问是要回复短一点（在 config.md 记「回复：短」；config.md 还没有时照下面的格式新建，但不写开关行，别顺手开启），还是连命令收尾的讲解也关掉（off）。
+   切开关在 .duck/decisions.md 记一行就够了，不往笔记本里记。
 3. 从这一轮起，你就按新开关做。切到 on 或 quiet 时，如果这次会话的开场注入里没有常驻规则（写的是没在这个项目开启，或者是 off），现在就读常驻规则：项目里有 .duck/skills/core.md 读它，没有就读插件根目录/rules/core.md，从这一轮起照做。切到 off，就从这一轮起照插件根目录/rules/off.md 做。下次开会话时，开场注入会按新开关来。
 
 新建 config.md 用这个格式：
@@ -66,6 +71,21 @@ disable-model-invocation: true
 ## 静音的卡
 
 ## 关掉的命令
+```
+
+学生用英文时，config.md 用这一版（「Switch:」和「开关：」一样认）：
+
+```
+# Ducktor settings
+
+Switch: on
+
+## Muted topics
+When the student says "I've got this kind", add a line here.
+
+## Muted cards
+
+## Disabled commands
 ```
 
 ## 三、后面是一句话：替学生挑命令

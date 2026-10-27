@@ -13,7 +13,7 @@ disable-model-invocation: true
 学生专门敲了这条命令，所以开关是 quiet 或 off 时也照常在对话里讲。
 
 ## 1. 先查两件事
-- 读项目的 .duck/config.md，没有就跳过这一条。「关掉的命令」下面写了 learn，就回一句「/duck-learn 已关闭，敲 /duck-skill enable learn 可以打开。」然后停下。
+- 读项目的 .duck/config.md，没有就跳过这一条。「关掉的命令」（Disabled commands）下面写了 learn，就回一句「/duck-learn 已关闭，敲 /duck-skill enable learn 可以打开。」然后停下。
 - 项目里有 .duck/skills/duck-learn/SKILL.md，而你现在读的不是它：改读那一份，从头照做。
 
 ## 2. 先说一句
@@ -37,7 +37,7 @@ disable-model-invocation: true
 不出题，不留作业，不打分，不写成长档案，不评价人。
 
 ## 5. 收尾
-- 开关是 on 或 quiet，或者 Ducktor 没在这个项目开启（没有 .duck/config.md，没有「开关：」那一行，或者写的不是 on、quiet、off；敲了这条命令就是要它）：整份复盘写进 .duck/reports/今天的日期-learn.md，日期写成 YYYY-MM-DD，重名就在后面加 -2、-3；「顶级导师会盯哪里」里的原则，各追加一行到 .duck/notebook.md：「- MM-DD 复盘｜原则（出处）｜这次：一句话说这一段碰到的具体事」，前后不空行，原则不加粗，笔记本里已经有同一条原则的不重复记。
+- 开关是 on 或 quiet，或者 Ducktor 没在这个项目开启（没有 .duck/config.md，没有「开关：」或「Switch:」那一行，或者写的不是 on、quiet、off；敲了这条命令就是要它）：整份复盘写进 .duck/reports/今天的日期-learn.md，日期写成 YYYY-MM-DD，重名就在后面加 -2、-3；「顶级导师会盯哪里」里的原则，各追加一行到 .duck/notebook.md：「- MM-DD 复盘｜原则（出处）｜这次：一句话说这一段碰到的具体事」，前后不空行，出处写名家和文章，或卡号加卡名，原则不加粗，笔记本里已经有同一条原则的不重复记。
 - 开关是 off：只在对话里讲，不写文件。
 
 .duck/ 和里面的文件不存在时，用到才建。

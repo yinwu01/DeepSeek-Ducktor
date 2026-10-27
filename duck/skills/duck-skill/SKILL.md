@@ -20,16 +20,16 @@ disable-model-invocation: true
 
 | 学生敲 | 做什么 |
 |---|---|
-| `/duck-skill` 或 `/duck-skill list` | 列出命令：插件的 13 条（总入口 duck 不算），加上项目 .claude/skills/、.agents/skills/ 里名字以 duck- 开头的文件夹。每条标开没开（看 .duck/config.md 的「关掉的命令」）、有没有改过的副本（.duck/skills/命令名/SKILL.md）。最后列出卡片：插件的 cards/INDEX.md 和项目的 .duck/cards/INDEX.md，标出静音的卡。 |
-| `/duck-skill disable figure`、`/duck-skill enable figure` | 在 .duck/config.md 的「关掉的命令」下加一行「figure」，或者删掉这一行。duck 和 skill 两条不能关。 |
+| `/duck-skill` 或 `/duck-skill list` | 列出命令：插件的 13 条（总入口 duck 不算），加上项目 .claude/skills/、.agents/skills/ 里名字以 duck- 开头的文件夹。每条标开没开（看 .duck/config.md 的「关掉的命令」，英文 config 里是 Disabled commands）、有没有改过的副本（.duck/skills/命令名/SKILL.md）。最后列出卡片：插件的 cards/INDEX.md 和项目的 .duck/cards/INDEX.md，标出静音的卡。 |
+| `/duck-skill disable figure`、`/duck-skill enable figure` | 在 .duck/config.md 的「关掉的命令」（Disabled commands）下加一行「figure」，或者删掉这一行。duck 和 skill 两条不能关。 |
 | `/duck-skill edit review` | 把插件根目录/skills/duck-review/SKILL.md 复制到项目的 .duck/skills/duck-review/SKILL.md，只改副本。按学生说的改，写之前给学生看和原版的差异。以后这条命令照副本做。 |
 | `/duck-skill edit rules` | 同上，原版是插件根目录/rules/core.md，副本是 .duck/skills/core.md。下次开会话起生效；Ducktor 在这个项目没开启时，副本也要等开启以后才用上。 |
 | `/duck-skill reset review`、`/duck-skill reset rules` | 删掉对应的副本，回到原版。删之前说一句删哪个文件。 |
 | `/duck-skill card new` | 加一张卡，步骤见下。 |
-| `/duck-skill card off W01`、`/duck-skill card on W01` | 在 .duck/config.md 的「静音的卡」下加一行「W01」，或者删掉这一行。静音的卡在收尾的「卡片提醒」里不再出现。 |
+| `/duck-skill card off W01`、`/duck-skill card on W01` | 在 .duck/config.md 的「静音的卡」（Muted cards）下加一行「W01」，或者删掉这一行。静音的卡在收尾的「卡片提醒」里不再出现。 |
 | `/duck-skill new`、`alias`、`share` | 还没做。直说还没做，学生要的话照常帮忙。 |
 
-这条命令要新建 .duck/config.md 时（不管是关命令、静音卡还是改设定），照总入口里的格式新建（读插件根目录/skills/duck/SKILL.md 第二节），但不写「开关：」那一行：没有这一行就是没开启，别顺手替学生开了。
+这条命令要新建 .duck/config.md 时（不管是关命令、静音卡还是改设定），照总入口里的格式新建（读插件根目录/skills/duck/SKILL.md 第二节），但不写开关行（「开关：」或「Switch:」）：没有这一行就是没开启，别顺手替学生开了。
 
 学生没敲这条命令、只是说「以后决策行别写这么长」「把这条记成我们组的规矩」：先判断是设定、规则还是卡片。设定改 .duck/config.md，规则走 `edit rules`，组里的规矩走 `card new`。都先给学生看，点头再写。
 

@@ -13,7 +13,7 @@ disable-model-invocation: true
 学生专门敲了这条命令，所以开关是 quiet 或 off 时也照常用。
 
 ## 1. 先查两件事
-- 读项目的 .duck/config.md，没有就跳过这一条。「关掉的命令」下面写了 notes，就回一句「/duck-notes 已关闭，敲 /duck-skill enable notes 可以打开。」然后停下。
+- 读项目的 .duck/config.md，没有就跳过这一条。「关掉的命令」（Disabled commands）下面写了 notes，就回一句「/duck-notes 已关闭，敲 /duck-skill enable notes 可以打开。」然后停下。
 - 项目里有 .duck/skills/duck-notes/SKILL.md，而你现在读的不是它：改读那一份，从头照做。
 
 ## 2. 按学生敲的做
