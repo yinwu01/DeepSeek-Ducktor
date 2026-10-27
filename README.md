@@ -117,7 +117,7 @@ Desktop 用户不要用这种方式：这一行对 Desktop 也生效，会盖过
 
 ### 装好以后
 
-开一个新会话，在输入框里敲 `/`，能看到全部 14 条命令。方式一装好就生效；方式二、方式三装好以后，先重启一次 dsh（Desktop 要重新打开）。从 `/duck` 开始，它会列出菜单。命令行的 headless 没有输入框，也不用重启：到项目文件夹里直接跑 `dsh --profile headless "/duck"`。
+开一个新会话，在输入框里敲 `/`，能看到全部 14 条命令。方式一装好就生效；方式二、方式三装好以后，先重启一次 dsh（Desktop 要重新打开）。从 `/duck` 开始，它会列出菜单。命令行的 headless 没有输入框，也不用重启：`dsh plugin --profile headless list` 里有 `deepseek-doctor` 就是装上了，再到项目文件夹里跑 `dsh --profile headless "/duck"`。
 
 刚装好时，Ducktor 在每个项目里都没开启，只在你敲 `/duck-*` 命令时说话。在一个项目里敲 `/duck on`，它就在这个项目里一直跟着：
 
