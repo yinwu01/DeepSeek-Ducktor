@@ -12,7 +12,9 @@ const path = require('path');
 const { createRequire } = require('module');
 const { readSessionEvents } = require('./session-log.cjs');
 
-const isContext = (e) => e && e.type === 'user/message' && e.data && e.data.source && e.data.source.kind === 'ducktor';
+// doctor-duck: the kind before the rename (until 2026-10-27), in the 10-25 and 10-26 sessions.
+const CONTEXT_KINDS = ['ducktor', 'doctor-duck'];
+const isContext = (e) => e && e.type === 'user/message' && e.data && e.data.source && CONTEXT_KINDS.includes(e.data.source.kind);
 
 async function foldSurfaceOf(dsh) {
   if (!dsh) return undefined;

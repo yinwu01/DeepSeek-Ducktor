@@ -37,7 +37,7 @@
 
 ---
 
-你认识它：程序员桌上那只黄色的橡皮鸭。程序出了 bug，你把代码一行一行讲给它听，讲着讲着，自己就找到了 bug。
+程序员桌上常有一只黄色的橡皮鸭。程序出了 bug，你把代码一行一行讲给它听，讲着讲着，自己就找到了 bug。
 
 现在 AI 替你做研究，轮不到你讲了。Ducktor 反过来：它把 AI 做过的判断讲给你听。DeepSeek-Doctor 把 [Ducktor](https://github.com/JoeyWu-tech/Ducktor) 原样装进 DeepSeek Harness：Web 和命令行里都能敲 `/duck-review` 这类命令。规则、命令和卡片是 Ducktor 的原文，和 Claude Code、Codex 用户拿到的是同一份，固定在 Ducktor 的一个提交上（`duck.lock.json` 写着是哪个）。
 
@@ -68,7 +68,7 @@
 
 ## 道理从哪来
 
-规则要求 Ducktor：讲道理时，名家和出处只从经验卡和科研手册（`handbook/`）的具体章节里取；找不到出处，就直说这是它自己的判断。
+规则要求 Ducktor：讲道理时，名家和出处只从经验卡、名家文章的转述（`cards/MENTORS.md`）和科研手册（`handbook/`）的具体章节里取；找不到出处，就直说这是它自己的判断。
 
 经验卡有两组。Ducktor 带 23 张。这个插件另带 11 张（`mentor/cards/`），讲读论文、进新方向、实验习惯、和导师开会、用 AI 做研究和审稿的规矩。每张写明出处，附原文链接。写卡时对过原文，发布前又让两个独立的模型会话当红队逐条复核过（不是人工审）。
 
@@ -77,6 +77,8 @@
 需要 DeepSeek Harness 0.2.1-rc.2 及以上、0.3 以下（`package.json` 的 `engines.dsh`，dsh 安装时会检查）。
 
 三种方式任选一种。项目里的 `.duck/` 是学生自己的记录，装、卸插件都不会动它。
+
+以前装过这个插件的旧版本（id 是 deepseek-supervisor，更早是 deepseek-ducktor），先照原来的方式把它卸掉，再照下面装：插件页点「卸载」；命令行是 `dsh plugin --profile <名字> remove <旧 id>`；方式三删掉旧 id 那一行。id 换了，不卸掉的话，dsh 会把新旧两个当成两个插件。
 
 ### 方式一：插件页（Web、Desktop）
 
@@ -181,7 +183,7 @@ Desktop 用户不要用这种方式：这一行对 Desktop 也生效，会盖过
 | `npm test` | Node 22 以上 | 单元测试和打包检查，不需要 dsh |
 | `node tests/dsh/check.mjs --route pnpm --web`（或 `--route patch`、`--route ui`） | Node 22.15 以上（读会话日志要 zstd），装好的 dsh；`pnpm` 和 `ui` 两条还要 PATH 上有 pnpm | 在临时 HOME 里按三种方式装、用、卸，读真实的会话日志核对注入的内容和位置。不需要也不使用 API key，模型请求发出前就停下 |
 | `node tests/web/sidebar.mjs <dsh web 打印的地址> <输出前缀> <项目目录> [poll] [dark]` | 一个开着的 `dsh web`（web profile 装了插件），`PLAYWRIGHT_CORE` 和 `CHROMIUM` 指向 playwright-core 和一个 Chromium | 在真的网页界面里打开「Ducktor」页签、截图；带 `poll` 时往 `decisions.md` 追加一行，看页签自己刷新出来。不发模型请求 |
-| `node tests/e2e/flow.cjs [main\|more\|loop\|paper]` | Node 22.15 以上，`DEEPSEEK_API_KEY`，dsh 的 headless profile 里装好插件 | 真模型跑 Ducktor 的整套学生流程，检查项和 Claude Code、Codex 版相同。花真钱 |
+| `node tests/e2e/flow.cjs [main\|more\|loop\|paper]` | Node 22.15 以上，`DEEPSEEK_API_KEY`，dsh 的 headless profile 里装好插件 | 真模型跑 Ducktor 的整套学生流程，检查项和 Claude Code、Codex 版相同，另有几条只查这个插件。花真钱 |
 
 `check.mjs` 建议在断网的环境里跑（例如 `unshare -rn`，打开 loopback），这样能确认没有东西出本机。
 
@@ -190,8 +192,8 @@ Desktop 用户不要用这种方式：这一行对 Desktop 也生效，会盖过
 细节在 [docs/验证记录.md](docs/验证记录.md)。简单说：
 
 - 验证了：dsh 0.2.1-rc.2 和 rc.3 上三种安装方式都能装上、卸掉（卸掉后不再加载）；命令在 Web 和 headless 里都列出来、指向真实文件；开场说明和 Ducktor 开场 hook 的输出逐字相同，位置在学生消息之后、命令之前；续接会话不重复给，开关变了给替换的一份；照 dsh 建子代理会话的写法、用被测 dsh 的代码建出会话，插件认得出子代理（dsh 真建子代理时这么写，是读代码确认的）。
-- 真模型：在 dsh rc.2 上用 DeepSeek（默认的 `deepseek-flash`）跑完 Ducktor 的四套学生流程，必须项全过；建议项里有一条没过：参考文献没给链接（10-26 只重跑了 survey 这一段，这一条过了）。运行里模型起的真子代理都没拿到开场说明；调低压缩阈值后，对话压缩掉开场说明，插件在下一步补发了。
-- 没验证：rc.3 和 `deepseek-v4-pro` 上的真模型流程，真模型结果的波动（每套只跑了一次）；改名以后的真模型流程（改名只动了名字）；红队改过的 11 张卡还没被真模型读过；Desktop（只有 macOS、Windows 版，我们只在 Linux 上测过）；插件页的点击流程本身（测的是它调用的后端接口），插件的「配置」页也没看过；模型换了工作目录后照不照附注里的路径读写 `.duck/`（流程里模型没换过目录）。
+- 真模型（10-25、10-26 跑的，用的是 10-27 同步以前的 `duck/` 和那时的检查项）：在 dsh rc.2 上用 DeepSeek（默认的 `deepseek-flash`）跑完 Ducktor 的四套学生流程，必须项全过；建议项里有一条没过：参考文献没给链接（10-26 只重跑了 survey 这一段，这一条过了）。运行里模型起的真子代理都没拿到开场说明；调低压缩阈值后，对话压缩掉开场说明，插件在下一步补发了。
+- 没验证：rc.3 和 `deepseek-v4-pro` 上的真模型流程，真模型结果的波动（每套只跑了一次）；10-27 同步以后的真模型流程（这次同步改了规则和命令的内容，不只是名字：菜单、`/duck-why`、名家文章的转述）；红队改过的 11 张卡还没被真模型读过；Desktop（只有 macOS、Windows 版，我们只在 Linux 上测过）；插件页的点击流程本身（测的是它调用的后端接口），插件的「配置」页也没看过；模型换了工作目录后照不照附注里的路径读写 `.duck/`（流程里模型没换过目录）。
 
 ## 常见问题
 
@@ -205,7 +207,7 @@ Desktop 用户不要用这种方式：这一行对 Desktop 也生效，会盖过
 插件自己不发网络请求，页签只读项目里的本地文件。AI 读到的内容照常发给模型。`/duck-survey`、`/duck-idea` 这类命令会让 AI 上网查文献；Ducktor 开着或你敲命令时，AI 给论文、数据集附的链接也要上网查。
 
 **以前叫什么？**
-2026-10-26 以前它叫 deepseek-ducktor。`evals/runs/` 和 `docs/验证记录.md` 里那天以前的记录保留了旧名字。
+2026-10-27 以前叫 deepseek-supervisor，10-26 以前叫 deepseek-ducktor；里面的 Ducktor 那时叫 Doctor Duck。`evals/runs/` 和 `docs/验证记录.md` 里的旧记录保留了当时的名字。装过旧版本的，先卸掉再装，见「安装」。
 
 ## 许可
 

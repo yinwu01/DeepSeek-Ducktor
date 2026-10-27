@@ -1,12 +1,15 @@
 #!/usr/bin/env node
 // End-to-end run of a grad student's session with Ducktor in DeepSeek Harness, on a real
 // DeepSeek model. Ported from Ducktor's tests/e2e/flow.js at the commit in duck.lock.json:
-// the stages and checks are the same; what changed is how the host runs, how its output is
-// read, and where the injected context is found. Code here is MIT. It costs real tokens.
+// the stages and checks are the same, plus a few for what only this plugin does (the context
+// can carry the rules, .duck/background.md, the extra cards in mentor/ count as sources); what
+// changed is how the host runs, how its output is read, and where the injected context is
+// found. Code here is MIT. It costs real tokens.
 //
 //   node tests/e2e/flow.cjs          main flow: idle, menu, on, idea, review, propose, why,
 //                                    quiet, card, learn, off
-//   node tests/e2e/flow.cjs more     survey, outline, intro, write, figure, vibe and notes
+//   node tests/e2e/flow.cjs more     survey (then /duck-why on it), outline, intro, write,
+//                                    figure, vibe and notes
 //   node tests/e2e/flow.cjs loop     /duck picking a command, old notebook entries coming
 //                                    back, a free conversation about a single-run result,
 //                                    and 「这类我懂了」
@@ -237,12 +240,118 @@ const duckSnapshot = () => {
 // The short why after a command: a quote line that is bold from end to end, and a quote line
 // starting with 下次. The original skills quote sentences too, so neither alone is enough.
 const WHY_BLOCK = { test: (s) => /^[ \t]*>\s*\*\*[^\n]+\*\*\s*$/m.test(s) && /^[ \t]*>\s*下次/m.test(s) };
+// The duck's closing blockquote: the last run of > lines that holds a 下次 line.
+// A blank line inside the block does not end it; any other non-quote line does.
+const lastWhy = (s) => {
+  const blocks = [];
+  let cur = [];
+  for (const l of s.split('\n')) {
+    if (/^[ \t]*>/.test(l)) cur.push(l);
+    else if (!l.trim() && cur.length) continue;
+    else if (cur.length) { blocks.push(cur.join('\n')); cur = []; }
+  }
+  if (cur.length) blocks.push(cur.join('\n'));
+  return blocks.filter((b) => /^[ \t]*>\s*下次/m.test(b)).at(-1) || '';
+};
+// A step of the wrapped skill given as the reason, e.g. 这是原技能 Step 0 的要求. Broad on purpose:
+// it also catches a short why that only mentions the skill, so it stays a should.
+const PROCEDURE_REASON = /原技能[^\n。]{0,24}(要求|规定|规则|说明|标准)|[按照依]原技能|技能(的)?要求|Step ?\d|SKILL\.md|references\/|\.md ?第 ?\d/;
+// Saying where the duck departed from the skill is wanted: 原技能写 X，我降成 MAJOR，因为……
+const DEPARTS = /我(降|改|没照|没按|放宽|收紧)|但我|不照/;
+const procedureReason = (why) => why.split(/[。；\n]/).some((c) => PROCEDURE_REASON.test(c) && !DEPARTS.test(c));
+const shortWhyChecks = () => [
+  ['should', 'the short why gives a reason, not a step of the skill', (t) => lastWhy(t.reply) && !procedureReason(lastWhy(t.reply))],
+  ['should', 'the short why has no labels like 为什么这么做：', (t) => lastWhy(t.reply) && !/^[ \t]*>\s*\**(为什么这么做|为什么|取舍|依据|你能带走的一条|下次自己先做什么|下次自己先做)\**[：:]/m.test(lastWhy(t.reply))],
+  ['must', 'every Latin name the short why reports as saying something is in the plugin or the project', (t) => unknownSpeakers(lastWhy(t.reply)).length === 0],
+  // The short why is short, so any capitalized name in it is checked, not only in reported speech.
+  ['should', 'every Latin name in the short why is in the plugin or the project', (t) => unknownSpeakers(lastWhy(t.reply), true).length === 0],
+];
 // What quiet must not show: the 下次 line or a decision line inside a quote.
 const DUCK_QUOTE = /^[ \t]*>\s*(下次|▸ ?决策)/m;
 // The principle part of a notebook line: between the first ｜ and ｜这次 (or the end).
 const principleOf = (l) => l.split('｜')[1] || l;
-// 「最小测试」is a minimal test run, not a quiz.
-const QUIZ = /考考你|(?<!最)小测|测验|测一测|思考题|练习题|课后作业|留个作业|布置.{0,4}作业|给你打分|打几分|你的得分|成长档案/;
+// 「最小测试」「小测试」are test runs, not a quiz.
+const QUIZ = /考考你|(?<!最)小测(?!试)|测验|测一测|思考题|练习题|课后作业|留个作业|布置.{0,4}作业|给你打分|打几分|你的得分|成长档案/;
+// /duck-why talks like a mentor and grounds the lesson in named researchers. Names and views may
+// only come from the plugin's cards (MENTORS.md and mentor/cards included), handbook and original
+// skills, or from the student's own project (paper authors, the survey report, background.md),
+// not from what the duck wrote while explaining. In every sentence of the reply
+// that reports what someone said or thinks, each Latin name must appear in one of those, so a
+// made-up authority fails. Multi-word names must match in full.
+const textUnder = (dir, ext, skip = () => false) => {
+  const out = [];
+  const walk = (d) => {
+    if (!fs.existsSync(d)) return;
+    for (const e of fs.readdirSync(d, { withFileTypes: true })) {
+      const p = path.join(d, e.name);
+      if (skip(p)) continue;
+      if (e.isDirectory()) { if (e.name !== '.git') walk(p); } else if (ext.test(e.name)) out.push(fs.readFileSync(p, 'utf8'));
+    }
+  };
+  walk(dir);
+  return out.join('\n');
+};
+// What the duck itself writes while explaining (why and learn reports, the notebook, decision
+// lines) holds the same names as the reply, so it cannot count as a source.
+const DUCK_OWN = (p) => /[\\/]\.duck[\\/](notebook|decisions)\.md$|[\\/]\.duck[\\/]reports[\\/][^\\/]*-(why|learn)(-\d+)?\.md$/.test(p);
+const PLUGIN_TEXT = [...['cards', 'handbook', 'library'].map((d) => path.join(ROOT, d)), path.join(REPO, 'mentor')]
+  .map((d) => textUnder(d, /\.(md|txt|json|ya?ml)$/)).join('\n');
+const allowedText = () => `${PLUGIN_TEXT}\n${textUnder(PROJECT, /\.(md|tex|bib|py|txt)$/, DUCK_OWN)}`;
+const NOT_PEOPLE = new Set(['Deep', 'Learning', 'Tuning', 'Playbook', 'Harvard', 'NeurIPS', 'CommKit', 'EECS', 'Comm', 'Lab', 'MIT', 'III']);
+// Researchers the reply may name: full names and surnames from MENTORS.md and the cards' sources.
+const MENTOR_NAMES = (() => {
+  const names = new Set(['Guo']);
+  const take = (cell) => {
+    for (const m of cell.replace(/（[^）]*）/g, '').matchAll(/[A-Z][A-Za-zé'.-]+(?: [A-Z][A-Za-zé'.-]+)*/g)) {
+      names.add(m[0]);
+      const last = m[0].split(' ').pop();
+      if (!NOT_PEOPLE.has(last)) names.add(last === 'III' ? m[0] : last);
+    }
+  };
+  for (const line of fs.readFileSync(path.join(ROOT, 'cards', 'MENTORS.md'), 'utf8').split('\n')) {
+    if (/^\| [^|-]/.test(line)) take(line.split('|')[1]);
+  }
+  for (const dir of [path.join(ROOT, 'cards'), path.join(REPO, 'mentor', 'cards')]) {
+    for (const f of fs.readdirSync(dir).filter((x) => /^[A-Z]\d{2}\.md$/.test(x))) {
+      const m = fs.readFileSync(path.join(dir, f), 'utf8').match(/^sources: \[(.*)\]$/m);
+      if (m) take(m[1]);
+    }
+  }
+  for (const n of NOT_PEOPLE) names.delete(n);
+  return names;
+})();
+const SPEECH = /说|认为|主张|提醒|建议|强调|提出|指出|提到|写过|写道|讲过|讲的是|批评|觉得|看来|观点|看法/;
+// The host and the plugin's own names are not authorities.
+const HOSTS = new Set(['AI', 'Claude', 'Codex', 'GPT', 'ChatGPT', 'Doctor', 'Duck', 'Ducktor',
+  'DeepSeek', 'DeepSeek Harness', 'Harness', 'DeepSeek-Doctor']);
+const unknownSpeakers = (reply, everySentence = false) => {
+  const allowed = allowedText();
+  const out = [];
+  for (const sentence of reply.split(/[。；！？\n]/)) {
+    if (!everySentence && !SPEECH.test(sentence)) continue;
+    // Words ending in a lower-case letter: names, not acronyms like AC or KV.
+    for (const m of sentence.matchAll(/[A-Z][A-Za-zé'.-]*[a-zé](?: [A-Z][A-Za-zé'.-]*[a-zé])*/g)) {
+      if (!HOSTS.has(m[0]) && !allowed.includes(m[0])) out.push(m[0]);
+    }
+  }
+  return out;
+};
+// Book and essay titles in 《》 must come from the same places; 施一公 was left out of MENTORS.md
+// because his talk could not be read first-hand.
+const unknownTitles = (reply) => {
+  const allowed = allowedText();
+  return [...reply.matchAll(/《([^》]+)》/g)].map((m) => m[1]).filter((t) => !allowed.includes(t)).concat(/施一公/.test(reply) ? ['施一公'] : []);
+};
+const OLD_OR_NEW_LABELS = /^[ \t]*>\s*\**(用的思路|要核对的话|放弃了什么|这次的过程|为什么|名家怎么看|回到这次|新手常怎么做|有经验的人怎么想|最值得学的|你能带走的一条|过程还原)\**[：:]/m;
+const whyChecks = () => [
+  ['must', 'says the account of this step is a reconstruction, not a replay', (t) => /不是 ?AI ?内部过程的回放/.test(t.reply)],
+  ['should', 'one blockquote with an all-bold line and a 下次 line', (t) => WHY_BLOCK.test(t.reply)],
+  ['should', 'no section labels like 用的思路： or 名家怎么看：', (t) => !OLD_OR_NEW_LABELS.test(t.reply)],
+  ['should', 'names a researcher or says it is its own judgment', (t) => [...MENTOR_NAMES].some((n) => t.reply.includes(n)) || /陈天奇|自己的判断/.test(t.reply)],
+  ['must', 'every Latin name it reports as saying something is in the plugin or the project', (t) => unknownSpeakers(t.reply).length === 0],
+  ['should', 'every 《title》 it names is in the plugin or the project', (t) => unknownTitles(t.reply).length === 0],
+  ['must', 'wrote a why report', () => reports('why').length > 0],
+];
 
 // Each stage: name, prompt, resume (continue the session), optional search and timeout, and
 // checks. A check is [severity, label, fn(transcript, before)] where severity is must or should.
@@ -266,6 +375,7 @@ function mainStages() {
       ['must', 'says the duck is not on in this project', (t) => /(没|未)[^\n]{0,8}开启|还没开|没在这个项目/.test(t.reply.replace(/\*/g, ''))],
       ['must', 'the menu did not turn it on', () => !switchIs('on')],
       ['must', 'hook injected the plugin root', (t) => /插件根目录/.test(t.injected)],
+      ['should', 'no quack and no 鸭子: an advisor does not talk like that', (t) => !/quack|鸭子|嘎/i.test(t.reply)],
     ] },
     // Turning it on mid-session: the rules were not injected at session start, so the AI reads them
     // now. In dsh the next step after config.md changes also carries them (a replacement context),
@@ -274,28 +384,27 @@ function mainStages() {
       ['must', 'config says on', () => switchIs('on')],
       ['must', 'read the resident rules this turn, or the context brought them', (t) => t.reads.some((r) => r && /rules\/core\.md|\.duck\/skills\/core\.md/.test(r))
         || /# Ducktor 常驻规则/.test(t.injected)],
+      ['should', 'no quack and no 鸭子: an advisor does not talk like that', (t) => !/quack|鸭子|嘎/i.test(t.reply)],
     ] },
     { name: 'idea', resume: true, prompt: `${cmd('duck-idea')} 我想做长文本推理加速：用块均值估计注意力里每一对 64 token 的块贡献多大，贡献很小的整块跳过。目标是 7B 模型在 LongBench 上省 30% 以上时间、准确率不掉。对手是 token 级剪枝和稠密注意力。现有结果在 notes.md 里。`, checks: [
       ['must', 'read library/idea-evaluator', (t) => readOf(t, 'idea-evaluator')],
       ['must', 'wrote an idea report', () => reports('idea').length > 0],
       ['must', 'notebook got a line', () => /评估 idea|idea/.test(text('notebook.md'))],
       ['should', 'reply has the why block', (t) => WHY_BLOCK.test(t.reply)],
+      ...shortWhyChecks(),
     ] },
     { name: 'review', resume: true, prompt: `${cmd('duck-review')} paper/main.tex`, checks: [
       ['must', 'read library/pre-submission-reviewer', (t) => readOf(t, 'pre-submission-reviewer')],
       ['must', 'wrote a review report', () => reports('review').length > 0],
       ['must', 'caught the single-run claim', (t) => /seed|种子|单次|一次|方差|标准差/.test(t.reply)],
       ['should', 'caught the em-dash', (t) => /em-dash|破折号|em dash/i.test(t.reply)],
+      ...shortWhyChecks(),
     ] },
     { name: 'propose', resume: true, prompt: '帮我把 paper/main.tex 摘要的第一句改得更紧凑一点。', before: () => text('notebook.md'), checks: [
       ['must', 'names /duck-polish in the reply', (t) => /duck-polish/.test(t.reply)],
       ['should', 'a one-sentence edit adds no notebook line', (t, before) => text('notebook.md') === before],
     ] },
-    { name: 'why', resume: true, prompt: cmd('duck-why'), checks: [
-      ['must', 'says it is a reconstruction, not a replay', (t) => /不是 ?AI ?内部过程的回放/.test(t.reply)],
-      ['should', 'the breakdown is a blockquote', (t) => /^[ \t]*>[^\n]*用的思路/m.test(t.reply)],
-      ['must', 'wrote a why report', () => reports('why').length > 0],
-    ] },
+    { name: 'why', resume: true, prompt: cmd('duck-why'), checks: whyChecks() },
     { name: 'quiet', resume: true, prompt: `${cmd('duck')} quiet`, checks: [
       ['must', 'config says quiet', () => switchIs('quiet')],
     ] },
@@ -343,6 +452,7 @@ function moreStages() {
     ['must', `read library/${skill}`, (t) => readOf(t, skill)],
     ['must', `wrote a ${short} report`, () => reports(short).length > 0],
     ['should', 'reply has the why block', (t) => WHY_BLOCK.test(t.reply)],
+    ...shortWhyChecks(),
     ['should', 'shows a card reminder with a plugin card number', (t) => /卡片提醒/.test(t.reply + newestReport(short))
       && cardIds(t.reply + newestReport(short)).some((id) => PLUGIN_CARDS.has(id))],
     ...extra,
@@ -355,6 +465,8 @@ function moreStages() {
       ['should', 'cites checkable sources', (t) => /arxiv\.org|doi\.org|\b\d{4}\.\d{4,5}\b/i.test(t.reply + newestReport('survey'))],
       ['should', 'wrote .duck/background.md with links', () => /https?:\/\//.test(text('background.md'))],
     ], { search: true, timeout: 1800000 }),
+    // The case students ask about most: what to learn from how the AI searched.
+    { name: 'survey-why', resume: true, prompt: cmd('duck-why'), checks: whyChecks() },
     wrapped('duck-outline', 'outline', 'tech-paper-template', 'paper/main.tex', [
       ['should', 'says it uses the technical-paper template', (t) => /技术论文|tech-paper-template/.test(t.reply)],
     ]),
@@ -444,12 +556,9 @@ function paperStages() {
       ['must', 'wrote a review report', () => reports('review').length > 0],
       ['should', 'grades issues CRITICAL / MAJOR / MINOR', (t) => /CRITICAL|MAJOR|MINOR/.test(t.reply)],
       ['should', 'reply has the why block', (t) => WHY_BLOCK.test(t.reply)],
+      ...shortWhyChecks(),
     ] },
-    { name: 'why', resume: true, prompt: cmd('duck-why'), checks: [
-      ['must', 'says it is a reconstruction, not a replay', (t) => /不是 ?AI ?内部过程的回放/.test(t.reply)],
-      ['should', 'the breakdown is a blockquote', (t) => /^[ \t]*>[^\n]*用的思路/m.test(t.reply)],
-      ['must', 'wrote a why report', () => reports('why').length > 0],
-    ] },
+    { name: 'why', resume: true, prompt: cmd('duck-why'), checks: whyChecks() },
     { name: 'learn-ask', resume: true, prompt: cmd('duck-learn'), checks: [
       ['must', 'opens with the one question', (t) => /最想重来/.test(t.reply)],
     ] },
@@ -482,6 +591,15 @@ function globalChecks(transcripts) {
     ['should', 'new notebook lines say what happened this time (｜这次：)', () => { const fresh = notebook.filter((l) => !LOOP_NOTEBOOK.includes(l)); return (fresh.length > 0 || FLOW === 'loop') && fresh.every((l) => /｜这次[:：]/.test(l)); }],
     ['must', 'no bold marks in notebook lines', () => !/\*\*/.test(text('notebook.md'))],
     ['must', 'no em-dash in notebook or decisions', () => !/\u2014/.test(text('notebook.md') + text('decisions.md'))],
+    // A card number in every short why is the old 原技能要求 crutch with a new name.
+    ['should', 'no card number appears in more than half of the short whys', () => {
+      const whys = transcripts.map((t) => lastWhy(t.reply)).filter(Boolean);
+      if (whys.length < 3) return true;
+      const ids = new Set(whys.flatMap(cardIds));
+      return [...ids].every((id) => whys.filter((w) => cardIds(w).includes(id)).length * 2 <= whys.length);
+    }],
+    // Most notebook lines are written by the AI; quoting one as the student's own is wrong.
+    ['should', 'does not credit a notebook line to the student (你 MM-DD 记下的)', () => transcripts.every((t) => !/你 ?\d{2}-\d{2} ?记下的/.test(t.reply))],
     ['must', 'no quizzes, homework or scoring the student', () => transcripts.every((t) => !QUIZ.test(t.reply))],
     ['must', 'every card number the replies cite exists', () => {
       const group = fs.existsSync(duckFile('cards')) ? fs.readdirSync(duckFile('cards')).map((f) => f.slice(0, 3)) : [];

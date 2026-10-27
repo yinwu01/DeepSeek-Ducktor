@@ -150,6 +150,11 @@ describe('when a step gets the context', () => {
     const out = withContext(proceed([studentMessage]), { agent, messages: [studentMessage] }, { root: ROOT, project: dir, makeMessage })
     assert.equal(out.messages[1].content[0].text, frameContext(current.body, true))
   })
+  test('a context from before the rename (kind doctor-duck) is replaced, not given again as new', () => {
+    const agent = fakeAgent([{ source: { kind: 'doctor-duck', identity: 'old' } }])
+    const out = withContext(proceed([studentMessage]), { agent, messages: [studentMessage] }, { root: ROOT, project: dir, makeMessage })
+    assert.equal(out.messages[1].content[0].text, frameContext(current.body, true))
+  })
   test('dropped by compaction (not on the surface any more): added again as new', () => {
     const agent = fakeAgent([{ source: { kind: 'user' } }])
     const out = withContext(proceed([studentMessage]), { agent, messages: [studentMessage] }, { root: ROOT, project: dir, makeMessage })
