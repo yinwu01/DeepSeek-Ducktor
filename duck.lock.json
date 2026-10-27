@@ -3,9 +3,9 @@
   "source": {
     "repository": "JoeyWu-tech/Ducktor",
     "ref": "journey-fixes",
-    "commit": "65500ede396672e9f373dc33c153148d21e6f6f2",
-    "committedAt": "2026-10-27T11:35:18-07:00",
-    "subject": "Second red-team pass: true append-only check, session root first, scope line"
+    "commit": "e15ec11566406a746656a93c7bae1ec385a6321e",
+    "committedAt": "2026-10-27T11:52:02-07:00",
+    "subject": "Drop 「回复从结果说起」: it fought /duck's 「先说一句按哪条处理」"
   },
   "paths": [
     "bin",
@@ -165,7 +165,7 @@
     "package.json": "2441f16fd5187d60814f193269aa8539c4716bc636f287cadcbf2ea0221f3d55",
     "rules/agents-header.md": "884face832b703c51158da31e2da6ebf833cd308e39070b9fcfdf3f5110a7283",
     "rules/commands.json": "e5dd738d985ebec7c4891b39c719a9a75a39b93184cfb0e48223d26f16ca3819",
-    "rules/core.md": "6433e3a8580d2d785a737bf0d88edb3dddf0cc501acaa30cfea81000f5dcbb0c",
+    "rules/core.md": "d4c4946df4956cace12642fa81639b1b24bad5af708e2aa5a56944d9a10fbcc9",
     "rules/idle.md": "b3aeac1a51165fd10fffe6dd289d1ae19c1bb2025e5ea3a791a9cdb08a73e1c5",
     "rules/off.md": "7ada3779ccd5d3488d12cd3cc3c615e19b7e4dbe6a627b8b007868233b958b00",
     "rules/wrapper-template.md": "81cad586ad260b077e04aa6ca758cc52ce9daafb8ce242362d8acb2e5ac55a33",
