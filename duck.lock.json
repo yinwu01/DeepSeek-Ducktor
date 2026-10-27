@@ -3,9 +3,9 @@
   "source": {
     "repository": "JoeyWu-tech/Ducktor",
     "ref": "journey-fixes",
-    "commit": "e15ec11566406a746656a93c7bae1ec385a6321e",
-    "committedAt": "2026-10-27T11:52:02-07:00",
-    "subject": "Drop 「回复从结果说起」: it fought /duck's 「先说一句按哪条处理」"
+    "commit": "007df8e5f41253f91aa865f6619eedf031559e9f",
+    "committedAt": "2026-10-27T12:31:09-07:00",
+    "subject": "Revert the no-fabrication rule from f0724a8: it pushed out notebook reuse"
   },
   "paths": [
     "bin",
@@ -164,8 +164,8 @@
     "LICENSES/README.md": "8d8ecb78e688e77e0edbc2301ee9526388a72ba98acb9c4d98a910bbd438ae45",
     "package.json": "2441f16fd5187d60814f193269aa8539c4716bc636f287cadcbf2ea0221f3d55",
     "rules/agents-header.md": "884face832b703c51158da31e2da6ebf833cd308e39070b9fcfdf3f5110a7283",
-    "rules/commands.json": "e5dd738d985ebec7c4891b39c719a9a75a39b93184cfb0e48223d26f16ca3819",
-    "rules/core.md": "d4c4946df4956cace12642fa81639b1b24bad5af708e2aa5a56944d9a10fbcc9",
+    "rules/commands.json": "393fc13dac54f9727182f72b8b385c99b90870a42ba70f82a5e2ed5edd22e98d",
+    "rules/core.md": "baf873781b58d45a26d397cc4e50772c6a0b4f2acf222a084a792886dcae74fb",
     "rules/idle.md": "b3aeac1a51165fd10fffe6dd289d1ae19c1bb2025e5ea3a791a9cdb08a73e1c5",
     "rules/off.md": "7ada3779ccd5d3488d12cd3cc3c615e19b7e4dbe6a627b8b007868233b958b00",
     "rules/wrapper-template.md": "81cad586ad260b077e04aa6ca758cc52ce9daafb8ce242362d8acb2e5ac55a33",
@@ -176,13 +176,13 @@
     "skills/duck-idea/agents/openai.yaml": "8410d0ecad9d861338395d585173b7527e9189c6582909c83fe6b937d003671c",
     "skills/duck-idea/SKILL.md": "9968a7a233bba462b4a28966d39f9edc4d80f4ab3769271f6600febce13e2ee5",
     "skills/duck-intro/agents/openai.yaml": "c0066741eaed62578e7d25b114043bd139b5898514d3cde8c216d4918bc27119",
-    "skills/duck-intro/SKILL.md": "0def2279df7849013f203cfb58e14dfe3029f74e2934f8bec7d41d673aa7026f",
+    "skills/duck-intro/SKILL.md": "e2433255f318faded2455890b3a47bb282a24105c28a3937b33c1a72ac6484bb",
     "skills/duck-learn/agents/openai.yaml": "6d2610fa9b993fd0867d0d3c5e7a4dd7b43b9a8d7b4a29a049531de82d89de77",
     "skills/duck-learn/SKILL.md": "b94ecb08fe74a5740470dbf6ecc8391587c804a7d02d14341986dd570106dd94",
     "skills/duck-notes/agents/openai.yaml": "15ff2cab6555b31f0b3b7f4a5d3a06cdd8a32b27deb1d4cfdbd1bd9ea2c1ee64",
     "skills/duck-notes/SKILL.md": "e2842bd1b25f48c29dc94706652aff5d31d65204609250001494dc6eb324ee2e",
     "skills/duck-outline/agents/openai.yaml": "299659fbb05a1000afa26919b226bb7b424daecaa61bcd2c3cf4b7507e5d32d4",
-    "skills/duck-outline/SKILL.md": "841044df13d88cad6ae5ceb31f73ecabf355743c34ad350d10eda6fab84ad0eb",
+    "skills/duck-outline/SKILL.md": "1587ca2ceee43301d02b57324fd58e97792a68d5076c8d76296c0ab52fd3a3e2",
     "skills/duck-polish/agents/openai.yaml": "a8ad4c0ae53088d07366f67b6f61bf587850976001b66b623aac6e09edcf07fa",
     "skills/duck-polish/SKILL.md": "20e85959fd304201fa4b6222764e08df7330d394571b7b33d0a59f17052e6c8c",
     "skills/duck-review/agents/openai.yaml": "e7122bd1e49db76d1f96f8fd3aaede806ec8764bf6810d062c2b61f27a70d6a3",
@@ -196,7 +196,7 @@
     "skills/duck-why/agents/openai.yaml": "a37486c1baffbfa56ad2d5f702ac91c8c3fa3001fe6aecb8118489b13f4b3b7b",
     "skills/duck-why/SKILL.md": "91217d4d78780b57e82fb50898bdcf51e0da017146ef810e954fdc9ccba791f0",
     "skills/duck-write/agents/openai.yaml": "33d4933649c778635d7b96ad41fd72602ed6e32fe9a8f1587c228c76c4fa6d9c",
-    "skills/duck-write/SKILL.md": "ee1c49a2338640061e3125fc55d20ae077ff0e9d137a01e5397ab8e11f47619e"
+    "skills/duck-write/SKILL.md": "01780afd083313531849f02b6aac7f1412e28430146a80870894ebbcec2bf572"
   },
   "fixture": "tests/fixtures/grad-project",
   "fixtureFiles": {
