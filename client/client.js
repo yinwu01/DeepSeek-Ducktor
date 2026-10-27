@@ -24,8 +24,10 @@ const REPORTS = '.duck/reports'
 
 // ---------------------------------------------------------------- parsing (pure)
 
-const TAG = /（([^（）]*定[^（）]*)）\s*$/
+// The 「谁定的」 tag at the end of a decision: （你定）、（AI 定） or, in English, (you decided).
+const TAG = /[（(]([^（）()]*(?:定|decided)[^（）()]*)[）)]\s*$/i
 const CARD_REF = /\b[A-Z]\d{2}\b/g
+const CJK = /[\u3400-\u9fff]/
 const URL_RE = /https?:\/\/[^\s）)，。；、<>"']+/g
 
 function bullets(text) {
@@ -55,21 +57,21 @@ function whoOf(tag) {
   return 'other'
 }
 
-/** decisions.md: one decision per segment when every 「；」 segment carries its own tag. Newest line first. */
+/** decisions.md: one decision per segment when every 「；」 (or "; ") segment carries its own tag. Newest line first. */
 function parseDecisions(text) {
   const lines = []
   for (const line of bullets(text)) {
     const out = []
     lines.unshift(out)
-    const match = /^(\d{4}-\d{2}-\d{2}|\d{1,2}-\d{1,2})?\s*(?:▸\s*)?(?:决策[：:]\s*)?([\s\S]*)$/.exec(line)
+    const match = /^(\d{4}-\d{2}-\d{2}|\d{1,2}-\d{1,2})?\s*(?:▸\s*)?(?:(?:决策|decision)[：:]\s*)?([\s\S]*)$/i.exec(line)
     const date = match[1] ?? ''
     const body = match[2].trim()
-    const segments = body.split('；').map(segment => segment.trim()).filter(Boolean)
+    const segments = body.split(/；|;\s+/).map(segment => segment.trim()).filter(Boolean)
     const each = segments.length > 1 && segments.every(segment => TAG.test(segment))
     for (const segment of each ? segments : [body]) {
       const tagMatch = TAG.exec(segment)
       const tag = tagMatch === null ? '' : tagMatch[1]
-      out.push({ date, text: tagMatch === null ? segment : segment.slice(0, tagMatch.index).trim(), tag, who: whoOf(tag), editable: /你可改/.test(tag) })
+      out.push({ date, text: tagMatch === null ? segment : segment.slice(0, tagMatch.index).trim(), tag, who: whoOf(tag), editable: /你可改|学生可改|you can change/i.test(tag) })
     }
   }
   return lines.flat()
@@ -87,7 +89,9 @@ function parseNotebook(text) {
     const head = /^(\d{4}-\d{2}-\d{2}|\d{1,2}-\d{1,2})?\s*(.*)$/.exec(parts[0].trim())
     let principle = parts[1].trim()
     let source = ''
-    const sourceMatch = /[（(]([^（）()]*)[）)]\s*$/.exec(principle)
+    // A full-width （出处） first; a half-width (source) only on an English line, where one
+    // level of nesting is allowed: (card E05 (seeds)).
+    const sourceMatch = /（([^（）]*)）\s*$/.exec(principle) ?? (CJK.test(principle) ? null : /\(((?:[^()]|\([^()]*\))*)\)\s*$/.exec(principle))
     if (sourceMatch !== null) {
       source = sourceMatch[1]
       principle = principle.slice(0, sourceMatch.index).trim()
@@ -98,8 +102,8 @@ function parseNotebook(text) {
   return out.reverse()
 }
 
-const CHECK_HEADING = /核对|自己先做|导师会盯|交给 ?AI ?的判断/
-const CARD_HEADING = /卡片提醒/
+const CHECK_HEADING = /核对|自己先做|导师会盯|交给 ?AI ?的判断|\bcheck|\bverify|yourself|advisor/i
+const CARD_HEADING = /卡片提醒|\bcards?\b/i
 
 /** One report: its title, its check sections, and the cards its 卡片提醒 section names. */
 function parseReport(text) {

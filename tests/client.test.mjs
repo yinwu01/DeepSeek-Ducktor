@@ -107,6 +107,32 @@ describe('model and view', () => {
     assert.ok(model.cards.some(card => card.id === 'E02'))
     assert.equal(model.latestChecks.name, reports.find(r => parseReport(r.text).checks.length > 0).name)
   })
+  test('English decision lines carry who decided', () => {
+    const lines = parseDecisions([
+      '- 2026-10-27 ▸ Decision: seeds 1→3, not a single run (you decided)',
+      '- 2026-10-27 ▸ Decision: report mean ± std, not the best run (AI decided)',
+      '- 2026-10-27 ▸ Decision: keep τ fixed (you decided); drop the 64k row (AI decided, you can change)',
+    ].join('\n'))
+    assert.equal(lines.map(d => d.who).join(','), 'student,ai,ai,student') // newest line first
+    assert.ok(lines.every(d => !/^Decision/i.test(d.text)), lines.map(d => d.text).join(' | '))
+    assert.equal(lines.find(d => d.text.startsWith('seeds')).text, 'seeds 1→3, not a single run')
+    assert.equal(lines.filter(d => d.editable).length, 1)
+  })
+  test('Chinese notebook lines with half-width brackets keep their source', () => {
+    const [nested] = parseNotebook('- 10-20 摸方向｜先找最接近的前作再定空白（参照 Hamming (1986) You and Your Research）｜这次：E07 那篇')
+    assert.equal(nested.principle, '先找最接近的前作再定空白')
+    assert.equal(nested.source, '参照 Hamming (1986) You and Your Research')
+    const [plain] = parseNotebook('- 10-21 做实验｜先在小模型上复现 (Qwen2.5-7B)｜这次：主表')
+    assert.equal(plain.principle, '先在小模型上复现 (Qwen2.5-7B)')
+    assert.equal(plain.source, '')
+    const [nestedEn] = parseNotebook('- 10-27 Experiments｜Compare gaps to the spread (card E05 (seeds))｜This time: 3 seeds')
+    assert.equal(nestedEn.source, 'card E05 (seeds)')
+  })
+  test('an English report shows its checks and cards', () => {
+    const report = parseReport('# Review\n\n## What you should check yourself\n- the 1.45× row\n\n## Card reminders\n- E05 a gap must beat the seed spread\n')
+    assert.equal(report.checks.length, 1)
+    assert.equal(report.cards.join(','), 'E05')
+  })
   test('an English notebook line splits the same way', () => {
     const [note] = parseNotebook('- 10-27 Experiments｜Report mean ± std over seeds (card E05, a gap must beat the seed spread)｜This time: 3 seeds for the tables')
     assert.equal(note.stage, 'Experiments')
