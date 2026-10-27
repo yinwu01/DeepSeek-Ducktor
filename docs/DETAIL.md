@@ -13,7 +13,7 @@ deepseek-supervisor is a community plugin. It is not made by DeepSeek and has no
 ## Use
 
 - Type `/` in the composer to see every `/duck-*` command. Start with `/duck`.
-- After installing, the duck is off in every project and speaks only when you run a `/duck-*` command.
+- After installing, the duck is not turned on in any project. It speaks only when you run a `/duck-*` command.
 - `/duck on` turns it on in this project: from then on it explains and logs decisions during ordinary work too.
 - `/duck quiet` keeps the explanations out of the conversation but still writes them to the notebook.
 - `/duck off` turns it off.

@@ -1,22 +1,80 @@
-# deepseek-supervisor
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/logo-dark.png">
+    <img src="assets/logo.png" width="220" alt="戴博士帽的像素小黄鸭，在终端里问 why?">
+  </picture>
+</p>
 
-> Trust me, I'm a Ducktor.
+<h1 align="center">deepseek-supervisor</h1>
 
-Doctor Duck（讲为什么的科研导师）的 DeepSeek Harness 原生插件。装上以后，在 DeepSeek Harness 的 Web、Desktop 和命令行里都能敲 `/duck-review` 这类命令；在开启了鸭子的项目里，每个会话都带着 Doctor Duck 的常驻规则。规则、命令和卡片是 Doctor Duck 的原文，和 Claude Code、Codex 用户拿到的是同一份。
+<p align="center">
+  <em>AI 做研究。鸭子讲为什么。道理你带走。</em>
+</p>
 
-在 Web 界面里，右侧边栏多一个「鸭子」页签（Desktop 用的是同一套网页界面，但这台机器没有 Desktop，没测过）：这次 AI 替你定了什么、你能带走的原则、该你亲手核对的地方、这个方向的背景、导师会提醒你的经验卡片，都摆在对话旁边。用 agent 做科研时一闪而过的判断，学生在这里能看见、能学到。插件在 Doctor Duck 的 23 张经验卡片之外另带 11 张（读论文、进新方向、实验习惯、和导师开会、用 AI 做研究和审稿的规矩），每张都写明出处，交付前另开两个模型会话当红队，逐条对过原文。
+<p align="center">
+  <sub>Trust me, I'm a Ducktor.</sub>
+</p>
 
-![「鸭子」页签](docs/images/sidebar.png)
+<p align="center">
+  <img src="https://img.shields.io/badge/works%20with-DeepSeek%20Harness-111111?style=flat-square" alt="Works with DeepSeek Harness">
+  <img src="https://img.shields.io/badge/license-MIT%20%C2%B7%20CC%20BY--NC--SA%204.0%20%C2%B7%20CC%20BY%204.0-111111?style=flat-square" alt="License: MIT, CC BY-NC-SA 4.0 and CC BY 4.0">
+</p>
 
-Doctor Duck 是什么、怎么用，见 [docs/DETAIL.zh.md](docs/DETAIL.zh.md)。这一页也是插件装好后在「插件」页里看到的详情（dsh 支持详情文档的版本才显示）。
+<p align="center">
+  <img src="assets/demo.zh-CN.gif" width="880" alt="示意动图，不是录屏。两个 DeepSeek Harness 对话窗口做同一件事：「实验都做完了，结果在 results/ 里。帮我写成一篇 NeurIPS 论文。」左边没有鸭子：AI 读完结果，写完 paper/main.tex，说都做完了，又说为了不夸大，消融只跑了一次，0.1 到 0.3 的差没下结论。你拿到一篇论文。右边装了这个插件，鸭子没在这个项目打开：同样写完以后，发 /duck 看到菜单，再发「/duck 可不可以告诉我这个内容里我要学什么？」鸭子说按复盘处理（/duck-learn），先问哪一步是你自己定的，你跳过。然后它讲本来想干什么、实际怎样、顶级导师会盯哪里。这篇是怎么写的：三条贡献是 AI 挑的，动笔之前，先把贡献写成一到三条（卡 W01）。怎么写好：AI 写明 0.1 到 0.3 的差不下结论，用词的强度，跟证据的强度对齐（卡 W11）。怎么让审稿人信服：英德上 base 只比 MoE 高 1.3，差距要大过种子间的波动（卡 E05）。鸭子没开，没有决策记录；看论文，贡献、措辞、跟谁比，都是 AI 定的。三条原则记进 .duck/notebook.md，右侧「鸭子」页签能看到。">
+</p>
 
-这是社区做的插件，不是 DeepSeek 官方出品，和 DeepSeek 公司没有关系。2026-10-26 以前它叫 deepseek-ducktor，`evals/runs/` 和 `docs/验证记录.md` 里那天以前的记录保留了旧名字。
+<p align="center">
+  <strong><a href="https://github.com/JoeyWu-tech/Doctor-Duck">Doctor Duck</a> 的 DeepSeek Harness 原生插件。</strong><br>
+  <strong>贡献怎么定、话说多满、跟谁比，AI 替你定了。鸭子把这些判断拆开，一条一条讲给你。</strong><br>
+  <strong>Web 界面里，鸭子讲到的原则和 AI 替你定的事，摆在对话旁边的「鸭子」页签里。</strong><br>
+  <sub>社区做的插件，不是 DeepSeek 官方出品，和 DeepSeek 公司没有关系。</sub>
+</p>
 
-## 要求
+<p align="center">
+  <sub>简体中文 &middot; <a href="docs/DETAIL.md">English overview</a></sub>
+</p>
 
-DeepSeek Harness 0.2.1-rc.2 及以上、0.3 以下（`package.json` 的 `engines.dsh`，dsh 安装时会检查）。
+---
+
+你认识它：程序员桌上那只黄色的橡皮鸭。程序出了 bug，你把代码一行一行讲给它听，讲着讲着，自己就找到了 bug。
+
+现在 AI 替你做研究，轮不到你讲了。Doctor Duck 反过来：鸭子把 AI 做过的判断讲给你听。这个插件把 [Doctor Duck](https://github.com/JoeyWu-tech/Doctor-Duck) 原样装进 DeepSeek Harness：Web 和命令行里都能敲 `/duck-review` 这类命令。规则、命令和卡片是 Doctor Duck 的原文，和 Claude Code、Codex 用户拿到的是同一份，固定在 Doctor Duck 的一个提交上（`duck.lock.json` 写着是哪个）。
+
+## 之前 / 之后
+
+你把实验结果交给 AI，让它写成论文。没有鸭子，AI 一口气写完。贡献怎么定、话说多满、拿什么比，这些判断都是 AI 做的。它也许在最后提几句，但不拆成道理，不给出处，也不记下来。
+
+装了插件，AI 照样写完。你发 `/duck`，后面直接接问题，比如 `/duck 可不可以告诉我这个内容里我要学什么？`。鸭子先说按哪条命令处理，再照那条命令讲；上面动图里，它挑的是复盘（`/duck-learn`）。讲到的原则记进 `.duck/notebook.md`，也出现在「鸭子」页签里。
+
+## 「鸭子」页签
+
+<p align="center">
+  <img src="docs/images/sidebar.png" width="720" alt="真实截图：DeepSeek Harness Web 界面右侧的「鸭子」页签。截图来自另一个项目（一个块稀疏注意力的 idea），不是动图里那篇论文。页签开着，能看到四块：这次 AI 替你定的，两条，模型把谁定的写成了「我定」，页签照原样标「没写清谁定的：我定」；可以带走的原则，一条，出处写着 five-dimensions 第 10 节和卡 E05；该你亲手核对的；领域背景，列着代表作和链接。导师会提醒你的在更下面。">
+</p>
+
+用 agent 做科研时，AI 一路替你做了很多判断，一闪就过去了。Web 界面右侧边栏的「鸭子」页签把它们摆在对话旁边。打开右侧边栏（右上角的按钮），在「开始」里选「鸭子」。页签读的是项目 `.duck/` 下的文件：
+
+| 页签里的一块 | 来自 |
+|---|---|
+| 这次 AI 替你定的 | `decisions.md`；标着「待你确认」的排最前，「AI 定」和「你定」分开标；写成别的（比如「我定」），照原样标「没写清谁定的」 |
+| 可以带走的原则 | `notebook.md`；每条带阶段、出处和「这次」 |
+| 该你亲手核对的 | `reports/` 里最近一份有核对段落的报告，可以点开整份 |
+| 领域背景 | `background.md`；第一次用 `/duck-survey`、`/duck-idea` 摸一个方向时写 |
+| 导师会提醒你的 | 最近几步点到的卡片（Doctor Duck 的 `cards/` 和本插件的 `mentor/cards/`） |
+| 报告 | `reports/` 里的报告，可以点开 |
+
+页签开着时每 4 秒看一次文件有没有变，变了就重画。它只读本地文件，不发模型请求。项目里没开鸭子时，页签告诉你怎么开。命令行（TUI、headless）里没有这个页签，`.duck/` 里的文件照样写。Desktop 用的是同一套网页界面，我们没在 Desktop 上测过。
+
+## 道理从哪来
+
+规则要求鸭子：讲道理时，名家和出处只从经验卡和科研手册（`handbook/`）的具体章节里取；找不到出处，就直说这是它自己的判断。
+
+经验卡有两组。Doctor Duck 带 23 张。这个插件另带 11 张（`mentor/cards/`），讲读论文、进新方向、实验习惯、和导师开会、用 AI 做研究和审稿的规矩。每张写明出处，附原文链接。写卡时对过原文，发布前又让两个独立的模型会话当红队逐条复核过（不是人工审）。
 
 ## 安装
+
+需要 DeepSeek Harness 0.2.1-rc.2 及以上、0.3 以下（`package.json` 的 `engines.dsh`，dsh 安装时会检查）。
 
 三种方式任选一种。项目里的 `.duck/` 是学生自己的记录，装、卸插件都不会动它。
 
@@ -55,6 +113,20 @@ Desktop 用户不要用这种方式：这一行对 Desktop 也生效，会盖过
 
 这一行和方式一、二装上的那一行 id 相同，会盖过它们，不会注册两遍。所以要改设置，也写在这一行里（见下一节）。
 
+### 装好以后
+
+开一个新会话（方式三要先重启 dsh，Desktop 要重新打开），在输入框里敲 `/`，能看到全部 14 条命令。从 `/duck` 开始：鸭子 quack 一声，列出菜单。
+
+刚装好时，鸭子在每个项目里都没开启，只在你敲 `/duck-*` 命令时说话。在一个项目里敲 `/duck on`，鸭子就在这个项目里一直跟着：
+
+- AI 做完一步实质性的工作，比如定了方法、改了实验、写完一段，鸭子在回复末尾讲一句为什么。
+- 会改变做法的决定，AI 动手之前先问你，一次最多问三件。
+- 有取舍时，鸭子记一行决策，写明是你定的还是 AI 定的。
+
+`/duck quiet` 照样先问、照样记，只是不在对话里讲。`/duck off` 关掉。
+
+全部命令和开关的说明见 [docs/DETAIL.zh.md](docs/DETAIL.zh.md)。
+
 ## 设置
 
 三项都可以不填。用方式一、二装的，在插件页插件的「配置」里改。用了方式三那一行的，改那一行的 `config:`；它优先级更高，插件页里改的会被它盖过（插件页会提示「被更高优先级的配置覆盖」）：
@@ -85,20 +157,6 @@ Desktop 用户不要用这种方式：这一行对 Desktop 也生效，会盖过
 | 读插件里的文件 | Claude Code 里插件给 Read、Glob、Grep 开了绿灯 | dsh 的每种沙箱模式都不拦读文件，不用学生批准；插件目录只读 |
 | 学生自己加的命令 | 放项目的 `.claude/skills/duck-xxx/` 或 `.agents/skills/duck-xxx/` | dsh 只读 `.agents/skills/`（和 `.dsh/skills/`），不读 `.claude/skills/`。名字别和插件的 14 条重复：dsh 里插件自带的技能优先级最低，同名的会盖过插件的命令 |
 | 项目目录 | 开场 hook 收到的目录 | 会话创建时的目录。开场说明里写明它和 `.duck/` 的绝对路径，让模型在会话里换了工作目录也读写原来的 `.duck/`（模型照不照做，没用真模型验证） |
-
-## 「鸭子」页签
-
-打开右侧边栏（右上角的按钮），在「开始」里选「鸭子」。页签读的是项目 `.duck/` 下的文件：
-
-| 页签里的一块 | 来自 |
-|---|---|
-| 这次 AI 替你定的 | `decisions.md`；标着「待你确认」的排最前，「AI 定」和「你定」分开标 |
-| 可以带走的原则 | `notebook.md`；每条带阶段、出处和「这次」 |
-| 该你亲手核对的 | `reports/` 里最近一份有核对段落的报告，可以点开整份 |
-| 领域背景 | `background.md`；第一次用 `/duck-survey`、`/duck-idea` 摸一个方向时写 |
-| 导师会提醒你的 | 最近几步点到的卡片（Doctor Duck 的 `cards/` 和本插件的 `mentor/cards/`） |
-
-页签开着时每 4 秒看一次文件有没有变，变了就重画；只读本地文件，不发模型请求。项目里没开鸭子时，页签告诉你怎么开。命令行（TUI、headless）里没有这个页签，`.duck/` 里的文件照样写。
 
 ## 怎么做的
 
@@ -132,14 +190,30 @@ Desktop 用户不要用这种方式：这一行对 Desktop 也生效，会盖过
 细节在 [docs/验证记录.md](docs/验证记录.md)。简单说：
 
 - 验证了：dsh 0.2.1-rc.2 和 rc.3 上三种安装方式都能装上、卸掉（卸掉后不再加载）；命令在 Web 和 headless 里都列出来、指向真实文件；开场说明和 Doctor Duck 开场 hook 的输出逐字相同，位置在学生消息之后、命令之前；续接会话不重复给，开关变了给替换的一份；照 dsh 建子代理会话的写法、用被测 dsh 的代码建出会话，插件认得出子代理（dsh 真建子代理时这么写，是读代码确认的）。
-- 真模型：在 dsh rc.2 上用 DeepSeek（默认的 `deepseek-flash`）跑完 Doctor Duck 的四套学生流程，36 个阶段、133 项检查过了 132 项，必须项全过，没过的是一条 should（参考文献没给链接）。运行里模型起的 3 个真子代理都没拿到开场说明；调低压缩阈值后，对话压缩掉开场说明，插件在下一步补发了。
-- 没验证：rc.3 和 `deepseek-v4-pro` 上的真模型流程，真模型结果的波动（每套只跑了一次）；Desktop（只有 macOS、Windows 版，这台机器是 Linux）；插件页的点击流程本身（测的是它调用的后端接口），插件的「配置」页也没看过；模型换了工作目录后照不照附注里的路径读写 `.duck/`（流程里模型没换过目录）。
+- 真模型：在 dsh rc.2 上用 DeepSeek（默认的 `deepseek-flash`）跑完 Doctor Duck 的四套学生流程，必须项全过；建议项里有一条没过：参考文献没给链接（10-26 只重跑了 survey 这一段，这一条过了）。运行里模型起的真子代理都没拿到开场说明；调低压缩阈值后，对话压缩掉开场说明，插件在下一步补发了。
+- 没验证：rc.3 和 `deepseek-v4-pro` 上的真模型流程，真模型结果的波动（每套只跑了一次）；改名以后的真模型流程（改名只动了名字）；Desktop（只有 macOS、Windows 版，我们只在 Linux 上测过）；插件页的点击流程本身（测的是它调用的后端接口），插件的「配置」页也没看过；模型换了工作目录后照不照附注里的路径读写 `.duck/`（流程里模型没换过目录）。
+
+## 常见问题
+
+**是 DeepSeek 官方的插件吗？**
+不是。这是社区做的插件，和 DeepSeek 公司没有关系。
+
+**和 Doctor Duck 是什么关系？**
+`duck/` 是 Doctor Duck 的原样拷贝，`duck.lock.json` 记着它来自哪个提交。这个插件加的是 DeepSeek Harness 的接入、「鸭子」页签和另带的 11 张卡。
+
+**会把我的东西发出去吗？**
+插件自己不发网络请求，页签只读项目里的本地文件。AI 读到的内容照常发给模型。`/duck-survey`、`/duck-idea` 这类命令会让 AI 上网查文献；鸭子开着或你敲命令时，AI 给论文、数据集附的链接也要上网查。
+
+**以前叫什么？**
+2026-10-26 以前它叫 deepseek-ducktor。`evals/runs/` 和 `docs/验证记录.md` 里那天以前的记录保留了旧名字。
 
 ## 许可
 
 - 插件代码（`index.js`、`lib/`、`client/`、`scripts/`、`tests/`）：MIT。
-- 文档和展示文字（`README.md`、`docs/`、`locale/`）和另带的经验卡片（`mentor/`）：CC BY-NC-SA 4.0，和 Doctor Duck 的文字一样（里面有改写自 Doctor Duck 的段落）。
+- 文档、展示文字和图（`README.md`、`docs/`、`locale/`、`assets/`、`icon.png`）和另带的经验卡片（`mentor/`）：CC BY-NC-SA 4.0，和 Doctor Duck 的文字一样（里面有改写自 Doctor Duck 的段落）。
 - `duck/`：Doctor Duck 原样拷贝，按它自己的 `duck/LICENSE` 分目录许可：文字（skills/、rules/、cards/、handbook/）是 CC BY-NC-SA 4.0，不可商用；`library/` 里的原技能各自保留原来的许可（CC BY 4.0 或 CC BY-NC-SA 4.0）；代码是 MIT。
 - Doctor Duck 改编自 [Supervisor-Skills](https://github.com/HKUSTDial/Supervisor-Skills)（骆昱宇及贡献者，CC BY-NC-SA 4.0）。
+- 动图左边滚过的 LaTeX 行，取自一次 Claude Code 运行写的论文；论文数字取自《Attention Is All You Need》（[arXiv 1706.03762](https://arxiv.org/abs/1706.03762)）的表 2 和表 3。
+- 截图里的 DeepSeek Harness 界面归其所有者，不在本许可内。
 
 详见 [LICENSE](LICENSE)。
