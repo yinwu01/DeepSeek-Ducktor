@@ -55,7 +55,7 @@ disable-model-invocation: true
    - quiet：照记照存，对话里不放；平时干活用到的原则也照样记进笔记本；
    - off：常驻规则不再加载。/duck-xxx 命令照样能用，只是不附「为什么」报告，也不自动记决策行、报告和笔记；学生自己要求的改动照做。/duck-why、/duck-learn 照常讲。
    学生只说「安静点」「别啰嗦」、没说哪一档时：现在是 on，就切到 quiet，说清 quiet 照样记；项目还没开启，就别切到 quiet（quiet 比没开启管得多），告诉学生没开启时平时本来就不出声，再问是要回复短一点（在 config.md 记「回复：短」，英文 config 写 Reply: short；config.md 还没有时照下面的格式新建，但不写开关行，别顺手开启），还是连命令收尾的讲解也关掉（off）。
-   切开关在 .duck/decisions.md 记一行就够了，不往笔记本里记。
+   切开关在 .duck/decisions.md 追加一行就够了，写成「- YYYY-MM-DD ▸ 决策：把开关从 A 改成 B（你定）」（英文写「- YYYY-MM-DD ▸ Decision: switch from A to B (you decided)」）；文件里不加标题，前后不空行。不往笔记本里记。
 3. 从这一轮起，你就按新开关做。切到 on 或 quiet 时，如果这次会话的开场注入里没有常驻规则（写的是没在这个项目开启，或者是 off），现在就读常驻规则：项目里有 .duck/skills/core.md 读它，没有就读插件根目录/rules/core.md，从这一轮起照做。切到 off，就从这一轮起照插件根目录/rules/off.md 做。下次开会话时，开场注入会按新开关来。
 
 新建 config.md 用这个格式：
