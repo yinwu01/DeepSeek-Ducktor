@@ -76,7 +76,7 @@
 
 需要 DeepSeek Harness 0.2.1-rc.2 及以上、0.3 以下（`package.json` 的 `engines.dsh`，dsh 安装时会检查）。
 
-三种方式任选一种。项目里的 `.duck/` 是学生自己的记录，装、卸插件都不会动它。
+三种方式任选一种。三种都是让 dsh 直接用你放仓库的那个文件夹，不复制：装好以后，这个文件夹别删、别挪，要挪就先卸载，挪完重装。项目里的 `.duck/` 是学生自己的记录，装、卸插件都不会动它。
 
 以前装过这个插件的旧版本（id 是 deepseek-supervisor，更早是 deepseek-ducktor），先照原来的方式把它卸掉，再照下面装：插件页点「卸载」；命令行是 `dsh plugin --profile <名字> remove <旧 id>`；方式三删掉旧 id 那一行。id 换了，不卸掉的话，dsh 会把新旧两个当成两个插件。
 
@@ -95,7 +95,7 @@ dsh plugin --profile web add /绝对路径/DeepSeek-Doctor
 dsh plugin --profile headless add /绝对路径/DeepSeek-Doctor
 ```
 
-每个 profile 单独装，需要 PATH 上有 `pnpm`。卸载把 `add /绝对路径/DeepSeek-Doctor` 换成 `remove deepseek-doctor`。
+每个 profile 单独装，需要 PATH 上有 `pnpm`。装的时候 pnpm 会打一段 `peerDependencies` 的 WARN，说这些包要从 dsh 那边找：插件运行时用的就是 dsh 自带的那几个包，这段警告可以不管。卸载把 `add /绝对路径/DeepSeek-Doctor` 换成 `remove deepseek-doctor`。
 
 Desktop 的 profile 名是 `desktop`：先打开一次 Desktop，完全退出，再用 Desktop 自带的 `dsh` 命令（Desktop 菜单「管理 dsh 命令…」可以把它注册到终端）运行 `dsh plugin --profile desktop add /绝对路径/DeepSeek-Doctor`，然后重新打开 Desktop。
 
@@ -117,11 +117,11 @@ Desktop 用户不要用这种方式：这一行对 Desktop 也生效，会盖过
 
 ### 装好以后
 
-开一个新会话，在输入框里敲 `/`，能看到全部 14 条命令。方式一装好就生效；方式二、方式三装好以后，先重启一次 dsh（Desktop 要重新打开）。从 `/duck` 开始，它会列出菜单。
+开一个新会话，在输入框里敲 `/`，能看到全部 14 条命令。方式一装好就生效；方式二、方式三装好以后，先重启一次 dsh（Desktop 要重新打开）。从 `/duck` 开始，它会列出菜单。命令行的 headless 没有输入框，也不用重启：到项目文件夹里直接跑 `dsh --profile headless "/duck"`。
 
 刚装好时，Ducktor 在每个项目里都没开启，只在你敲 `/duck-*` 命令时说话。在一个项目里敲 `/duck on`，它就在这个项目里一直跟着：
 
-- AI 做完一步实质性的工作，比如定了方法、改了实验、写完一段，Ducktor 在回复末尾讲一句为什么。
+- AI 做完一步实质性的工作，比如定了方法、改了实验、写完一段，Ducktor 在回复末尾用一两行讲为什么。
 - 会改变做法的决定，AI 动手之前先问你，一次最多问三件。
 - 有取舍时，Ducktor 记一行决策，写明是你定的还是 AI 定的。
 

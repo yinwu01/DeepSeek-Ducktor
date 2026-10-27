@@ -54,6 +54,11 @@ describe('parsers on a real run', () => {
     assert.equal(parseSwitch('# x\n\n开关：on\n'), 'on')
     assert.equal(parseSwitch('开关：quiet'), 'quiet')
     assert.equal(parseSwitch(undefined), 'unset')
+    // Read the way Ducktor's bin/duck.js reads it: Chinese values, an English label, bad values.
+    assert.equal(parseSwitch('开关：关'), 'off')
+    assert.equal(parseSwitch('- **开关**：静音'), 'quiet')
+    assert.equal(parseSwitch('# Ducktor settings\n\nSwitch: on\n'), 'on')
+    assert.equal(parseSwitch('开关：maybe'), 'unset')
   })
   test('decisions: one per tagged segment, newest first, 待你确认 recognised', () => {
     const decisions = parseDecisions(read('decisions.md'))
@@ -101,6 +106,14 @@ describe('model and view', () => {
     assert.ok(model.cards.length > 0 && model.cards.length <= 4)
     assert.ok(model.cards.some(card => card.id === 'E02'))
     assert.equal(model.latestChecks.name, reports.find(r => parseReport(r.text).checks.length > 0).name)
+  })
+  test('an English notebook line splits the same way', () => {
+    const [note] = parseNotebook('- 10-27 Experiments｜Report mean ± std over seeds (card E05, a gap must beat the seed spread)｜This time: 3 seeds for the tables')
+    assert.equal(note.stage, 'Experiments')
+    assert.equal(note.principle, 'Report mean ± std over seeds')
+    assert.equal(note.source, 'card E05, a gap must beat the seed spread')
+    assert.equal(note.thisTime, '3 seeds for the tables')
+    assert.equal(note.cards.join(','), 'E05')
   })
   test('with no named card, the latest stage picks by 「什么时候用」', () => {
     const notes = parseNotebook('- 10-25 润色｜先砍虚词（paper-polish）｜这次：摘要')

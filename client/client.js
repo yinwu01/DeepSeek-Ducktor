@@ -33,16 +33,25 @@ function bullets(text) {
     .map(line => line.replace(/^[-*]\s+/, ''))
 }
 
-/** on | quiet | off | idle | unset, from config.md's 开关 line. */
+/** The words Ducktor's bin/duck.js accepts on the switch line (modeOf). */
+const SWITCH_WORDS = {
+  on: 'on', quiet: 'quiet', off: 'off',
+  开: 'on', 打开: 'on', 开启: 'on', 启用: 'on', 静音: 'quiet', 安静: 'quiet', 关: 'off', 关闭: 'off', 关掉: 'off',
+}
+
+/** on | quiet | off | unset, from config.md's 开关 line (Switch: in an English config), read like Ducktor reads it. */
 function parseSwitch(text) {
-  const match = /开关[：:]\s*([a-z]+)/i.exec(String(text ?? ''))
-  return match === null ? 'unset' : match[1].toLowerCase()
+  for (const match of String(text ?? '').matchAll(/^[\s>#*-]*\**(?:开关|switch)\**\s*[:：=]\s*(.*)$/gim)) {
+    const word = match[1].replace(/\*/g, '').trim().split(/[\s（(，,。.;；]/)[0].toLowerCase()
+    if (SWITCH_WORDS[word]) return SWITCH_WORDS[word]
+  }
+  return 'unset'
 }
 
 function whoOf(tag) {
   if (/待(你)?确认/.test(tag)) return 'confirm'
-  if (/^\s*你定/.test(tag)) return 'student'
-  if (/AI\s*定/i.test(tag)) return 'ai'
+  if (/^\s*(你定|you\b)/i.test(tag)) return 'student'
+  if (/AI\s*(定|decided)/i.test(tag)) return 'ai'
   return 'other'
 }
 
@@ -66,7 +75,7 @@ function parseDecisions(text) {
   return lines.flat()
 }
 
-/** notebook.md: 「日期 阶段｜原则（出处）｜这次：…」. Lines in another shape keep their text. Newest first. */
+/** notebook.md: 「日期 阶段｜原则（出处）｜这次：…」, or in English 「date stage｜principle (source)｜This time: …」. Lines in another shape keep their text. Newest first. */
 function parseNotebook(text) {
   const out = []
   for (const line of bullets(text)) {
@@ -78,12 +87,12 @@ function parseNotebook(text) {
     const head = /^(\d{4}-\d{2}-\d{2}|\d{1,2}-\d{1,2})?\s*(.*)$/.exec(parts[0].trim())
     let principle = parts[1].trim()
     let source = ''
-    const sourceMatch = /（([^（）]*)）\s*$/.exec(principle)
+    const sourceMatch = /[（(]([^（）()]*)[）)]\s*$/.exec(principle)
     if (sourceMatch !== null) {
       source = sourceMatch[1]
       principle = principle.slice(0, sourceMatch.index).trim()
     }
-    const thisTime = parts.slice(2).join('｜').trim().replace(/^这次[：:]\s*/, '')
+    const thisTime = parts.slice(2).join('｜').trim().replace(/^(?:这次|this time)\s*[：:]\s*/i, '')
     out.push({ date: head[1] ?? '', stage: head[2].trim(), principle, source, thisTime, cards: [...new Set(`${source} ${thisTime}`.match(CARD_REF) ?? [])] })
   }
   return out.reverse()
