@@ -161,14 +161,17 @@ function globBase(pattern) {
 
 function allowRead(input) {
   const toolInput = input.tool_input || {};
-  let target = toolInput.file_path || toolInput.path;
+  if (!['Read', 'Glob', 'Grep'].includes(input.tool_name)) return;
+  // Glob and Grep search the folder in path; a file_path next to it is not what they read.
+  let target = input.tool_name === 'Read' ? toolInput.file_path || toolInput.path : toolInput.path;
   // Glob and Grep can also reach files through a pattern (Glob's pattern, Grep's glob
   // filter). Allow only patterns that stay inside the root: no '..' anywhere (braces such as
   // {..,x} would hide it from a check of whole path parts), no '~', and an absolute pattern
   // must start inside the root.
   const pattern = input.tool_name === 'Glob' ? toolInput.pattern : input.tool_name === 'Grep' ? toolInput.glob : undefined;
   if (typeof pattern === 'string' && pattern) {
-    if (pattern.startsWith('~') || pattern.includes('..')) return;
+    // '~' anywhere, and a brace alternative that starts a new absolute path ({/etc/*,x}), also leave the root.
+    if (pattern.includes('~') || pattern.includes('..') || /[{,]\s*(?:[\\/]|[A-Za-z]:)/.test(pattern)) return;
     if (path.isAbsolute(pattern)) {
       if (!insideRoot(globBase(pattern))) return;
       if (!target) target = globBase(pattern);

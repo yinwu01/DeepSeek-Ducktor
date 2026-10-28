@@ -69,7 +69,6 @@ on：
 
 quiet：对话里只交原技能的结果；决策行、报告和笔记照样写进文件。
 
-
 .duck/ 和里面的文件不存在时，用到才建。
 
 <!-- 插件开发者看：这份文件由 scripts/build.js 按 rules/wrapper-template.md 和 rules/commands.json 生成，要改就改那两处再重新生成。 -->

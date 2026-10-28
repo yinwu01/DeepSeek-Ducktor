@@ -9,12 +9,14 @@ licensed under CC BY-NC-SA 4.0.
 | `library/<skill>/` | Each skill keeps its own license | CC-BY-4.0: benchmark-paper-template, figure-designer, idea-evaluator, pre-submission-reviewer, tech-paper-template, vibe-research-workflow. CC-BY-NC-SA-4.0: deep-research, intro-drafter, paper-polish, paper-writer. Files are unmodified copies. CC BY 4.0: see `CC-BY-4.0.txt` (the official legal code from https://creativecommons.org/licenses/by/4.0/legalcode.txt). |
 | `handbook/` | CC-BY-NC-SA-4.0 | Unmodified copies of the handbook text. See `CC-BY-NC-SA-4.0.txt`. |
 | `skills/`, `rules/`, `cards/` | CC-BY-NC-SA-4.0 | Ducktor's own text, adapted from Supervisor-Skills. Not for commercial use. |
-| `bin/`, `hooks/`, `scripts/`, `tests/` | MIT | Code. See `MIT.txt`. Code files read the text in `rules/` at run time and do not embed it. |
+| `bin/`, `hooks/`, `scripts/`, `tests/` (except `tests/fixtures/`) | MIT | Code. See `MIT.txt`. Code files read the text in `rules/` at run time and do not embed it. |
+| `tests/fixtures/` | `*.py`: MIT. Other files: CC-BY-NC-SA-4.0 | A synthetic project for the tests: a made-up paper, notes and code. |
 | `README.md`, `i18n/README.en.md`, `INSTALL.md`, `i18n/INSTALL.en.md`, `CHANGELOG.md`, `CONTRIBUTING.md`, `AGENTS.md` (generated from `rules/`), `library/README.md` | CC-BY-NC-SA-4.0 | Ducktor's own text. |
 | `evals/` | `*.js` and `*.sh`: MIT. Other files: CC-BY-NC-SA-4.0 | Evaluation cases and recorded results. The papers in the cases are synthetic, written for the evaluation. |
 | `assets/` | CC-BY-NC-SA-4.0 | The logo and the README images. The README images are illustrations, not screen recordings. Their paper numbers come from Tables 2 and 3 of arXiv 1706.03762. |
 | `library/upstream.lock.json`, `package.json`, `gemini-extension.json`, `.claude-plugin/`, `.codex-plugin/`, `.cursor-plugin/`, `.agents/`, `.github/`, `.gitignore` | MIT | Manifests and configuration. |
-| other `docs/` | CC-BY-NC-SA-4.0 | Ducktor's design notes and research. Passages quoted from third-party guides and documentation remain under their authors' terms. |
+| `docs/` | CC-BY-NC-SA-4.0 | Ducktor's design notes and research. Passages quoted from third-party guides and documentation remain under their authors' terms. |
+| `LICENSE`, `LICENSES/` | The license texts | `LICENSE` is the short summary, and this file is the full map. The legal codes are copied unchanged. |
 
 `CC-BY-NC-SA-4.0.txt` is the upstream `LICENSE` file, copied unchanged. The full legal code is at
 https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode. `CC-BY-4.0.txt` is the CC BY 4.0 legal code, downloaded unchanged on 2026-10-28.
