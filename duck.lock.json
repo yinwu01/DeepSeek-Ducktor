@@ -3,9 +3,9 @@
   "source": {
     "repository": "JoeyWu-tech/Ducktor",
     "ref": "launch-batch",
-    "commit": "a102ebcdfec3719dc5fed0ca2aa8371da2d75a3f",
-    "committedAt": "2026-10-28T12:05:46-07:00",
-    "subject": "Hub: no rules block, so `/duck <sentence>` picks a command again"
+    "commit": "cffa0ef8decfda83d7be7b252f005f1f5020e05a",
+    "committedAt": "2026-10-28T13:23:19-07:00",
+    "subject": "testing.md: round 5 (not-on route, hub patch), round 2's rule, A/B cost"
   },
   "paths": [
     "bin",
@@ -170,7 +170,7 @@
     "rules/idle.md": "1dccb5841067d313cf6b5c3b191c079a6a61fd885ed59e8f1f09b3b7850bffa6",
     "rules/wrapper-template.md": "7ad11d905eb51f3a310f4c991f066f4d7c4b421a3675d2dcc21eca693173b6a8",
     "skills/duck/agents/openai.yaml": "ccf50e7c85317179009e728771457fb1e88ae257be42b3175df837feefa80b7c",
-    "skills/duck/SKILL.md": "d829b9e7daf157fb553716254b43eae3d5a7637f8e77a7be26e7df316222da31",
+    "skills/duck/SKILL.md": "e4d49fd057fbadd9fe0ea1dcf556d8c9c87bb173d621e61bd114b645181b39b9",
     "skills/duck-figure/agents/openai.yaml": "d5825d32e7252e5939926aa9ea9a6fbadb3689a20491251223dafbf1ca9a683c",
     "skills/duck-figure/SKILL.md": "c04167293d9dea499d55136a71d2e85ebb418165dfc702736718efc54e2c1f6b",
     "skills/duck-idea/agents/openai.yaml": "8410d0ecad9d861338395d585173b7527e9189c6582909c83fe6b937d003671c",
