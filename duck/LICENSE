@@ -2,7 +2,8 @@ Ducktor is licensed by directory. The full map is in LICENSES/README.md.
 
 - Text in skills/, rules/, cards/ and handbook/, and the README images in assets/: CC BY-NC-SA 4.0
   (LICENSES/CC-BY-NC-SA-4.0.txt)
-- library/: each original skill keeps its own license (CC BY 4.0 or CC BY-NC-SA 4.0)
+- library/: each original skill keeps its own license: CC BY 4.0
+  (LICENSES/CC-BY-4.0.txt, https://creativecommons.org/licenses/by/4.0/) or CC BY-NC-SA 4.0
 - Code in bin/, hooks/, scripts/ and tests/: MIT (LICENSES/MIT.txt)
 
 Ducktor is adapted from Supervisor-Skills (https://github.com/HKUSTDial/Supervisor-Skills),

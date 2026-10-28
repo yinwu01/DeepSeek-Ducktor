@@ -125,7 +125,7 @@ Desktop 用户不要用这种方式：这一行对 Desktop 也生效，会盖过
 - 会改变做法的决定，AI 动手之前先问你，一次最多问三件。
 - 有取舍时，Ducktor 记一行决策，写明是你定的还是 AI 定的。
 
-`/duck quiet` 照样先问、照样记，只是不在对话里讲。`/duck off` 关掉。
+`/duck quiet` 照样先问、照样记，只是不在对话里讲。`/duck off` 回到刚装好的样子：平时不出声，敲命令时照常讲、照常记。
 
 全部命令和开关的说明见 [docs/DETAIL.zh.md](docs/DETAIL.zh.md)。
 

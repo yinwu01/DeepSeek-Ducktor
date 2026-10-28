@@ -197,7 +197,8 @@ function buildModel(raw, cards) {
 
 // ---------------------------------------------------------------- view (pure given h)
 
-const SWITCH_LABEL = { on: '开着', quiet: '安静模式', off: '关着', idle: '没开启', unset: '没开启' }
+// off is the fresh-install state, so it reads as not turned on (skills/duck/SKILL.md: 不说「关掉了」).
+const SWITCH_LABEL = { on: '开着', quiet: '安静模式', off: '没开启', idle: '没开启', unset: '没开启' }
 const WHO_LABEL = { confirm: '待你确认', student: '你定的', ai: 'AI 定的', other: '' }
 
 function section(title, count, children, note) {
@@ -261,7 +262,7 @@ function panelView(model, ui) {
   const on = model.switch === 'on' || model.switch === 'quiet'
   const intro = on && !empty ? null : h('div', { className: 'ds-doctor-intro' },
     h('p', null, on || (model.hasDuck && model.switch !== 'unset')
-      ? `Ducktor 在这个项目里${SWITCH_LABEL[model.switch] ?? model.switch}。`
+      ? `Ducktor 在这个项目里${SWITCH_LABEL[model.switch] ?? model.switch}${model.switch === 'off' ? '（开关写着 off，和刚装好时一样）' : ''}。`
       : 'Ducktor 还没在这个项目开启。'),
     on
       ? h('p', null, '还没有记录。AI 做完一步实质性的活，这里会列出它替你定了什么、你能带走的原则、该你亲手核对的地方。')

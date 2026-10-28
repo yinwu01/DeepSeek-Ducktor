@@ -16,7 +16,7 @@ DeepSeek-Doctor is a community plugin. It is not made by DeepSeek and has no con
 - After installing, Ducktor is not turned on in any project. It speaks only when you run a `/duck-*` command.
 - `/duck on` turns it on in this project: from then on it explains and logs decisions during ordinary work too.
 - `/duck quiet` keeps the explanations out of the conversation but still writes them to the notebook.
-- `/duck off` turns it off.
+- `/duck off` puts it back to how it is after you install it: it is silent during ordinary work, and the commands still explain and write their records.
 - Everything Ducktor writes goes under the project's `.duck/`: `config.md`, `notebook.md`, `decisions.md`, `reports/` and `background.md`.
 
 ## The Ducktor tab

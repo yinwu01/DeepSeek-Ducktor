@@ -191,7 +191,8 @@ const text = (rel) => (exists(rel) ? fs.readFileSync(duckFile(rel), 'utf8') : ''
 const reports = (suffix) => (fs.existsSync(duckFile('reports'))
   ? fs.readdirSync(duckFile('reports')).filter((f) => f.endsWith(`${suffix}.md`) || f.includes(`${suffix}-`)) : []);
 const allReports = () => (fs.existsSync(duckFile('reports')) ? fs.readdirSync(duckFile('reports')) : []);
-const readOf = (t, skill) => t.reads.some((r) => r && r.includes(`library/${skill}/SKILL.md`));
+// Read the original skill in this stage, or earlier in the same dsh session (its text is still in context).
+const readOf = (t, skill) => [...t.reads, ...(t.earlierReads || [])].some((r) => r && r.includes(`library/${skill}/SKILL.md`));
 const switchIs = (mode) => new RegExp(`^[\\s>*#-]*开关\\s*[:：]\\s*${mode}`, 'm').test(text('config.md'));
 const FOLLOWUP = '信息就这些。按你的理解继续做完，缺的地方在结果里标出来就行；我前面说的限制照旧。';
 const newestReport = (suffix) => {
@@ -221,6 +222,15 @@ const cardIds = (s) => {
   const letters = [...new Set([...PLUGIN_CARDS].map((id) => id[0]).concat('G'))].join('');
   return lines.flatMap((l) => [...l.matchAll(new RegExp(`\\b([${letters}]\\d{2})\\b`, 'g'))].map((m) => m[1]));
 };
+// A plugin card number standing on its own: a line that starts with it (「卡 E05 差距……」,
+// 「E05：……」) or says little else. Cards are named by title or by what they say; the number
+// may only follow in brackets, e.g. 「差距要大过种子间的波动（卡 E05）」.
+const bareCardId = (s) => s.split('\n').some((l) => {
+  if (![...PLUGIN_CARDS].some((id) => new RegExp(`\\b${id}\\b`).test(l))) return false;
+  if (/^[\s>*\-•\d.、]*\**\s*(?:卡片?|card)?\s*[A-Z]\d{2}\b/i.test(l)) return true;
+  const rest = l.replace(/(?:卡片?|card)?\s*\b[A-Z]\d{2}\b/gi, '').replace(/[\s>*\-•()（）,，:：;；.。、]/g, '');
+  return rest.length < 6;
+});
 // The hook injected the not-turned-on note and not the resident rules. Matches idle.md's first
 // words, which no command file contains (Codex's rollout also holds the command files it read).
 const IDLE_ONLY = (t) => /Ducktor 没在这个项目开启：/.test(t.injected) && !/# Ducktor 常驻规则/.test(t.injected);
@@ -436,12 +446,16 @@ function mainStages() {
     ] },
     { name: 'off', resume: true, prompt: `${cmd('duck')} off`, checks: [
       ['must', 'config says off', () => switchIs('off')],
+      // off is the fresh-install state, not a stronger "off" than that.
+      ['should', 'reply says this is back to not turned on', (t) => /刚.{0,2}装好|没开启|未.{0,4}开启|没有开启/.test(t.reply)],
     ] },
+    // A new session after /duck off: same as a project that never turned Ducktor on. The plugin
+    // gives the idle note, and a command still explains itself and keeps its records.
     { name: 'off-new-session', resume: false, prompt: `${cmd('duck-polish')} 润色 paper/main.tex 的结论一节`,
-      before: () => ({ reports: allReports().length, notebook: text('notebook.md') }), checks: [
-        ['must', 'hook injected the off note', (t) => /Ducktor 现在是 off/.test(t.injected)],
-        ['must', 'no new report', (t, before) => allReports().length === before.reports],
-        ['must', 'notebook untouched', (t, before) => text('notebook.md') === before.notebook],
+      before: () => ({ reports: allReports().length }), checks: [
+        ['must', 'injected the not-turned-on note', (t) => IDLE_ONLY(t)],
+        ['must', 'wrote a polish report', (t, before) => allReports().length > before.reports],
+        ['should', 'reply has the why block', (t) => WHY_BLOCK.test(t.reply)],
       ] },
   ];
 }
@@ -498,6 +512,12 @@ function moreStages() {
         return notes.lines.length > 0 && now.length === notes.lines.length - 1 && now.every((l, i) => l === notes.lines[i]);
       }],
     ] },
+    // Not turned on: 「这类我懂了」 is recorded all the same, without turning Ducktor on.
+    { name: 'mute', resume: true, prompt: '多 seed 和方差这类我懂了，以后别讲了。', checks: [
+      ['must', 'config mutes the category', () => /按类静音[\s\S]*(seed|种子|方差)/.test(text('config.md'))],
+      ['must', 'did not turn Ducktor on', () => !switchIs('on') && !switchIs('quiet')],
+      ['should', 'wrote no switch line', () => !/^[\s>*#-]*开关\s*[:：]/m.test(text('config.md'))],
+    ] },
   ];
 }
 
@@ -531,6 +551,7 @@ function loopStages() {
       before: () => projectFile('paper/main.tex'), checks: [
         ['must', 'raises seeds or run-to-run variation', (t) => /seed|种子|波动|方差|标准差/.test(t.reply)],
         ['should', 'asks before editing the table', (t, before) => /[？?]/.test(t.reply) && projectFile('paper/main.tex') === before],
+        ['should', 'no card number on its own in the reply', (t) => !bareCardId(t.reply)],
       ] },
     { name: 'exp-ok', resume: true, prompt: '先补到 3 个 seed，表等结果出来再改。', before: () => decisions().length, checks: [
       ['must', 'a new decision line says the student decided', (t, before) => decisions().slice(before).some((l) => /你定/.test(l))],
@@ -591,13 +612,8 @@ function globalChecks(transcripts) {
     ['should', 'new notebook lines say what happened this time (｜这次：)', () => { const fresh = notebook.filter((l) => !LOOP_NOTEBOOK.includes(l)); return (fresh.length > 0 || FLOW === 'loop') && fresh.every((l) => /｜这次[:：]/.test(l)); }],
     ['must', 'no bold marks in notebook lines', () => !/\*\*/.test(text('notebook.md'))],
     ['must', 'no em-dash in notebook or decisions', () => !/\u2014/.test(text('notebook.md') + text('decisions.md'))],
-    // A card number in every short why is the old 原技能要求 crutch with a new name.
-    ['should', 'no card number appears in more than half of the short whys', () => {
-      const whys = transcripts.map((t) => lastWhy(t.reply)).filter(Boolean);
-      if (whys.length < 3) return true;
-      const ids = new Set(whys.flatMap(cardIds));
-      return [...ids].every((id) => whys.filter((w) => cardIds(w).includes(id)).length * 2 <= whys.length);
-    }],
+    // The short why names cards by title; a bare card number is jargon the student cannot read.
+    ['should', 'no card number on its own in a short why', () => transcripts.map((t) => lastWhy(t.reply)).every((w) => !bareCardId(w))],
     // Most notebook lines are written by the AI; quoting one as the student's own is wrong.
     ['should', 'does not credit a notebook line to the student (你 MM-DD 记下的)', () => transcripts.every((t) => !/你 ?\d{2}-\d{2} ?记下的/.test(t.reply))],
     ['must', 'no quizzes, homework or scoring the student', () => transcripts.every((t) => !QUIZ.test(t.reply))],
@@ -675,6 +691,8 @@ function main() {
     let t = turn(stage.prompt, stage.resume ? session : null, opts, file(''));
     if (stage.resume !== false && !session) session = t.session;
     if (stage.resume === false) session = t.session;
+    t.sessionId = session;
+    t.earlierReads = transcripts.filter((x) => x.sessionId && x.sessionId === session).flatMap((x) => x.reads);
     const evaluate = (tr) => stage.checks.map(([severity, label, fn]) => {
       let ok = false;
       try { ok = Boolean(fn(tr, before)); } catch (err) { ok = false; }

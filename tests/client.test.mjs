@@ -180,6 +180,12 @@ describe('model and view', () => {
     assert.match(text, /还没有记录/)
     assert.doesNotMatch(text, /\/duck on/)
   })
+  test('off reads as not turned on, the way the hub says it, never as switched off', () => {
+    const text = textOf(client.view.panelView(buildModel({ config: '开关：off\n', errors: [] }, cards), { loading: false, open: {}, toggle() {}, refresh() {} }))
+    assert.match(text, /没开启（开关写着 off，和刚装好时一样）/)
+    assert.match(text, /\/duck on/)
+    assert.doesNotMatch(text, /关着|关掉/)
+  })
   test('a tag that is neither 你定 nor AI 定 is shown as written', () => {
     // A real DeepSeek turn in the Web GUI wrote this line (2026-10-26).
     const line = '- 2026-10-26 ▸ 决策：判 Accept with Revisions、缩范围重写，不按现稿投 10-30（我定）；保留 64-token 块与免训练路线（我定）'

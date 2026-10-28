@@ -48,8 +48,8 @@ function readInput() {
 
 // Returns { mode, note }. mode is on, quiet, off, or unset: the duck has not been turned
 // on in this project (no file, no switch line, or a value we cannot read). Only an explicit
-// on or quiet loads the resident rules. note is a sentence for the AI when the switch line
-// was there but could not be read.
+// on or quiet loads the resident rules; off is the same as not turned on. note is a sentence
+// for the AI when the switch line was there but could not be read.
 function modeOf(config) {
   if (!config) return { mode: 'unset', note: null };
   const seen = [];
@@ -84,14 +84,12 @@ function coreRules(project) {
   return readText(path.join(ROOT, 'rules', 'core.md')) || '（没读到 rules/core.md，常驻规则这次缺席。）';
 }
 
-// The 「东西在哪」 and 「每次都照做」 sections of the plugin's rules/core.md: where files live,
-// how to read and write them, the skill-name table, and the few rules that hold in every mode
-// (the student's language, checking facts, pushback). Commands need them even when the
-// resident rules are not loaded.
+// The 「每次都照做」 section of rules/core.md: the few rules that hold in every mode (the
+// student's language, checking facts, pushback). A student's copy of the rules made before
+// it existed gets it from the plugin. Commands carry it, with 「东西在哪」, in their own
+// files (scripts/build.js copies both in), so a project that has not turned Ducktor on
+// pays only for the short idle note.
 const EVERY_TIME = /^##[ \t]*每次都照做[ \t]*$/m;
-const BASIC_SECTIONS = [/^##[ \t]*东西在哪[ \t]*$/m, EVERY_TIME];
-// Said right under 「每次都照做」 when the resident rules are not loaded.
-const EVERY_TIME_SCOPE = '（Ducktor 没开启或是 off：下面几条在学生敲 /duck-xxx 时照做；平时干活照宿主自己的规矩，只有「回复：短」平时也算数。）';
 
 // One "## " section of a rules file, heading included; '' when it is not there.
 function sectionOf(text, heading) {
@@ -101,28 +99,14 @@ function sectionOf(text, heading) {
   return text.slice(m.index, end < 0 ? undefined : end).trim();
 }
 
-function basics() {
-  const core = readText(path.join(ROOT, 'rules', 'core.md')) || '';
-  return BASIC_SECTIONS.map((heading) => {
-    const section = sectionOf(core, heading);
-    if (!section || heading !== EVERY_TIME) return section;
-    const firstBreak = section.indexOf('\n');
-    return firstBreak < 0 ? section : `${section.slice(0, firstBreak)}\n${EVERY_TIME_SCOPE}${section.slice(firstBreak)}`;
-  }).filter(Boolean).join('\n\n');
-}
-
 function buildContext(project) {
   const config = readText(path.join(project, '.duck', 'config.md'));
   const { mode, note } = modeOf(config);
   const parts = [`Ducktor 插件根目录：${ROOT}`];
 
   if (mode === 'unset' || mode === 'off') {
-    const note = mode === 'unset'
-      ? readText(path.join(ROOT, 'rules', 'idle.md')) || 'Ducktor 没在这个项目开启。'
-      : readText(path.join(ROOT, 'rules', 'off.md')) || '开关：off。';
-    parts.push(note);
-    const b = basics();
-    if (b) parts.push(b);
+    // off is the same as not turned on: the idle note, and commands keep their why and records.
+    parts.push(readText(path.join(ROOT, 'rules', 'idle.md')) || 'Ducktor 没在这个项目开启。');
   } else {
     parts.push(coreRules(project));
   }
@@ -131,7 +115,8 @@ function buildContext(project) {
     const shown = config.length > CONFIG_LIMIT
       ? `${config.slice(0, CONFIG_LIMIT)}\n……（后面太长没放进来，要用时直接读这个文件）`
       : config;
-    parts.push(`项目的 .duck/config.md（开关：${mode === 'unset' ? '没开启' : mode}）：\n${shown}`);
+    const label = { unset: '没开启', off: 'off，和没开启一样' }[mode] || mode;
+    parts.push(`项目的 .duck/config.md（开关：${label}）：\n${shown}`);
     if (note) parts.push(note);
     if (config.includes('�')) parts.push('.duck/config.md 里有读不出的字节（可能不是 UTF-8 编码），开关可能没认对。');
   }
@@ -178,11 +163,12 @@ function allowRead(input) {
   const toolInput = input.tool_input || {};
   let target = toolInput.file_path || toolInput.path;
   // Glob and Grep can also reach files through a pattern (Glob's pattern, Grep's glob
-  // filter). Allow only patterns that stay inside the root: no '..', no '~', and an
-  // absolute pattern must start inside the root.
+  // filter). Allow only patterns that stay inside the root: no '..' anywhere (braces such as
+  // {..,x} would hide it from a check of whole path parts), no '~', and an absolute pattern
+  // must start inside the root.
   const pattern = input.tool_name === 'Glob' ? toolInput.pattern : input.tool_name === 'Grep' ? toolInput.glob : undefined;
   if (typeof pattern === 'string' && pattern) {
-    if (pattern.startsWith('~') || pattern.split(/[\\/]/).includes('..')) return;
+    if (pattern.startsWith('~') || pattern.includes('..')) return;
     if (path.isAbsolute(pattern)) {
       if (!insideRoot(globBase(pattern))) return;
       if (!target) target = globBase(pattern);
@@ -257,7 +243,12 @@ function onlyAdds(input, target, stat) {
   }
   if (typeof result !== 'string') return false;
   const bytes = Buffer.from(result, 'utf8');
-  return bytes.length >= old.length && bytes.subarray(0, old.length).equals(old);
+  if (bytes.length < old.length || !bytes.subarray(0, old.length).equals(old)) return false;
+  // When the old file does not end in a newline, text added straight after it lands on the
+  // old last line and changes what that line says. Only a new line counts as adding.
+  if (bytes.length === old.length || old[old.length - 1] === 0x0a) return true;
+  const next = bytes[old.length];
+  return next === 0x0a || (next === 0x0d && bytes[old.length + 1] === 0x0a);
 }
 
 function allowRecord(input) {

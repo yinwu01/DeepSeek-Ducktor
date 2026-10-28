@@ -21,7 +21,7 @@ DeepSeek-Doctor 是社区做的插件，不是 DeepSeek 官方出品，和 DeepS
 - 刚装好时，Ducktor 在哪个项目里都没开启，只在你敲 `/duck-*` 命令时出声。
 - `/duck on`：在这个项目里开启。之后平时干活也跟着讲为什么、记决策。
 - `/duck quiet`：对话里不讲，道理照样记进笔记本。
-- `/duck off`：关掉，命令也不再写记录。
+- `/duck off`：回到刚装好的样子。平时不出声；敲命令时照常讲为什么、照常写记录。
 - Ducktor 的东西都写在项目的 `.duck/` 下：`config.md`（开关和设定）、`notebook.md`（笔记本）、`decisions.md`（决策记录）、`reports/`（完整报告）、`background.md`（这个方向的背景）。
 
 ## 网页界面的「Ducktor」页签

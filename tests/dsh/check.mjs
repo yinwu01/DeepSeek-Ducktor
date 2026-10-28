@@ -149,7 +149,9 @@ check('switch changed to quiet: a replacement context enters', replacement && te
 setSwitch('off')
 const off = headless('/duck-polish 润色摘要')
 const offContext = off.users.find(m => m.source?.kind === SOURCE_KIND)
-check('a new session with the switch off gets the off note', offContext && /Ducktor 现在是 off/u.test(textOf(offContext)))
+// off is the fresh-install state: the same note as a project that never turned Ducktor on.
+check('a new session with the switch off gets the not-turned-on note', offContext && /Ducktor 没在这个项目开启：/u.test(textOf(offContext))
+  && /开关：off，和没开启一样/u.test(textOf(offContext)) && !/# Ducktor 常驻规则/u.test(textOf(offContext)))
 }
 
 // ---------- web: the surface Desktop also runs ----------

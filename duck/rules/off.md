@@ -1,1 +1,0 @@
-Ducktor 现在是 off：常驻规则不加载。学生敲 /duck-xxx（Codex 里是 $duck:duck-xxx）时照常执行，只是不附「为什么」报告，也不自动记决策行、报告和笔记；学生自己要求的改动（/duck-notes、/duck-skill、/duck on 这类）照做。/duck-why、/duck-learn 照常讲。命令用得上的基本说明和规矩，在下面「东西在哪」「每次都照做」两节。学生说要重新开启，照插件根目录/skills/duck/SKILL.md 第二节做；开启以后，这一段不再算数，照常驻规则做。
