@@ -2,7 +2,7 @@
   "note": "duck/ and tests/e2e/fixtures/grad-project are verbatim copies of these Ducktor paths at this commit. Re-run scripts/sync-duck.mjs instead of editing them.",
   "source": {
     "repository": "JoeyWu-tech/Ducktor",
-    "ref": "journey-fixes",
+    "ref": "main",
     "commit": "8a3eeedd5dfbc852e2285596e07a7a51a5232231",
     "committedAt": "2026-10-27T12:56:31-07:00",
     "subject": "intro, write: parts the project does not have yet are written as plans"
