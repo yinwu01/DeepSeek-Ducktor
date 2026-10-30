@@ -1,4 +1,4 @@
-DeepSeek-Doctor is licensed by directory.
+DeepSeek-Ducktor is licensed by directory.
 
 - Plugin code and config (index.js, lib/, client/, scripts/, tests/, cordis.patch.yml): MIT,
   text below. tests/e2e/flow.cjs and tests/e2e/fixtures/ come from Ducktor's tests/, which

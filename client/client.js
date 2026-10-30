@@ -1,6 +1,6 @@
-window.__ModuleLoader__.load({ id: 'deepseek-doctor', factory: (require) => {
+window.__ModuleLoader__.load({ id: 'deepseek-ducktor', factory: (require) => {
 var module = { exports: {} }
-// deepseek-doctor, browser half: the Ducktor tab in the right sidebar of the dsh Web GUI.
+// deepseek-ducktor, browser half: the Ducktor tab in the right sidebar of the dsh Web GUI.
 //
 // It shows what Ducktor already writes into the session's project, so a student sees
 // what an agent doing the research would otherwise keep to itself:
@@ -15,9 +15,9 @@ var module = { exports: {} }
 const React = require('react')
 const h = React.createElement
 
-const TAB_ID = 'deepseek-doctor/duck'
+const TAB_ID = 'deepseek-ducktor/duck'
 const TAB_KIND = 'duck'
-const STYLE_ID = 'deepseek-doctor-style'
+const STYLE_ID = 'deepseek-ducktor-style'
 const POLL_MS = 4000
 const FILES = { config: '.duck/config.md', decisions: '.duck/decisions.md', notebook: '.duck/notebook.md', background: '.duck/background.md' }
 const REPORTS = '.duck/reports'
@@ -202,9 +202,9 @@ const SWITCH_LABEL = { on: '开着', quiet: '安静模式', off: '没开启', id
 const WHO_LABEL = { confirm: '待你确认', student: '你定的', ai: 'AI 定的', other: '' }
 
 function section(title, count, children, note) {
-  return h('section', { className: 'ds-doctor-section' },
-    h('h3', null, title, count ? h('span', { className: 'ds-doctor-count' }, String(count)) : null),
-    note ? h('p', { className: 'ds-doctor-note' }, note) : null,
+  return h('section', { className: 'ds-ducktor-section' },
+    h('h3', null, title, count ? h('span', { className: 'ds-ducktor-count' }, String(count)) : null),
+    note ? h('p', { className: 'ds-ducktor-note' }, note) : null,
     children)
 }
 
@@ -212,39 +212,39 @@ function more(items, limit, render, open, toggle, key) {
   const shown = open ? items : items.slice(0, limit)
   return [
     ...shown.map(render),
-    items.length > limit ? h('button', { key: `${key}-more`, className: 'ds-doctor-link', type: 'button', onClick: () => toggle(key) },
+    items.length > limit ? h('button', { key: `${key}-more`, className: 'ds-ducktor-link', type: 'button', onClick: () => toggle(key) },
       open ? '收起' : `还有 ${items.length - limit} 条`) : null,
   ]
 }
 
 function decisionView(decision, index) {
-  return h('div', { key: `d${index}`, className: 'ds-doctor-item', 'data-who': decision.who },
+  return h('div', { key: `d${index}`, className: 'ds-ducktor-item', 'data-who': decision.who },
     h('div', null, linkify(decision.text)),
-    h('div', { className: 'ds-doctor-meta' },
-      decision.who !== 'other' ? h('span', { className: 'ds-doctor-chip', 'data-who': decision.who }, WHO_LABEL[decision.who])
+    h('div', { className: 'ds-ducktor-meta' },
+      decision.who !== 'other' ? h('span', { className: 'ds-ducktor-chip', 'data-who': decision.who }, WHO_LABEL[decision.who])
         // A tag outside 你定 / AI 定 (a model once wrote 我定) is shown as written, not guessed.
-        : decision.tag ? h('span', { className: 'ds-doctor-chip', title: decision.tag }, `没写清谁定的：${decision.tag}`) : null,
-      decision.editable && decision.who !== 'confirm' ? h('span', { className: 'ds-doctor-chip' }, '你可改') : null,
+        : decision.tag ? h('span', { className: 'ds-ducktor-chip', title: decision.tag }, `没写清谁定的：${decision.tag}`) : null,
+      decision.editable && decision.who !== 'confirm' ? h('span', { className: 'ds-ducktor-chip' }, '你可改') : null,
       decision.date ? h('span', null, decision.date) : null))
 }
 
 function noteView(note, index) {
-  return h('div', { key: `n${index}`, className: 'ds-doctor-item' },
-    h('div', { className: 'ds-doctor-principle' }, linkify(note.principle)),
-    note.thisTime ? h('div', { className: 'ds-doctor-this' }, '这次：', linkify(note.thisTime)) : null,
-    h('div', { className: 'ds-doctor-meta' }, [note.stage, note.date, note.source].filter(Boolean).join(' · ')))
+  return h('div', { key: `n${index}`, className: 'ds-ducktor-item' },
+    h('div', { className: 'ds-ducktor-principle' }, linkify(note.principle)),
+    note.thisTime ? h('div', { className: 'ds-ducktor-this' }, '这次：', linkify(note.thisTime)) : null,
+    h('div', { className: 'ds-ducktor-meta' }, [note.stage, note.date, note.source].filter(Boolean).join(' · ')))
 }
 
 function cardView(card) {
-  return h('details', { key: card.id, className: 'ds-doctor-item ds-doctor-card' },
-    h('summary', null, h('span', { className: 'ds-doctor-card-id' }, card.id), card.title,
-      card.strength ? h('span', { className: 'ds-doctor-chip' }, card.strength) : null),
-    card.parts.map((part, index) => h('div', { key: index, className: 'ds-doctor-part' },
-      part.label ? h('span', { className: 'ds-doctor-label' }, `${part.label}：`) : null,
+  return h('details', { key: card.id, className: 'ds-ducktor-item ds-ducktor-card' },
+    h('summary', null, h('span', { className: 'ds-ducktor-card-id' }, card.id), card.title,
+      card.strength ? h('span', { className: 'ds-ducktor-chip' }, card.strength) : null),
+    card.parts.map((part, index) => h('div', { key: index, className: 'ds-ducktor-part' },
+      part.label ? h('span', { className: 'ds-ducktor-label' }, `${part.label}：`) : null,
       linkify(part.text),
       part.items.length > 0 ? h('ul', null, part.items.map((item, i) => h('li', { key: i }, linkify(item)))) : null)),
-    card.links.length > 0 ? h('div', { className: 'ds-doctor-meta' }, '出处：',
-      card.links.map((link, i) => h('a', { key: i, href: link.url, target: '_blank', rel: 'noreferrer', className: 'ds-doctor-source' }, link.label))) : null)
+    card.links.length > 0 ? h('div', { className: 'ds-ducktor-meta' }, '出处：',
+      card.links.map((link, i) => h('a', { key: i, href: link.url, target: '_blank', rel: 'noreferrer', className: 'ds-ducktor-source' }, link.label))) : null)
 }
 
 /**
@@ -253,14 +253,14 @@ function cardView(card) {
  * @param {{ refresh: () => void, openReport?: (path: string) => void, open: Record<string, boolean>, toggle: (key: string) => void, loading: boolean }} ui
  */
 function panelView(model, ui) {
-  const header = h('header', { className: 'ds-doctor-head' },
+  const header = h('header', { className: 'ds-ducktor-head' },
     h('strong', null, 'Ducktor'),
-    model ? h('span', { className: 'ds-doctor-chip', 'data-switch': model.switch }, SWITCH_LABEL[model.switch] ?? model.switch) : null,
-    h('button', { className: 'ds-doctor-link ds-doctor-refresh', type: 'button', onClick: ui.refresh, disabled: ui.loading }, ui.loading ? '读取中' : '刷新'))
-  if (model === undefined) return h('div', { className: 'ds-doctor' }, header, h('p', { className: 'ds-doctor-note' }, '正在读这个项目的 .duck/ …'))
+    model ? h('span', { className: 'ds-ducktor-chip', 'data-switch': model.switch }, SWITCH_LABEL[model.switch] ?? model.switch) : null,
+    h('button', { className: 'ds-ducktor-link ds-ducktor-refresh', type: 'button', onClick: ui.refresh, disabled: ui.loading }, ui.loading ? '读取中' : '刷新'))
+  if (model === undefined) return h('div', { className: 'ds-ducktor' }, header, h('p', { className: 'ds-ducktor-note' }, '正在读这个项目的 .duck/ …'))
   const empty = model.decisions.length === 0 && model.notes.length === 0 && model.reports.length === 0
   const on = model.switch === 'on' || model.switch === 'quiet'
-  const intro = on && !empty ? null : h('div', { className: 'ds-doctor-intro' },
+  const intro = on && !empty ? null : h('div', { className: 'ds-ducktor-intro' },
     h('p', null, on || (model.hasDuck && model.switch !== 'unset')
       ? `Ducktor 在这个项目里${SWITCH_LABEL[model.switch] ?? model.switch}${model.switch === 'off' ? '（开关写着 off，和刚装好时一样）' : ''}。`
       : 'Ducktor 还没在这个项目开启。'),
@@ -268,7 +268,7 @@ function panelView(model, ui) {
       ? h('p', null, '还没有记录。AI 做完一步实质性的活，这里会列出它替你定了什么、你能带走的原则、该你亲手核对的地方。')
       : h('p', null, '开启以后，AI 每做一步，这里列出它替你定了什么、你能带走的原则、该你亲手核对的地方。在对话里敲 ', h('code', null, '/duck on'), ' 就开启。'))
   const checks = model.latestChecks
-  return h('div', { className: 'ds-doctor' },
+  return h('div', { className: 'ds-ducktor' },
     header,
     intro,
     model.decisions.length > 0 ? section('这次 AI 替你定的', model.decisions.length,
@@ -277,59 +277,59 @@ function panelView(model, ui) {
     model.notes.length > 0 ? section('可以带走的原则', model.notes.length,
       more(model.notes, 5, noteView, ui.open.notes, ui.toggle, 'notes')) : null,
     checks ? section('该你亲手核对的', 0, [
-      ...checks.checks.map((check, i) => h('div', { key: `c${i}`, className: 'ds-doctor-item' },
-        h('div', { className: 'ds-doctor-label' }, check.heading),
+      ...checks.checks.map((check, i) => h('div', { key: `c${i}`, className: 'ds-ducktor-item' },
+        h('div', { className: 'ds-ducktor-label' }, check.heading),
         check.lines.map((line, j) => h('p', { key: j }, linkify(line))))),
-      ui.openReport ? h('button', { key: 'open', className: 'ds-doctor-link', type: 'button', onClick: () => ui.openReport(checks.path) }, `打开《${checks.title || checks.name}》`) : null,
+      ui.openReport ? h('button', { key: 'open', className: 'ds-ducktor-link', type: 'button', onClick: () => ui.openReport(checks.path) }, `打开《${checks.title || checks.name}》`) : null,
     ]) : null,
     model.background && model.background.length > 0 ? section('领域背景', 0,
-      h('div', { className: 'ds-doctor-item' }, model.background.map((line, i) => /^#{2,6}\s+/.test(line)
-        ? h('div', { key: i, className: 'ds-doctor-label ds-doctor-subhead' }, line.replace(/^#{2,6}\s+/, ''))
+      h('div', { className: 'ds-ducktor-item' }, model.background.map((line, i) => /^#{2,6}\s+/.test(line)
+        ? h('div', { key: i, className: 'ds-ducktor-label ds-ducktor-subhead' }, line.replace(/^#{2,6}\s+/, ''))
         : h('p', { key: i }, linkify(line.replace(/^[-*]\s+/, '')))))) : null,
     model.cards.length > 0 ? section('导师会提醒你的', 0, model.cards.map(cardView), '经验卡片，每张写明道理、怎么用和出处。') : null,
     model.reports.length > 0 ? section('报告', model.reports.length,
       more(model.reports, 5, (report, i) => h('div', { key: `r${i}` },
         ui.openReport
-          ? h('button', { className: 'ds-doctor-link', type: 'button', onClick: () => ui.openReport(report.path) }, report.title || report.name)
+          ? h('button', { className: 'ds-ducktor-link', type: 'button', onClick: () => ui.openReport(report.path) }, report.title || report.name)
           : h('span', null, report.title || report.name)), ui.open.reports, ui.toggle, 'reports')) : null,
-    model.errors.length > 0 ? h('p', { className: 'ds-doctor-note ds-doctor-error' }, `有 ${model.errors.length} 个文件读不出来：${model.errors.join('；')}`) : null)
+    model.errors.length > 0 ? h('p', { className: 'ds-ducktor-note ds-ducktor-error' }, `有 ${model.errors.length} 个文件读不出来：${model.errors.join('；')}`) : null)
 }
 
 const CSS = `
-.ds-doctor{box-sizing:border-box;height:100%;overflow-y:auto;padding:12px 14px 28px;color:var(--dsw-alias-label-primary);font-size:13px;line-height:20px}
-.ds-doctor-head{display:flex;align-items:center;gap:8px;margin-bottom:4px}
-.ds-doctor-head strong{font-size:15px;line-height:22px}
-.ds-doctor-refresh{margin-left:auto}
-.ds-doctor-section h3{display:flex;align-items:center;gap:6px;margin:18px 0 6px;font-size:12px;line-height:18px;font-weight:600;color:var(--dsw-alias-label-secondary)}
-.ds-doctor-count{font-weight:400;color:var(--dsw-alias-label-tertiary)}
-.ds-doctor-note{margin:0 0 6px;font-size:12px;line-height:18px;color:var(--dsw-alias-label-tertiary)}
-.ds-doctor-error{color:var(--dsw-alias-state-error-primary)}
-.ds-doctor-intro{margin:8px 0;padding:10px 12px;border-radius:10px;background:var(--dsw-alias-bg-layer-1)}
-.ds-doctor-intro p{margin:0 0 6px}
-.ds-doctor-intro p:last-child{margin:0;color:var(--dsw-alias-label-secondary)}
-.ds-doctor-item{margin-bottom:6px;padding:8px 10px;border-radius:10px;background:var(--dsw-alias-bg-layer-1)}
-.ds-doctor-item p{margin:2px 0}
-.ds-doctor-item[data-who=confirm]{box-shadow:inset 2px 0 0 var(--dsw-alias-state-warn-primary)}
-.ds-doctor-principle{font-weight:500}
-.ds-doctor-this{margin-top:2px;color:var(--dsw-alias-label-secondary)}
-.ds-doctor-meta{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:4px;font-size:12px;line-height:18px;color:var(--dsw-alias-label-tertiary)}
-.ds-doctor-chip{display:inline-block;padding:0 6px;border:0.5px solid var(--dsw-alias-border-l2);border-radius:999px;corner-shape:round;font-size:11px;line-height:16px;color:var(--dsw-alias-label-secondary)}
-.ds-doctor-chip[data-who=confirm]{color:var(--dsw-alias-state-warn-label);border-color:var(--dsw-alias-state-warn-primary)}
-.ds-doctor-chip[data-who=student]{color:var(--dsw-alias-state-success-primary);border-color:var(--dsw-alias-state-success-primary)}
-.ds-doctor-chip[data-switch=on]{color:var(--dsw-alias-state-success-primary);border-color:var(--dsw-alias-state-success-primary)}
-.ds-doctor-label{font-weight:600;color:var(--dsw-alias-label-secondary)}
-.ds-doctor-part{margin-top:4px}
-.ds-doctor-subhead{margin-top:8px}
-.ds-doctor-subhead:first-child{margin-top:0}
-.ds-doctor-part ul{margin:2px 0 0;padding-left:18px}
-.ds-doctor-card summary{cursor:pointer;font-weight:500;list-style-position:outside}
-.ds-doctor-card-id{margin-right:6px;color:var(--dsw-alias-label-tertiary);font-weight:400}
-.ds-doctor a,.ds-doctor-link{color:var(--dsw-alias-link);font-weight:500;text-decoration:none}
-.ds-doctor-source{margin-right:8px}
-.ds-doctor-link{padding:0;border:0;background:none;font:inherit;font-weight:500;cursor:pointer;text-align:left}
-.ds-doctor-link:disabled{color:var(--dsw-alias-label-tertiary);cursor:default}
-.ds-doctor code{font-size:12px}
-@media (hover:hover){.ds-doctor a:hover,.ds-doctor-link:not(:disabled):hover{text-decoration:underline dotted;text-underline-offset:3px}}
+.ds-ducktor{box-sizing:border-box;height:100%;overflow-y:auto;padding:12px 14px 28px;color:var(--dsw-alias-label-primary);font-size:13px;line-height:20px}
+.ds-ducktor-head{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.ds-ducktor-head strong{font-size:15px;line-height:22px}
+.ds-ducktor-refresh{margin-left:auto}
+.ds-ducktor-section h3{display:flex;align-items:center;gap:6px;margin:18px 0 6px;font-size:12px;line-height:18px;font-weight:600;color:var(--dsw-alias-label-secondary)}
+.ds-ducktor-count{font-weight:400;color:var(--dsw-alias-label-tertiary)}
+.ds-ducktor-note{margin:0 0 6px;font-size:12px;line-height:18px;color:var(--dsw-alias-label-tertiary)}
+.ds-ducktor-error{color:var(--dsw-alias-state-error-primary)}
+.ds-ducktor-intro{margin:8px 0;padding:10px 12px;border-radius:10px;background:var(--dsw-alias-bg-layer-1)}
+.ds-ducktor-intro p{margin:0 0 6px}
+.ds-ducktor-intro p:last-child{margin:0;color:var(--dsw-alias-label-secondary)}
+.ds-ducktor-item{margin-bottom:6px;padding:8px 10px;border-radius:10px;background:var(--dsw-alias-bg-layer-1)}
+.ds-ducktor-item p{margin:2px 0}
+.ds-ducktor-item[data-who=confirm]{box-shadow:inset 2px 0 0 var(--dsw-alias-state-warn-primary)}
+.ds-ducktor-principle{font-weight:500}
+.ds-ducktor-this{margin-top:2px;color:var(--dsw-alias-label-secondary)}
+.ds-ducktor-meta{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:4px;font-size:12px;line-height:18px;color:var(--dsw-alias-label-tertiary)}
+.ds-ducktor-chip{display:inline-block;padding:0 6px;border:0.5px solid var(--dsw-alias-border-l2);border-radius:999px;corner-shape:round;font-size:11px;line-height:16px;color:var(--dsw-alias-label-secondary)}
+.ds-ducktor-chip[data-who=confirm]{color:var(--dsw-alias-state-warn-label);border-color:var(--dsw-alias-state-warn-primary)}
+.ds-ducktor-chip[data-who=student]{color:var(--dsw-alias-state-success-primary);border-color:var(--dsw-alias-state-success-primary)}
+.ds-ducktor-chip[data-switch=on]{color:var(--dsw-alias-state-success-primary);border-color:var(--dsw-alias-state-success-primary)}
+.ds-ducktor-label{font-weight:600;color:var(--dsw-alias-label-secondary)}
+.ds-ducktor-part{margin-top:4px}
+.ds-ducktor-subhead{margin-top:8px}
+.ds-ducktor-subhead:first-child{margin-top:0}
+.ds-ducktor-part ul{margin:2px 0 0;padding-left:18px}
+.ds-ducktor-card summary{cursor:pointer;font-weight:500;list-style-position:outside}
+.ds-ducktor-card-id{margin-right:6px;color:var(--dsw-alias-label-tertiary);font-weight:400}
+.ds-ducktor a,.ds-ducktor-link{color:var(--dsw-alias-link);font-weight:500;text-decoration:none}
+.ds-ducktor-source{margin-right:8px}
+.ds-ducktor-link{padding:0;border:0;background:none;font:inherit;font-weight:500;cursor:pointer;text-align:left}
+.ds-ducktor-link:disabled{color:var(--dsw-alias-label-tertiary);cursor:default}
+.ds-ducktor code{font-size:12px}
+@media (hover:hover){.ds-ducktor a:hover,.ds-ducktor-link:not(:disabled):hover{text-decoration:underline dotted;text-underline-offset:3px}}
 `
 
 // ---------------------------------------------------------------- host wiring
@@ -414,10 +414,10 @@ function makeBody(reader) {
             const raw = await reader.load(sessionId, signal)
             if (signal.aborted) return
             last.current = signature
-            setModel(buildModel(raw, globalThis.__DEEPSEEK_DOCTOR__?.cards))
+            setModel(buildModel(raw, globalThis.__DEEPSEEK_DUCKTOR__?.cards))
           }
         } catch (error) {
-          if (!signal.aborted) console.error('deepseek-doctor: reading .duck/ failed', error)
+          if (!signal.aborted) console.error('deepseek-ducktor: reading .duck/ failed', error)
         } finally {
           if (!signal.aborted) {
             setLoading(false)
@@ -454,22 +454,22 @@ function installStyle() {
 }
 
 module.exports = {
-  name: 'deepseek-doctor',
+  name: 'deepseek-ducktor',
   inject: ['slots', 'sidebarRightTabs', 'remote', 'remote.workspaceFiles'],
   apply(ctx) {
-    ctx.effect(installStyle, 'deepseek-doctor: style')
+    ctx.effect(installStyle, 'deepseek-ducktor: style')
     ctx.effect(() => ctx.sidebarRightTabs.register({
       id: TAB_ID,
       kind: TAB_KIND,
       keepMounted: false,
       title: () => 'Ducktor',
       guide: [{ id: 'duck', order: 40, title: () => 'Ducktor', description: () => 'AI 替你定了什么、能带走的原则、该你核对的' }],
-    }), 'deepseek-doctor: tab type')
+    }), 'deepseek-ducktor: tab type')
     const Body = makeBody(createReader(ctx.remote))
     ctx.effect(() => ctx.slots.inject('sidebar.right.pane.tab', () => ctx.slots.register(
       { name: 'sidebar.right.pane.tab', key: TAB_ID },
       Body,
-    )), 'deepseek-doctor: tab body')
+    )), 'deepseek-ducktor: tab body')
   },
   // For tests.
   parse: { parseSwitch, parseDecisions, parseNotebook, parseReport, pickCards, buildModel },

@@ -1,11 +1,11 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/logo-dark.png">
-    <img src="assets/logo.png" width="220" alt="DeepSeek-Doctor：戴博士帽的像素小鲸鱼，趴在一个敲着 /duck 的终端上">
+    <img src="assets/logo.png" width="220" alt="DeepSeek-Ducktor：戴博士帽的像素小鲸鱼，趴在一个敲着 /duck 的终端上">
   </picture>
 </p>
 
-<h1 align="center">DeepSeek-Doctor</h1>
+<h1 align="center">DeepSeek-Ducktor</h1>
 
 <p align="center">
   <em>AI 做研究。Ducktor 讲为什么。道理你带走。</em>
@@ -39,7 +39,7 @@
 
 程序员桌上常有一只黄色的橡皮鸭。程序出了 bug，你把代码一行一行讲给它听，讲着讲着，自己就找到了 bug。
 
-现在 AI 替你做研究，轮不到你讲了。Ducktor 反过来：它把 AI 做过的判断讲给你听。DeepSeek-Doctor 把 [Ducktor](https://github.com/JoeyWu-tech/Ducktor) 原样装进 DeepSeek Harness：Web 和命令行里都能敲 `/duck-review` 这类命令。规则、命令和卡片是 Ducktor 的原文，和 Claude Code、Codex 用户拿到的是同一份，固定在 Ducktor 的一个提交上（`duck.lock.json` 写着是哪个）。
+现在 AI 替你做研究，轮不到你讲了。[Ducktor](https://github.com/JoeyWu-tech/Ducktor) 反过来：它把 AI 做过的判断讲给你听。DeepSeek-Ducktor 把它原样装进 DeepSeek Harness：Web 和命令行里都能敲 `/duck-review` 这类命令。规则、命令和卡片是 Ducktor 的原文，和 Claude Code、Codex 用户拿到的是同一份，固定在 Ducktor 的一个提交上（`duck.lock.json` 写着是哪个）。
 
 ## 之前 / 之后
 
@@ -78,26 +78,28 @@
 
 三种方式任选一种。方式二、方式三都是让 dsh 直接用你放仓库的那个文件夹，不复制（方式一走的是和方式二同一套安装，没单独核对过）：装好以后，这个文件夹别删、别挪，要挪就先卸载，挪完重装。项目里的 `.duck/` 是学生自己的记录，装、卸插件都不会动它。
 
-以前装过这个插件的旧版本（id 是 deepseek-supervisor，更早是 deepseek-ducktor），先照原来的方式把它卸掉，再照下面装：插件页点「卸载」；命令行是 `dsh plugin --profile <名字> remove <旧 id>`；方式三删掉旧 id 那一行。id 换了，不卸掉的话，dsh 会把新旧两个当成两个插件。
+以前装过这个插件的，先把旧的卸掉，再更新文件夹，最后照下面装。插件页里旧插件卡片的标题是「DeepSeek-Doctor」，更早的版本是「Doctor Duck」开头的，点「卸载」；命令行是 `dsh plugin --profile <名字> remove <旧 id>`；方式三删掉旧 id 那一行。旧 id 是 deepseek-doctor 或 deepseek-supervisor 的，不卸掉的话，dsh 会把新旧两个当成两个插件。最早的版本 id 也是 deepseek-ducktor，同样先卸掉再装。
+
+装好以后在「配置」里看一眼：id 换了，原来的设置不会跟过来，要重新填。方式三也可以不删旧那一行，只把 id 改成 deepseek-ducktor（路径换了的话也改），`config:` 就留着。
 
 ### 方式一：插件页（Web、Desktop）
 
 1. 把这个仓库放到本机任意位置（`git clone` 或下载解压）。
-2. 在 DeepSeek Harness 里打开侧边栏的「插件」，选「安装第三方插件」，在「包名或地址」里填仓库的绝对路径，例如 `/Users/you/DeepSeek-Doctor`。
-3. 装好就生效，不用重启。插件卡片上显示「DeepSeek-Doctor」。
+2. 在 DeepSeek Harness 里打开侧边栏的「插件」，选「安装第三方插件」，在「包名或地址」里填仓库的绝对路径，例如 `/Users/you/deepseek-ducktor`。
+3. 装好就生效，不用重启。插件卡片上显示「DeepSeek-Ducktor」。
 
 卸载在同一页面里点「卸载」。npm 装的 dsh 用 PATH 上的 `pnpm` 装插件；Desktop 自带 pnpm。
 
 ### 方式二：命令行
 
 ```sh
-dsh plugin --profile web add /绝对路径/DeepSeek-Doctor
-dsh plugin --profile headless add /绝对路径/DeepSeek-Doctor
+dsh plugin --profile web add /绝对路径/deepseek-ducktor
+dsh plugin --profile headless add /绝对路径/deepseek-ducktor
 ```
 
-每个 profile 单独装，需要 PATH 上有 `pnpm`。装的时候 pnpm 会打一段 `peerDependencies` 的 WARN，说这些包要从 dsh 那边找：插件运行时用的就是 dsh 自带的那几个包，这段警告可以不管。卸载把 `add /绝对路径/DeepSeek-Doctor` 换成 `remove deepseek-doctor`。
+每个 profile 单独装，需要 PATH 上有 `pnpm`。装的时候 pnpm 会打一段 `peerDependencies` 的 WARN，说这些包要从 dsh 那边找：插件运行时用的就是 dsh 自带的那几个包，这段警告可以不管。卸载把 `add /绝对路径/deepseek-ducktor` 换成 `remove deepseek-ducktor`。
 
-Desktop 的 profile 名是 `desktop`：先打开一次 Desktop，完全退出，再用 Desktop 自带的 `dsh` 命令（Desktop 菜单「管理 dsh 命令…」可以把它注册到终端）运行 `dsh plugin --profile desktop add /绝对路径/DeepSeek-Doctor`，然后重新打开 Desktop。
+Desktop 的 profile 名是 `desktop`：先打开一次 Desktop，完全退出，再用 Desktop 自带的 `dsh` 命令（Desktop 菜单「管理 dsh 命令…」可以把它注册到终端）运行 `dsh plugin --profile desktop add /绝对路径/deepseek-ducktor`，然后重新打开 Desktop。
 
 ### 方式三：不装 pnpm（命令行）
 
@@ -105,8 +107,8 @@ Desktop 的 profile 名是 `desktop`：先打开一次 Desktop，完全退出，
 
 ```yaml
 - insert:
-    - id: deepseek-doctor
-      name: /绝对路径/DeepSeek-Doctor/index.js
+    - id: deepseek-ducktor
+      name: /绝对路径/deepseek-ducktor/index.js
 ```
 
 这一行对所有 profile 生效，下次启动 dsh 时加载。卸载就删掉这一行。
@@ -117,7 +119,7 @@ Desktop 用户不要用这种方式：这一行对 Desktop 也生效，会盖过
 
 ### 装好以后
 
-开一个新会话，在输入框里敲 `/`，能看到全部 14 条命令。方式一装好就生效；方式二、方式三装好以后，先重启一次 dsh（Desktop 要重新打开）。从 `/duck` 开始，它会列出菜单。命令行的 headless 没有输入框，也不用重启：`dsh plugin --profile headless list` 里有 `deepseek-doctor` 就是装上了，再到项目文件夹里跑 `dsh --profile headless "/duck"`。
+开一个新会话，在输入框里敲 `/`，能看到全部 14 条命令。方式一装好就生效；方式二、方式三装好以后，先重启一次 dsh（Desktop 要重新打开）。从 `/duck` 开始，它会列出菜单。命令行的 headless 没有输入框，也不用重启：`dsh plugin --profile headless list` 里有 `deepseek-ducktor` 就是装上了，再到项目文件夹里跑 `dsh --profile headless "/duck"`。
 
 刚装好时，Ducktor 在每个项目里都没开启，只在你敲 `/duck-*` 命令时说话。在一个项目里敲 `/duck on`，它就在这个项目里一直跟着：
 
@@ -135,8 +137,8 @@ Desktop 用户不要用这种方式：这一行对 Desktop 也生效，会盖过
 
 ```yaml
 - insert:
-    - id: deepseek-doctor
-      name: /绝对路径/DeepSeek-Doctor/index.js
+    - id: deepseek-ducktor
+      name: /绝对路径/deepseek-ducktor/index.js
       config:
         duckRoot: /绝对路径/Ducktor
         sessionContext: true
@@ -207,7 +209,7 @@ Desktop 用户不要用这种方式：这一行对 Desktop 也生效，会盖过
 插件自己不发网络请求，页签只读项目里的本地文件。AI 读到的内容照常发给模型。`/duck-survey`、`/duck-idea` 这类命令会让 AI 上网查文献；Ducktor 开着或你敲命令时，AI 给论文、数据集附的链接也要上网查。
 
 **以前叫什么？**
-2026-10-27 以前叫 deepseek-supervisor，10-26 以前叫 deepseek-ducktor；里面的 Ducktor 那时叫 Doctor Duck。`evals/runs/` 和 `docs/验证记录.md` 里的旧记录保留了当时的名字。装过旧版本的，先卸掉再装，见「安装」。
+2026-10-29 以前叫 deepseek-doctor（显示名 DeepSeek-Doctor），10-27 以前叫 deepseek-supervisor，10-26 以前也叫 deepseek-ducktor，和现在一样；里面的 Ducktor 在 10-27 以前叫 Doctor Duck。`evals/runs/` 和 `docs/验证记录.md` 里的旧记录保留了当时的名字。装过旧版本的，先卸掉再装，见「安装」。
 
 ## 许可
 

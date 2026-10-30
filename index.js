@@ -1,5 +1,5 @@
 /**
- * DeepSeek-Doctor: Ducktor as a native DeepSeek Harness (dsh) plugin.
+ * DeepSeek-Ducktor: Ducktor as a native DeepSeek Harness (dsh) plugin.
  *
  * Two pieces, both reading the Ducktor copy in duck/ (or Config.duckRoot):
  *   commands  the /duck-* skills through a skill provider. The base directory dsh shows
@@ -61,7 +61,7 @@ const z = await hostImport('@deepseek-ai/schemastery', [process.argv[1]])
   .then(module => module.default, () => undefined)
 
 /** Cordis plugin identity. */
-export const name = 'deepseek-doctor'
+export const name = 'deepseek-ducktor'
 /** Skill registry for the commands, agent registry for the session context. */
 export const inject = ['skills', 'agents']
 
@@ -107,7 +107,7 @@ export async function apply(ctx, config) {
   // server emits this event, so other profiles skip it.
   const cards = readCards([join(root, 'cards'), MENTOR_CARDS])
   ctx.on('webserver/index-inject', (table) => {
-    table.push({ kind: 'global', name: '__DEEPSEEK_DOCTOR__', value: { cards } })
+    table.push({ kind: 'global', name: '__DEEPSEEK_DUCKTOR__', value: { cards } })
   })
   ctx.logger.info('Ducktor at %s: %d commands, %d cards, session context %s', root, candidates.length,
     cards.length, config.sessionContext === false ? 'off' : 'on')

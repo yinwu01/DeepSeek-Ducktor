@@ -1,5 +1,5 @@
 'use strict';
-// Which checkout a dsh profile loads as deepseek-doctor, read from `dsh --dump-config`.
+// Which checkout a dsh profile loads as deepseek-ducktor, read from `dsh --dump-config`.
 // The dump prints a home-level row as a percent-encoded file:// URL and folds a long one
 // into a `name: >-` block, keeps the user's key order (`- name:` may come before `id:`),
 // and merges an enable toggle into the row as `disabled: true`, so a one-line regex does
@@ -52,12 +52,12 @@ function rows(dump) {
 }
 
 /** Every row with this id, in dump order (the last one is the one dsh uses). */
-function idRows(dump, id = 'deepseek-doctor') {
+function idRows(dump, id = 'deepseek-ducktor') {
   return rows(dump).filter((row) => row.id === id);
 }
 
 /** The name of every row with this id, in dump order. */
-function rowNames(dump, id = 'deepseek-doctor') {
+function rowNames(dump, id = 'deepseek-ducktor') {
   return idRows(dump, id).map((row) => row.name).filter((name) => typeof name === 'string');
 }
 

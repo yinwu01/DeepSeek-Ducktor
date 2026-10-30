@@ -1,4 +1,4 @@
-# DeepSeek-Doctor
+# DeepSeek-Ducktor
 
 > Trust me, I'm a Ducktor.
 
@@ -13,7 +13,7 @@ Ducktor 把「讲一遍」找回来：
 
 这个插件把 Ducktor 原样带进 DeepSeek Harness。规则、命令、卡片和 Claude Code、Codex 里的是同一份，固定在 Ducktor 的一个提交上（插件目录里的 `duck.lock.json` 写着是哪个）。
 
-DeepSeek-Doctor 是社区做的插件，不是 DeepSeek 官方出品，和 DeepSeek 公司没有关系。
+DeepSeek-Ducktor 是社区做的插件，不是 DeepSeek 官方出品，和 DeepSeek 公司没有关系。
 
 ## 怎么用
 

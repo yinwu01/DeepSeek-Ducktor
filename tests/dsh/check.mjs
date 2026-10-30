@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Checks deepseek-doctor against an installed DeepSeek Harness without an API key: nothing
+// Checks deepseek-ducktor against an installed DeepSeek Harness without an API key: nothing
 // reaches a model, because with no key dsh stops at MISSING_CREDENTIAL right before the request
 // (the session log already holds every message the request would have carried). Everything
 // happens in a fresh temporary HOME; DEEPSEEK_API_KEY is removed from the environment.
@@ -39,7 +39,7 @@ if (!['pnpm', 'patch', 'ui'].includes(ROUTE)) {
 const DSH = process.env.DSH || 'dsh'
 const ROOT = resolveDuckRoot(undefined)
 
-const scratch = realpathSync(mkdtempSync(join(tmpdir(), 'ds-doctor-dsh-')))
+const scratch = realpathSync(mkdtempSync(join(tmpdir(), 'ds-ducktor-dsh-')))
 const HOME = join(scratch, 'home')
 const DSH_HOME = join(HOME, '.dsh')
 const PROJECT = join(scratch, 'project')
@@ -117,11 +117,11 @@ if (ROUTE === 'pnpm') {
   }
 } else {
   mkdirSync(DSH_HOME, { recursive: true })
-  writeFileSync(join(DSH_HOME, 'cordis.patch.yml'), `- insert:\n    - id: deepseek-doctor\n      name: ${join(REPO, 'index.js')}\n`)
+  writeFileSync(join(DSH_HOME, 'cordis.patch.yml'), `- insert:\n    - id: deepseek-ducktor\n      name: ${join(REPO, 'index.js')}\n`)
   check('home-level cordis.patch.yml row written', true)
 }
 const dump = dsh(['--profile', 'headless', '--dump-config'])
-check('the composed headless profile has the deepseek-doctor row', /- id: deepseek-doctor\n/u.test(dump.stdout), dump.stderr)
+check('the composed headless profile has the deepseek-ducktor row', /- id: deepseek-ducktor\n/u.test(dump.stdout), dump.stderr)
 }
 
 // ---------- headless: first request, resume, switch change ----------
@@ -205,8 +205,8 @@ async function web() {
       check('Plugins page call: installBundle with the checkout path', installed.result?.ok === true, JSON.stringify(installed))
       const bundles = await callArgs('pluginManager/listBundles', {})
       const listed = JSON.stringify(bundles)
-      check('Plugins page call: listBundles shows deepseek-doctor with its own title and description',
-        listed.includes('"deepseek-doctor"') && listed.includes('"DeepSeek-Doctor"') && listed.includes('讲为什么的科研导师 Ducktor') && listed.includes('Ducktor, a research mentor that explains why'), listed.slice(0, 400))
+      check('Plugins page call: listBundles shows deepseek-ducktor with its own title and description',
+        listed.includes('"deepseek-ducktor"') && listed.includes('"DeepSeek-Ducktor"') && listed.includes('讲为什么的科研导师 Ducktor') && listed.includes('Ducktor, a research mentor that explains why'), listed.slice(0, 400))
     }
     const created = await call('session/create', { cwd: PROJECT })
     const sessionId = JSON.stringify(created).match(/"sessionId":"([^"]+)"/u)?.[1]
@@ -227,7 +227,7 @@ async function web() {
     check('web: the standard preset agent gets the context after the student, before the /duck-review skill',
       contextBefore(users, 'duck-review'), kinds(users))
     if (ROUTE === 'ui') {
-      const removed = await callArgs('pluginManager/removeBundle', { name: 'deepseek-doctor' })
+      const removed = await callArgs('pluginManager/removeBundle', { name: 'deepseek-ducktor' })
       check('Plugins page call: removeBundle', removed.result?.ok === true, JSON.stringify(removed))
       const later = await call('session/create', { cwd: PROJECT })
       const laterId = JSON.stringify(later).match(/"sessionId":"([^"]+)"/u)?.[1]
@@ -248,24 +248,24 @@ if (WEB) await web()
 
 if (ROUTE === 'ui') {
   const after = dsh(['web', '--dump-config'])
-  check('after removal the web profile has no deepseek-doctor', after.status === 0 && !/deepseek-doctor/u.test(after.stdout), after.stderr)
+  check('after removal the web profile has no deepseek-ducktor', after.status === 0 && !/deepseek-ducktor/u.test(after.stdout), after.stderr)
 } else {
 if (ROUTE === 'pnpm') {
   for (const profile of PROFILES) {
-    const remove = dsh(['plugin', '--profile', profile, 'remove', 'deepseek-doctor'])
-    check(`dsh plugin --profile ${profile} remove deepseek-doctor`, remove.status === 0, remove.stderr || remove.stdout)
+    const remove = dsh(['plugin', '--profile', profile, 'remove', 'deepseek-ducktor'])
+    check(`dsh plugin --profile ${profile} remove deepseek-ducktor`, remove.status === 0, remove.stderr || remove.stdout)
     // Not a failure: pnpm may keep the link in the profile's node_modules after the row is gone.
-    const link = join(DSH_HOME, 'profiles', profile, 'node_modules', 'deepseek-doctor')
+    const link = join(DSH_HOME, 'profiles', profile, 'node_modules', 'deepseek-ducktor')
     let left = false
     try { left = lstatSync(link).isSymbolicLink() || existsSync(link) } catch { left = false }
-    console.log(`     note: ${profile} profile node_modules/deepseek-doctor ${left ? 'still there (pnpm leaves it)' : 'removed'}`)
+    console.log(`     note: ${profile} profile node_modules/deepseek-ducktor ${left ? 'still there (pnpm leaves it)' : 'removed'}`)
   }
 } else {
   rmSync(join(DSH_HOME, 'cordis.patch.yml'))
 }
 for (const profile of PROFILES) {
   const after = dsh(profile === 'web' ? ['web', '--dump-config'] : ['--profile', profile, '--dump-config'])
-  check(`after removal the ${profile} profile has no deepseek-doctor`, after.status === 0 && !/deepseek-doctor/u.test(after.stdout), after.stderr)
+  check(`after removal the ${profile} profile has no deepseek-ducktor`, after.status === 0 && !/deepseek-ducktor/u.test(after.stdout), after.stderr)
 }
 setSwitch('on')
 const gone = headless('/duck 菜单')
