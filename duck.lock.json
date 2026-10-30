@@ -2,10 +2,10 @@
   "note": "duck/ and tests/e2e/fixtures/grad-project are verbatim copies of these Ducktor paths at this commit. Re-run scripts/sync-duck.mjs instead of editing them.",
   "source": {
     "repository": "JoeyWu-tech/Ducktor",
-    "ref": "launch-batch",
-    "commit": "cffa0ef8decfda83d7be7b252f005f1f5020e05a",
-    "committedAt": "2026-10-28T13:23:19-07:00",
-    "subject": "testing.md: round 5 (not-on route, hub patch), round 2's rule, A/B cost"
+    "ref": "main",
+    "commit": "3ba7a732cc9df1117fafb30de45511079e4c49d2",
+    "committedAt": "2026-10-28T14:19:01-07:00",
+    "subject": "testing.md: the test used a git source; GitHub installs are a github source"
   },
   "paths": [
     "bin",
