@@ -78,11 +78,11 @@
 
 三种方式任选一种。方式二、方式三都是让 dsh 直接用你放仓库的那个文件夹，不复制（方式一走的是和方式二同一套安装，没单独核对过）：装好以后，这个文件夹别删、别挪，要挪就先卸载，挪完重装。项目里的 `.duck/` 是学生自己的记录，装、卸插件都不会动它。
 
-以前用方式一、二装过这个插件的，先卸载旧的，再更新文件夹（`git pull`，或重新下载解压），最后照下面装。旧 id 是 deepseek-doctor 或 deepseek-supervisor，最早的版本是 deepseek-ducktor。插件页里，旧插件卡片的标题是「DeepSeek-Doctor」，或以「Doctor Duck」开头，点这张卡片上的「卸载」。用命令行卸载时，在每个装过的 profile 里运行 `dsh plugin --profile <名字> remove <旧 id>`。已经更新过文件夹的，也用这条命令按旧 id 卸载。不卸载的话，dsh 会同时加载新旧两个插件。
+以前用方式一、二装过这个插件的，先卸载旧的，再更新文件夹（`git pull`，或重新下载解压），最后照下面装。旧 id 是 deepseek-doctor 或 deepseek-supervisor，最早的版本是 deepseek-ducktor。插件页里，旧插件卡片的标题是「DeepSeek-Doctor」，或以「Doctor Duck」开头，点这张卡片上的「卸载」。用命令行卸载时，在每个装过的 profile 里运行 `dsh plugin --profile <名字> remove <旧 id>`。已经更新过文件夹的，也用这条命令按旧 id 卸载。旧 id 是 deepseek-doctor 或 deepseek-supervisor 的，不卸载的话，dsh 会同时加载新旧两个插件。
 
 以前用方式三装过的，不用卸载。更新文件夹以后，把那一行的 id 改成 deepseek-ducktor，文件夹换了位置或名字的话路径也改，`config:` 留着，不用再加一行。
 
-id 从 deepseek-doctor 或 deepseek-supervisor 换过来以后，插件页「配置」里改过的设置不会跟过来。改过设置的，装好以后在「配置」里再改一次。
+id 从 deepseek-doctor 或 deepseek-supervisor 换过来以后，插件页「配置」里改过的设置不会转到新 id 下。改过设置的，装好以后在「配置」里再改一次。
 
 ### 方式一：插件页（Web、Desktop）
 
