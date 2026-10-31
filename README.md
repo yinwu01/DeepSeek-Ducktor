@@ -1,7 +1,7 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/logo-dark.png">
-    <img src="assets/logo.png" width="220" alt="DeepSeek-Ducktor：戴博士帽的像素小鲸鱼，趴在一个敲着 /duck 的终端上">
+    <img src="assets/logo.png" width="220" alt="DeepSeek-Ducktor：戴博士帽的像素小黄鸭在教一条像素小鲸鱼，两个一起趴在敲着 /duck 的终端上">
   </picture>
 </p>
 
