@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Copy Ducktor's content into duck/ from one exact commit, and record it in duck.lock.json.
-//   node scripts/sync-duck.mjs [--from <Ducktor checkout>] [--ref <git ref>]
+//   node scripts/sync-duck.mjs [--from <Ducktor checkout, default ../Ducktor>] [--ref <git ref>]
 //   node scripts/sync-duck.mjs --check     verify duck/ still matches duck.lock.json
 // duck/ is never edited by hand: the adapter adds DeepSeek Harness behavior in index.js only,
 // so the rules and commands stay the ones Claude Code and Codex users get. The e2e fixture
@@ -23,7 +23,7 @@ const FIXTURE_SOURCE = 'tests/fixtures/grad-project'
 const FIXTURE = join(HERE, 'tests', 'e2e', 'fixtures', 'grad-project')
 
 function args(argv) {
-  const out = { from: resolve(HERE, '..', 'mentor-plugin'), ref: 'main', check: false }
+  const out = { from: resolve(HERE, '..', 'Ducktor'), ref: 'main', check: false }
   for (let i = 0; i < argv.length; i += 1) {
     if (argv[i] === '--from') out.from = resolve(argv[++i])
     else if (argv[i] === '--ref') out.ref = argv[++i]
