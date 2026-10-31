@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Copy Ducktor's content into duck/ from one exact commit, and record it in duck.lock.json.
-//   node scripts/sync-duck.mjs [--from <Ducktor checkout, default ../Ducktor>] [--ref <git ref>]
+//   node scripts/sync-duck.mjs [--from <Ducktor checkout; default: the Ducktor folder next to this repo>] [--ref <git ref>]
 //   node scripts/sync-duck.mjs --check     verify duck/ still matches duck.lock.json
 // duck/ is never edited by hand: the adapter adds DeepSeek Harness behavior in index.js only,
 // so the rules and commands stay the ones Claude Code and Codex users get. The e2e fixture

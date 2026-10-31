@@ -1,7 +1,7 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/logo-dark.png">
-    <img src="assets/logo.png" width="220" alt="DeepSeek-Ducktor：戴博士帽的像素小黄鸭从一个敲着 /duck 的终端后面探出来，旁边一条像素小鲸鱼趴在终端上看着它">
+    <img src="assets/logo.png" width="220" alt="DeepSeek-Ducktor：戴博士帽的像素小黄鸭从一个敲着 /duck 的终端后面探出来，旁边一条像素小鲸鱼趴在终端上看着小黄鸭">
   </picture>
 </p>
 
@@ -78,9 +78,11 @@
 
 三种方式任选一种。方式二、方式三都是让 dsh 直接用你放仓库的那个文件夹，不复制（方式一走的是和方式二同一套安装，没单独核对过）：装好以后，这个文件夹别删、别挪，要挪就先卸载，挪完重装。项目里的 `.duck/` 是学生自己的记录，装、卸插件都不会动它。
 
-以前装过这个插件的，先卸载旧的，再更新文件夹（`git pull`，或重新下载解压），最后照下面装。旧 id 是 deepseek-doctor 或 deepseek-supervisor，最早的版本是 deepseek-ducktor。插件页里，旧插件卡片的标题是「DeepSeek-Doctor」，或以「Doctor Duck」开头，点这张卡片上的「卸载」。用命令行的，在每个装过的 profile 里运行 `dsh plugin --profile <名字> remove <旧 id>`。已经更新过文件夹的，也用这条命令按旧 id 卸载。方式三把那一行的 id 改成 deepseek-ducktor，文件夹换了位置或名字的话路径也改，`config:` 留着，不用再加一行。旧 id 是 deepseek-doctor 或 deepseek-supervisor 的，不卸载的话，dsh 会同时加载新旧两个插件，其中一个的命令和页签注册不上。
+以前用方式一、二装过这个插件的，先卸载旧的，再更新文件夹（`git pull`，或重新下载解压），最后照下面装。旧 id 是 deepseek-doctor 或 deepseek-supervisor，最早的版本是 deepseek-ducktor。插件页里，旧插件卡片的标题是「DeepSeek-Doctor」，或以「Doctor Duck」开头，点这张卡片上的「卸载」。用命令行卸载时，在每个装过的 profile 里运行 `dsh plugin --profile <名字> remove <旧 id>`。已经更新过文件夹的，也用这条命令按旧 id 卸载。不卸载的话，dsh 会同时加载新旧两个插件。
 
-id 换了，插件页「配置」里改过的设置不会跟过来。用方式一、二装、又改过设置的，装好以后在「配置」里再改一次。
+以前用方式三装过的，不用卸载。更新文件夹以后，把那一行的 id 改成 deepseek-ducktor，文件夹换了位置或名字的话路径也改，`config:` 留着，不用再加一行。
+
+id 从 deepseek-doctor 或 deepseek-supervisor 换过来以后，插件页「配置」里改过的设置不会跟过来。改过设置的，装好以后在「配置」里再改一次。
 
 ### 方式一：插件页（Web、Desktop）
 
@@ -193,7 +195,7 @@ Desktop 用户不要用这种方式：这一行对 Desktop 也生效，会盖过
 
 细节在 [docs/验证记录.md](docs/验证记录.md)。简单说：
 
-- 验证了：dsh 0.2.1-rc.2 和 rc.3 上三种安装方式都能装上、卸掉（卸掉后不再加载）；命令在 Web 和 headless 里都列出来、指向真实文件；开场说明和 Ducktor 开场 hook 的输出逐字相同，位置在学生消息之后、命令之前；续接会话不重复给，开关变了给替换的一份；照 dsh 建子代理会话的写法、用被测 dsh 的代码建出会话，插件认得出子代理（dsh 真建子代理时这么写，是读代码确认的）。
+- 验证了：dsh 0.2.1-rc.2 和 rc.3 上三种安装方式都能装上、卸载（卸载后不再加载）；命令在 Web 和 headless 里都列出来、指向真实文件；开场说明和 Ducktor 开场 hook 的输出逐字相同，位置在学生消息之后、命令之前；续接会话不重复给，开关变了给替换的一份；照 dsh 建子代理会话的写法、用被测 dsh 的代码建出会话，插件认得出子代理（dsh 真建子代理时这么写，是读代码确认的）。
 - 真模型（10-25、10-26 跑的，用的是 10-27 同步以前的 `duck/` 和那时的检查项）：在 dsh rc.2 上用 DeepSeek（默认的 `deepseek-flash`）跑完 Ducktor 的四套学生流程，必须项全过；建议项里有一条没过：参考文献没给链接（10-26 只重跑了 survey 这一段，这一条过了）。运行里模型起的真子代理都没拿到开场说明；调低压缩阈值后，对话压缩掉开场说明，插件在下一步补发了。
 - 没验证：rc.3 和 `deepseek-v4-pro` 上的真模型流程，真模型结果的波动（每套只跑了一次）；10-27 同步以后的真模型流程（这次同步改了规则和命令的内容，不只是名字：菜单、`/duck-why`、名家文章的转述）；红队改过的 11 张卡还没被真模型读过；Desktop（只有 macOS、Windows 版，我们只在 Linux 上测过）；插件页的点击流程本身（测的是它调用的后端接口），插件的「配置」页也没看过；模型换了工作目录后照不照附注里的路径读写 `.duck/`（流程里模型没换过目录）。
 
