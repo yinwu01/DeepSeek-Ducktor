@@ -40,7 +40,7 @@
 
 ## 为什么做 Ducktor
 
-**在 vibe research 浪潮之下，研究者（特别是新入学的研究生）在研究过程中究竟能获得什么样的知识？这是我们在 [Supervisor-Skills](https://github.com/HKUSTDial/Supervisor-Skills) 获得学术界和业界的认可之后，越来越关注的一个问题。**
+**在 vibe research 浪潮之下，研究者（特别是新入学的研究生）在研究过程中究竟能获得什么样的知识？这是我们在 [Supervisor-Skills](https://github.com/HKUSTDial/Supervisor-Skills)（![GitHub stars](https://img.shields.io/github/stars/HKUSTDial/Supervisor-Skills?style=flat-square&label=stars&color=111111)）获得学术界和业界的认可之后，越来越关注的一个问题。**
 
 我们从社群中发现，许多 skill 使用者是正在学习科研流程或希望继续精进的研究人员及研究生。对他们而言，我们之前的 Supervisor 系列工作能够提供有深度且结构化的知识认知与引导，**但尚无法提供直接指导**。
 
