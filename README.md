@@ -25,7 +25,7 @@
 </p>
 
 <p align="center">
-  <img src="assets/demo.zh-CN.gif" width="880" alt="示意动图，不是录屏。两个 DeepSeek Harness 对话窗口做同一件事：「实验都做完了，结果在 results/ 里。帮我写成一篇 NeurIPS 论文。」左边没装 Ducktor：AI 读完结果，写完 paper/main.tex，说都做完了，又说为了不夸大，消融只跑了一次，0.1 到 0.3 的差没下结论。你拿到一篇论文。右边装了这个插件，没在这个项目打开 Ducktor：同样写完以后，发 /duck 看到菜单，再发「/duck 可不可以告诉我这个内容里我要学什么？」Ducktor 说按复盘处理（/duck-learn），先问哪一步是你自己定的，你跳过。然后它讲本来想干什么、实际怎样、顶级导师会盯哪里。这篇是怎么写的：三条贡献是 AI 挑的，动笔之前，先把贡献写成一到三条（卡 W01）。怎么写好：AI 写明 0.1 到 0.3 的差不下结论，用词的强度，跟证据的强度对齐（卡 W11）。怎么让审稿人信服：英德上 base 只比 MoE 高 1.3，差距要大过种子间的波动（卡 E05）。没开 Ducktor，没有决策记录；看论文，贡献、措辞、跟谁比，都是 AI 定的。三条原则记进 .duck/notebook.md，右侧「Ducktor」页签能看到。">
+  <img src="assets/demo.zh-CN.webp" width="880" alt="示意动图，不是录屏。两个 DeepSeek Harness 对话窗口做同一件事：「实验都做完了，结果在 results/ 里。帮我写成一篇 NeurIPS 论文。」左边没装 Ducktor：AI 很快写完 paper/main.tex，说都做完了，又说为了不夸大，消融只跑了一次，0.1 到 0.3 的差没下结论。你拿到一篇论文。右边先发 /duck on，在这个项目开启 Ducktor：平时干活也讲为什么、记决策，结果进论文前先对标准。再说同一句话。Ducktor 读完结果，说按 /duck-write 来写，动笔前先说：消融只跑了一次，0.1 到 0.3 的差没和 seed 间的波动比过，先补 seed，还是先写？你回了一句「你定」。写完以后它讲为什么：先写不先补 seed，消融只报数，不下结论，免得把波动写成发现；三条贡献各对一节，审稿人能逐条核对。决策行记下三件事：先写不先补 seed、贡献写三条、引言先写挑战再给方法，都是 AI 定的。然后发 /duck-learn：它先问这次哪一步是你自己定的、哪一步最想重来，你答「跳过」。它讲本来想干什么、实际怎样；顶级导师会盯的是差距要大过种子间的波动（卡 E05，Ducktor 自带的经验卡，不是文献），这次消融只跑了一次；再列出这次交给 AI 的判断，说下次想自己定，说一声就行；下一步是先弄清引言为什么这样排，消融补两个 seed。复盘存进 .duck/reports/，原则记进笔记本。最后发 /duck-why，问写引言这一步有什么值得学习和注意的。Ducktor 说最值得学的是引言第二段：讲完 RNN、卷积的不足，先写翻译本身难在哪，远处的词也要连上，词序决定意思。这样排是 AI 定的。常见写法是讲完不足就给出方法；有经验的人先写问题的难处，再让每条对上一个模块：远处的词靠自注意力一步连上，词序靠位置编码。Widom 在 Tips for Writing Technical Papers 里说，引言要回答为什么难。这次两处难点各对上了模块，见 paper/main.tex 第 49 行。原则「挑战写问题的难处，每条对上一个模块」记进笔记本，讲解存进 .duck/reports/；下次写引言前，先列出这个问题本身的两三处难点。它最后注明，讲「这次怎么做的」那几句是照文件和对话记录推出来的，AI 当时是不是这么想的，没法确认。">
 </p>
 
 <p align="center">
@@ -62,7 +62,7 @@ DeepSeek-Ducktor 是我们为 DeepSeek Harness 做的原生插件。我们把 [D
 
 你把实验结果交给 AI，让它写成论文。没有 Ducktor，AI 一口气写完。贡献怎么定、话说多满、拿什么比，这些判断都是 AI 做的。它也许在最后提几句，但不拆成道理，不给出处，也不记下来。
 
-装了插件，AI 照样写完。你发 `/duck`，后面直接接问题，比如 `/duck 可不可以告诉我这个内容里我要学什么？`。Ducktor 先说按哪条命令处理，再照那条命令讲；上面动图里，它挑的是复盘（`/duck-learn`）。讲到的原则记进 `.duck/notebook.md`，也出现在「Ducktor」页签里。
+装了插件，AI 照样写完。你发 `/duck`，后面直接接问题，比如 `/duck 可不可以告诉我这个内容里我要学什么？`。Ducktor 先说按哪条命令处理，再照那条命令讲。讲到的原则记进 `.duck/notebook.md`，也出现在「Ducktor」页签里。
 
 ## 「Ducktor」页签
 
@@ -236,7 +236,7 @@ Desktop 用户不要用这种方式：这一行对 Desktop 也生效，会盖过
 - 文档、展示文字和图（`README.md`、`docs/`、`locale/`、`assets/`、`icon.png`）、运行记录（`evals/`）和另带的经验卡片（`mentor/`）：CC BY-NC-SA 4.0，和 Ducktor 的文字一样（里面有改写自 Ducktor 的段落）。
 - `duck/`：Ducktor 原样拷贝，按它自己的 `duck/LICENSE` 分目录许可：文字（skills/、rules/、cards/、handbook/）是 CC BY-NC-SA 4.0，不可商用；`library/` 里的原技能各自保留原来的许可（CC BY 4.0 或 CC BY-NC-SA 4.0）；代码是 MIT。
 - Ducktor 改编自 [Supervisor-Skills](https://github.com/HKUSTDial/Supervisor-Skills)（骆昱宇及贡献者，CC BY-NC-SA 4.0）。
-- 动图里两个窗口滚过的 LaTeX 行，取自一次 Claude Code 运行写的论文；论文数字取自《Attention Is All You Need》（[arXiv 1706.03762](https://arxiv.org/abs/1706.03762)）的表 2 和表 3。
+- 动图里滚过的 LaTeX 行，取自一次 Claude Code 运行写的论文；右边窗口第 49 行讲翻译难在哪，是为示意另加的，后面的行号随之后移；论文数字取自《Attention Is All You Need》（[arXiv 1706.03762](https://arxiv.org/abs/1706.03762)）的表 2 和表 3。
 - 截图里的 DeepSeek Harness 界面归其所有者，不在本许可内。
 
 详见 [LICENSE](LICENSE)。
