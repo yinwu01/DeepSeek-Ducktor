@@ -58,6 +58,13 @@
 
 DeepSeek-Ducktor 是我们为 DeepSeek Harness 做的原生插件。我们把 [Ducktor](https://github.com/yinwu01/Ducktor) 原样装了进去，让你在 DeepSeek Harness 里也能用 `/duck-review` 这类命令。这个插件另外加了哪些东西，和 Claude Code、Codex 版有什么不同，下文分节介绍。
 
+<details>
+<summary>为什么叫 Ducktor？</summary>
+
+因为我们希望可以学习[小黄鸭调试法](https://zh.wikipedia.org/wiki/%E5%B0%8F%E9%BB%84%E9%B8%AD%E8%B0%83%E8%AF%95%E6%B3%95)（Rubber Duck Debugging）。在这种方法中，一次有效的 debug 过程就是工程师随身携带一只小黄鸭，在调试代码的时候会在桌上放上这只小黄鸭，然后详细地向鸭子解释每行代码。这种互动交流过程，将让人逐渐知道代码的问题，获取新的知识。所以我们希望 Ducktor 也是这样的一只小黄鸭，在和用户的互动中，达成学习的闭环。
+
+</details>
+
 ## 之前 / 之后
 
 你把实验结果交给 AI，让它写成论文。没有 Ducktor，AI 一口气写完。贡献怎么定、话说多满、拿什么比，这些判断都是 AI 做的。它也许在最后提几句，但不拆成道理，不给出处，也不记下来。
