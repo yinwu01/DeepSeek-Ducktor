@@ -56,7 +56,7 @@
 
 我们希望避免人在这 vibe research 中彻底丧失掌控力与思考能力，这就是 Ducktor 这个项目真正想做的事。
 
-DeepSeek-Ducktor 是我们为 DeepSeek Harness 做的原生插件。我们把 [Ducktor](https://github.com/JoeyWu-tech/Ducktor) 原样装了进去，让你在 DeepSeek Harness 里也能用 `/duck-review` 这类命令。这个插件另外加了哪些东西，和 Claude Code、Codex 版有什么不同，下文分节介绍。
+DeepSeek-Ducktor 是我们为 DeepSeek Harness 做的原生插件。我们把 [Ducktor](https://github.com/yinwu01/Ducktor) 原样装了进去，让你在 DeepSeek Harness 里也能用 `/duck-review` 这类命令。这个插件另外加了哪些东西，和 Claude Code、Codex 版有什么不同，下文分节介绍。
 
 ## 之前 / 之后
 

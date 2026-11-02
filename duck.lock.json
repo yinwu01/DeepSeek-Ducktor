@@ -1,8 +1,8 @@
 {
   "note": "duck/ and tests/e2e/fixtures/grad-project are verbatim copies of these Ducktor paths at this commit. Re-run scripts/sync-duck.mjs instead of editing them.",
   "source": {
-    "repository": "JoeyWu-tech/Ducktor",
-    "ref": "main",
+    "repository": "yinwu01/Ducktor",
+    "ref": "duck--v0.2.0",
     "commit": "3ba7a732cc9df1117fafb30de45511079e4c49d2",
     "committedAt": "2026-10-28T14:19:01-07:00",
     "subject": "testing.md: the test used a git source; GitHub installs are a github source"

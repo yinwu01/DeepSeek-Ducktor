@@ -90,7 +90,7 @@ function sync({ from, ref }) {
   const fixtureFiles = extract(from, commit, [FIXTURE_SOURCE], FIXTURE, FIXTURE_SOURCE.split('/').length)
   const lock = {
     note: 'duck/ and tests/e2e/fixtures/grad-project are verbatim copies of these Ducktor paths at this commit. Re-run scripts/sync-duck.mjs instead of editing them.',
-    source: { repository: 'JoeyWu-tech/Ducktor', ref, commit, committedAt, subject },
+    source: { repository: 'yinwu01/Ducktor', ref, commit, committedAt, subject },
     paths: PATHS,
     files,
     fixture: FIXTURE_SOURCE,
