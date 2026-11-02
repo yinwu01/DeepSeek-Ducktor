@@ -8,7 +8,11 @@
 <h1 align="center">DeepSeek-Ducktor</h1>
 
 <p align="center">
-  <em>AI 做研究。Ducktor 讲为什么。道理你带走。</em>
+  在 vibe research 下，我们这些新入学的研究生除了能看 agent 帮你做完一切、过程中刷刷手机以外，还能学到什么？如何实现一个在 vibe research 下的知识闭环？
+</p>
+
+<p align="center">
+  有没有可能，即使在 agent 能够全自动帮你把一堆零散数据整合并写成论文的过程中，它也能像导师一样，一步步告诉你这个过程中你可以学到哪些东西？
 </p>
 
 <p align="center">
@@ -25,9 +29,6 @@
 </p>
 
 <p align="center">
-  <strong><a href="https://github.com/JoeyWu-tech/Ducktor">Ducktor</a> 的 DeepSeek Harness 原生插件。</strong><br>
-  <strong>贡献怎么定、话说多满、跟谁比，AI 替你定了。Ducktor 把这些判断拆开，一条一条讲给你。</strong><br>
-  <strong>Web 界面里，Ducktor 讲到的原则和 AI 替你定的事，摆在对话旁边的「Ducktor」页签里。</strong><br>
   <sub>社区做的插件，不是 DeepSeek 官方出品，和 DeepSeek 公司没有关系。</sub>
 </p>
 
@@ -37,9 +38,25 @@
 
 ---
 
-程序员桌上常有一只黄色的橡皮鸭。程序出了 bug，你把代码一行一行讲给它听，讲着讲着，自己就找到了 bug。
+## 为什么做 Ducktor
 
-现在 AI 替你做研究，轮不到你讲了。[Ducktor](https://github.com/JoeyWu-tech/Ducktor) 反过来：它把 AI 做过的判断讲给你听。DeepSeek-Ducktor 把它原样装进 DeepSeek Harness：Web 和命令行里都能敲 `/duck-review` 这类命令。规则、命令和卡片是 Ducktor 的原文，和 Claude Code、Codex 用户拿到的是同一份，固定在它的一个提交上（`duck.lock.json` 写着是哪个）。
+**在 vibe research 浪潮之下，研究者（特别是新入学的研究生）在研究过程中究竟能获得什么样的知识？这是我们在 [Supervisor-Skills](https://github.com/HKUSTDial/Supervisor-Skills) 获得学术界和业界的认可之后，越来越关注的一个问题。**
+
+我们从社群中发现，许多 skill 使用者是正在学习科研流程或希望继续精进的研究人员及研究生。对他们而言，我们之前的 Supervisor 系列工作能够提供有深度且结构化的知识认知与引导，**但尚无法提供直接指导**。
+
+与此同时，agent 将过往的科研过程大大压缩，传统由导师指导或学生自行反复探索再进步的范式正逐渐失效。我们就在思考：在车轮之下，作为 human，我们的思维是否也能同步跟上 agent 步伐？我们的脑子能否在这个过程中真正学到东西并以此精进？
+
+目前许多这类 vibe research 工具只是一个开环系统：**data in**，然后 **paper out**，整个过程中没有形成人的知识闭环。
+
+因此，我们希望通过 Ducktor 这个项目来补上闭环的缺口：
+
+1. 你的输入不再仅仅是 data，而是将 data 与你想要参考的顶级学者思想共同作为 input。
+2. 在 agent 执行 research 的过程中，Ducktor 会拆解出用户真正应该学习掌握的内容，整理成册，并与你实时互动。
+3. 让你不仅能在这里学到足够扎实的内容，还能在此过程中将 paper 润色打磨，最终输出高质量的成果。
+
+我们希望避免人在这 vibe research 中彻底丧失掌控力与思考能力，这就是 Ducktor 这个项目真正想做的事。
+
+DeepSeek-Ducktor 是我们为 DeepSeek Harness 做的原生插件。我们把 [Ducktor](https://github.com/JoeyWu-tech/Ducktor) 原样装了进去，让你在 DeepSeek Harness 里也能用 `/duck-review` 这类命令。这个插件另外加了哪些东西，和 Claude Code、Codex 版有什么不同，下文分节介绍。
 
 ## 之前 / 之后
 
