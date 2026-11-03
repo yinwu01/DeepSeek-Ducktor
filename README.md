@@ -98,6 +98,15 @@ DeepSeek-Ducktor 是我们为 DeepSeek Harness 做的原生插件。我们把 [D
 
 ## 安装
 
+让你的 agent 帮忙，把下面这段话发给它：
+
+```text
+帮我安装 DeepSeek-Ducktor 插件：https://github.com/yinwu01/DeepSeek-Ducktor
+照仓库 README 里「安装」一节的步骤装好，装完告诉我怎么开始用。
+```
+
+也可以照下面的步骤自己装。
+
 需要 DeepSeek Harness 0.2.1-rc.2 及以上、0.3 以下（`package.json` 的 `engines.dsh`，dsh 安装时会检查）。
 
 三种方式任选一种。方式二、方式三都是让 dsh 直接用你放仓库的那个文件夹，不复制（方式一走的是和方式二同一套安装，没单独核对过）：装好以后，这个文件夹别删、别挪，要挪就先卸载，挪完重装。项目里的 `.duck/` 是学生自己的记录，装、卸插件都不会动它。
@@ -236,6 +245,10 @@ Desktop 用户不要用这种方式：这一行对 Desktop 也生效，会盖过
 
 **以前叫什么？**
 2026-10-25 的第一版叫 deepseek-ducktor。10-26 改名 deepseek-supervisor，10-27 改名 deepseek-doctor（显示名 DeepSeek-Doctor），10-29 改回 deepseek-ducktor。里面的 Ducktor 在 10-27 以前叫 Doctor Duck。`evals/runs/` 和 `docs/验证记录.md` 里的旧记录保留了当时的名字。装过旧版本的，见「安装」。
+
+## 来源与致谢
+
+- **Supervisor 系列**：我们正式将 Supervisor 作为一个实验室系列：[Supervisor-Skills](https://github.com/HKUSTDial/Supervisor-Skills) 是系列的第一个，[Ducktor](https://github.com/yinwu01/Ducktor) 与 DeepSeek-Ducktor 是第二和第三个。接下来我们还会继续开源，并与社区合作。
 
 ## 许可
 
