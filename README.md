@@ -32,7 +32,7 @@
 </p>
 
 <p align="center">
-  <sub>简体中文 · <a href="docs/DETAIL.md">English overview</a></sub>
+  <sub>简体中文 · <a href="docs/README.en.md">English</a></sub>
 </p>
 
 ---
