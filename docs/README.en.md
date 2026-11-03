@@ -91,24 +91,9 @@ Right after the install, Ducktor is not on in any project, and it speaks only wh
 * **Ask right away**: even after the AI has finished, you can ask `/duck <your question>` at any time, or use `/duck-why` on the last action (or a file or paragraph that you name). It explains the one point most worth learning: the common approach and how experienced people think, the source, the files and line numbers to check, a principle, and what to do first next time.
 * **Look back on a stage**: when a stage ends, use `/duck-learn`. It compares what you meant to do with what happened, points out the weak spots that a top mentor would examine, and lists the judgments that you left to the AI this time.
 
-### 3. The "Ducktor" tab
+### 3. The "Ducktor" tab in the web interface
 
-<p align="center">
-  <img src="images/sidebar.png" width="720" alt="A real screenshot: the “Ducktor” tab on the right side of the DeepSeek Harness web interface, in Chinese. The screenshot is from another project (an idea on block-sparse attention), not the paper in the animation. With the tab open, four parts show: what the AI decided for you this time, two lines, where the model wrote who decided as “I decided”, and the tab shows it as written, marked “not clear who decided: I decided”; principles to take away, one line, with the source section 10 of five-dimensions and card E05; what you should check yourself; field background, with representative papers and links. What a mentor would remind you of is further down.">
-</p>
-
-When you do research with an agent, the AI makes many judgments for you along the way, and they go by quickly. The "Ducktor" tab in the right sidebar of the web interface puts them next to the conversation. Open the right sidebar (the button at the top right) and choose "Ducktor" in "开始" (Start). The tab reads the files in `.duck/` of the project:
-
-| Part of the tab | Comes from |
-|---|---|
-| What the AI decided for you this time | `decisions.md`; lines marked "待你确认" (waiting for you) come first, "AI 定" (AI decided) and "你定" (you decided) are marked apart; anything else (for example "我定", "I decided") is shown as written and marked "not clear who decided" |
-| Principles to take away | `notebook.md`; each with stage, source and "this time" |
-| What you should check yourself | the latest report in `reports/` that has a check section; you can open the full report |
-| Field background | `background.md`; written the first time you explore a direction with `/duck-survey` or `/duck-idea` |
-| What a mentor would remind you of | the cards cited in the last few steps (Ducktor's `cards/` and this plugin's `mentor/cards/`) |
-| Reports | the reports in `reports/`; you can open them |
-
-While the tab is open, it checks every 4 seconds whether the files changed, and redraws when they did. It reads only local files and sends no model requests. In a project where Ducktor is not on, the tab tells you how to turn it on. The command line (TUI, headless) has no tab, and the files in `.duck/` are still written. Desktop uses the same web interface; we did not test on Desktop.
+In the DeepSeek Harness web interface, the right sidebar gets a "Ducktor" tab that puts the decisions, the principles and what you should check yourself from `.duck/` next to the conversation. It only reads local files and costs no model tokens; the command line has no tab. See [DETAIL.md](DETAIL.md).
 
 ### 4. Personal knowledge (`.duck/`)
 
