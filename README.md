@@ -1,18 +1,21 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/logo-dark.png">
-    <img src="assets/logo.png" width="220" alt="DeepSeek-Doctor：戴博士帽的像素小鲸鱼，趴在一个敲着 /duck 的终端上">
+    <img src="assets/logo.png" width="220" alt="DeepSeek-Ducktor：戴博士帽的像素小黄鸭从一个敲着 /duck 的终端后面探出来，旁边一条像素小鲸鱼趴在终端上看着小黄鸭">
   </picture>
 </p>
 
-<h1 align="center">DeepSeek-Doctor</h1>
+<h1 align="center">DeepSeek-Ducktor</h1>
 
 <p align="center">
-  <em>AI 做研究。Ducktor 讲为什么。道理你带走。</em>
+  <b>面向 AI 科研时代的「方法论与认知闭环」插件，DeepSeek Harness 原生版</b><br>
+  当 Agent 将科研流程加速为 <code>Data In, Paper Out</code> 的黑盒，研究者如何避免沦为被动的旁观者？<br>
+  DeepSeek-Ducktor 把 <a href="https://github.com/yinwu01/Ducktor">Ducktor</a> 完整装进 DeepSeek Harness，在推进研究的同时，为你补齐缺失的导师指引与科研训练闭环。<br>
+  <b>Trust me, I'm a Ducktor.</b>
 </p>
 
 <p align="center">
-  <sub>Trust me, I'm a Ducktor.</sub>
+  <sub>当前处于早期测试阶段（Early Preview），欢迎提交 Issue 或 PR，我们将持续快速迭代。</sub>
 </p>
 
 <p align="center">
@@ -21,33 +24,73 @@
 </p>
 
 <p align="center">
-  <img src="assets/demo.zh-CN.gif" width="880" alt="示意动图，不是录屏。两个 DeepSeek Harness 对话窗口做同一件事：「实验都做完了，结果在 results/ 里。帮我写成一篇 NeurIPS 论文。」左边没装 Ducktor：AI 读完结果，写完 paper/main.tex，说都做完了，又说为了不夸大，消融只跑了一次，0.1 到 0.3 的差没下结论。你拿到一篇论文。右边装了这个插件，没在这个项目打开 Ducktor：同样写完以后，发 /duck 看到菜单，再发「/duck 可不可以告诉我这个内容里我要学什么？」Ducktor 说按复盘处理（/duck-learn），先问哪一步是你自己定的，你跳过。然后它讲本来想干什么、实际怎样、顶级导师会盯哪里。这篇是怎么写的：三条贡献是 AI 挑的，动笔之前，先把贡献写成一到三条（卡 W01）。怎么写好：AI 写明 0.1 到 0.3 的差不下结论，用词的强度，跟证据的强度对齐（卡 W11）。怎么让审稿人信服：英德上 base 只比 MoE 高 1.3，差距要大过种子间的波动（卡 E05）。没开 Ducktor，没有决策记录；看论文，贡献、措辞、跟谁比，都是 AI 定的。三条原则记进 .duck/notebook.md，右侧「Ducktor」页签能看到。">
+  <img src="assets/demo.zh-CN.webp" width="880" alt="示意动图，不是录屏。两个 DeepSeek Harness 对话窗口做同一件事：「实验都做完了，结果在 results/ 里。帮我写成一篇 NeurIPS 论文。」左边没装 Ducktor：AI 很快写完 paper/main.tex，说都做完了，又说为了不夸大，消融只跑了一次，0.1 到 0.3 的差没下结论。你拿到一篇论文。右边先发 /duck on，在这个项目开启 Ducktor：平时干活也讲为什么、记决策，结果进论文前先对标准。再说同一句话。Ducktor 读完结果，说按 /duck-write 来写，动笔前先说：消融只跑了一次，0.1 到 0.3 的差没和 seed 间的波动比过，先补 seed，还是先写？你回了一句「你定」。写完以后它讲为什么：先写不先补 seed，消融只报数，不下结论，免得把波动写成发现；三条贡献各对一节，审稿人能逐条核对。决策行记下三件事：先写不先补 seed、贡献写三条、引言先写挑战再给方法，都是 AI 定的。然后发 /duck-learn：它先问这次哪一步是你自己定的、哪一步最想重来，你答「跳过」。它讲本来想干什么、实际怎样；顶级导师会盯的是差距要大过种子间的波动（卡 E05，Ducktor 自带的经验卡，不是文献），这次消融只跑了一次；再列出这次交给 AI 的判断，说下次想自己定，说一声就行；下一步是先弄清引言为什么这样排，消融补两个 seed。复盘存进 .duck/reports/，原则记进笔记本。最后发 /duck-why，问写引言这一步有什么值得学习和注意的。Ducktor 说最值得学的是引言第二段：讲完 RNN、卷积的不足，先写翻译本身难在哪，远处的词也要连上，词序决定意思。这样排是 AI 定的。常见写法是讲完不足就给出方法；有经验的人先写问题的难处，再让每条对上一个模块：远处的词靠自注意力一步连上，词序靠位置编码。Widom 在 Tips for Writing Technical Papers 里说，引言要回答为什么难。这次两处难点各对上了模块，见 paper/main.tex 第 49 行。原则「挑战写问题的难处，每条对上一个模块」记进笔记本，讲解存进 .duck/reports/；下次写引言前，先列出这个问题本身的两三处难点。它最后注明，讲「这次怎么做的」那几句是照文件和对话记录推出来的，AI 当时是不是这么想的，没法确认。">
 </p>
 
 <p align="center">
-  <strong><a href="https://github.com/JoeyWu-tech/Ducktor">Ducktor</a> 的 DeepSeek Harness 原生插件。</strong><br>
-  <strong>贡献怎么定、话说多满、跟谁比，AI 替你定了。Ducktor 把这些判断拆开，一条一条讲给你。</strong><br>
-  <strong>Web 界面里，Ducktor 讲到的原则和 AI 替你定的事，摆在对话旁边的「Ducktor」页签里。</strong><br>
   <sub>社区做的插件，不是 DeepSeek 官方出品，和 DeepSeek 公司没有关系。</sub>
 </p>
 
 <p align="center">
-  <sub>简体中文 &middot; <a href="docs/DETAIL.md">English overview</a></sub>
+  <sub>简体中文 · <a href="docs/DETAIL.md">English overview</a></sub>
 </p>
 
 ---
 
-程序员桌上常有一只黄色的橡皮鸭。程序出了 bug，你把代码一行一行讲给它听，讲着讲着，自己就找到了 bug。
+## 为什么做 Ducktor
 
-现在 AI 替你做研究，轮不到你讲了。Ducktor 反过来：它把 AI 做过的判断讲给你听。DeepSeek-Doctor 把 [Ducktor](https://github.com/JoeyWu-tech/Ducktor) 原样装进 DeepSeek Harness：Web 和命令行里都能敲 `/duck-review` 这类命令。规则、命令和卡片是 Ducktor 的原文，和 Claude Code、Codex 用户拿到的是同一份，固定在 Ducktor 的一个提交上（`duck.lock.json` 写着是哪个）。
+在 **Vibe Research** 浪潮下，编码与科研 Agent 极大地压缩了从实验到成文的周期。但这也是我们在开源 [Supervisor-Skills](https://github.com/HKUSTDial/Supervisor-Skills)（![GitHub stars](https://img.shields.io/github/stars/HKUSTDial/Supervisor-Skills?style=flat-square&label=stars&color=111111)）并获得学界与业界广泛认可后，愈发担忧的一个问题：**当 AI 接管了执行细节，研究者（尤其是高年级本科生与低年级研究生）还能否从科研过程中习得真正的学术判断力？**
 
-## 之前 / 之后
+在社区反馈中我们发现，许多研究者依赖 `Supervisor-Skills` 获取结构化的科研认知，但静态的技能库仍缺少**伴随式的实时指导**。与此同时，当前多数自动化科研工具本质上是一个开环系统：**Data In, Paper Out**。Agent 替你完成了所有隐性决策（如何界定核心贡献、结论下到什么分寸、消融实验如何归因），而人却被排除在思考回路之外。
 
-你把实验结果交给 AI，让它写成论文。没有 Ducktor，AI 一口气写完。贡献怎么定、话说多满、拿什么比，这些判断都是 AI 做的。它也许在最后提几句，但不拆成道理，不给出处，也不记下来。
+**Ducktor 旨在打破这种「执行加速、认知空心化」的困境，构建属于研究者的知识闭环：**
 
-装了插件，AI 照样写完。你发 `/duck`，后面直接接问题，比如 `/duck 可不可以告诉我这个内容里我要学什么？`。Ducktor 先说按哪条命令处理，再照那条命令讲；上面动图里，它挑的是复盘（`/duck-learn`）。讲到的原则记进 `.duck/notebook.md`，也出现在「Ducktor」页签里。
+1. **注入顶尖学术品味**：输入不再只是实验数据，还将顶尖学者的方法论、审稿标准与你们课题组的经验共同作为上下文约束。
+2. **过程拆解与实时对齐**：在 Agent 推进研究的关键节点，Ducktor 主动暴露背后的学术取舍（Trade-offs），将隐性判断转化为可习得的显性原则。
+3. **能力与成果双重沉淀**：在打磨出高质量论文的同时，生成可溯源的决策日志与个人科研笔记，让研究者的学术直觉与 Agent 同步进化。
 
-## 「Ducktor」页签
+**DeepSeek-Ducktor** 是我们为 DeepSeek Harness 做的原生插件：把 Ducktor 原样装进去，让你在 DeepSeek Harness 里也能用 `/duck-review` 这类命令；另外加了 Web 界面里的「Ducktor」页签和 11 张经验卡。
+
+<details>
+<summary><b>💡 为什么取名为 Ducktor？</b></summary>
+<br>
+灵感源于软件工程中的<a href="https://zh.wikipedia.org/wiki/%E5%B0%8F%E9%BB%84%E9%B8%AD%E8%B0%83%E8%AF%95%E6%B3%95">小黄鸭调试法（Rubber Duck Debugging）</a>：工程师通过向桌上的小黄鸭逐行解释代码逻辑，在自我审视与复述中发现盲区、厘清思路。<b>Ducktor（Duck + Doctor/Mentor）</b> 扮演的正是终端里这只戴博士帽的“学术小黄鸭”：通过高频、轻量的方法论互动，帮你夺回对研究过程的掌控力与思考深度。
+</details>
+
+---
+
+## 核心体验：之前 vs. 之后
+
+当你把实验结果交给常规 AI 撰写论文时，AI 会一次性输出初稿。**核心贡献如何提炼、结论措辞的强弱边界、对比基线的合理性**，全部由模型在黑盒中自行决断。它也许在最后提几句，但不拆成道理，不给出处，也不记下来。
+
+引入 Ducktor 后，AI 照样把活干完，但同样的任务被重构为透明的教研闭环：
+- 使用 `/duck-outline` 梳理主线逻辑，`/duck-write` 撰写正文，`/duck-review` 以审稿人视角严苛自查。
+- 也可以直接发 `/duck` 加问题，例如 `/duck 可不可以告诉我这个内容里我要学什么？`，Ducktor 先说按哪条命令处理，再照那条命令讲。
+- 每完成一个关键阶段，Ducktor 都会为你提炼：**这一步的核心取舍（Why）**、**一条可迁移的科研原则（Principle）**，以及**下次你可以主动前置的操作建议（Next Time）**。讲到的原则记进 `.duck/notebook.md`，也出现在「Ducktor」页签里。
+
+---
+
+## 核心机制与工作流
+
+DeepSeek-Ducktor 并不替换你现有的模型，而是作为一套规则、技能与界面层，引导 AI 扮演严谨的学术导师。
+
+### 1. 双模式运行与「证据护栏」
+
+刚装好时，Ducktor 在每个项目里都没开启，只在你敲 `/duck-*` 命令时介入。在项目里敲 `/duck on`，开启当前项目的**伴随指导模式**：
+
+* **即时方法论点拨**：AI 做完一步实质性的工作（定了方法、改了实验、写完一段），Ducktor 在回复末尾用一两行讲为什么。
+* **关键决策前置征询**：会改变做法的决定，AI 动手之前先问你，一次最多问三件。
+* **决策溯源**：有取舍时，Ducktor 记一行决策，写明是你定的还是 AI 定的。
+* **结果入文前的「证据护栏」**：你要 AI 把实验结果写进表格或论文时，动手前先看三件事：只跑了一次、或者差距没和种子间的波动比过；提升很大，却没拆出来源；结论说得比证据强。撞上了先停下来问你。
+
+`/duck quiet` 照样先问、照样记，只是不在对话里讲。`/duck off` 回到刚装好的样子：平时不出声，敲命令时照常讲、照常记。
+
+### 2. 事后追问（`/duck-why`）与阶段复盘（`/duck-learn`）
+
+* **即时追问**：AI 已经做完了，你也可以随时问 `/duck <你的问题>`，或用 `/duck-why` 针对刚才的操作（或指定的文件、段落）讲最值得学的一处：常见做法和有经验的人怎么想、出处、该核对的文件和行号，以及一条原则和下次先做什么。
+* **阶段复盘**：一个阶段告一段落时用 `/duck-learn`，对比本来想干什么和实际怎样，指出顶尖导师会盯的薄弱环节，并列出这次交给 AI 的判断。
+
+### 3. 「Ducktor」页签
 
 <p align="center">
   <img src="docs/images/sidebar.png" width="720" alt="真实截图：DeepSeek Harness Web 界面右侧的「Ducktor」页签。截图来自另一个项目（一个块稀疏注意力的 idea），不是动图里那篇论文。页签开着，能看到四块：这次 AI 替你定的，两条，模型把谁定的写成了「我定」，页签照原样标「没写清谁定的：我定」；可以带走的原则，一条，出处写着 five-dimensions 第 10 节和卡 E05；该你亲手核对的；领域背景，列着代表作和链接。导师会提醒你的在更下面。">
@@ -66,38 +109,70 @@
 
 页签开着时每 4 秒看一次文件有没有变，变了就重画。它只读本地文件，不发模型请求。项目里没开 Ducktor 时，页签告诉你怎么开。命令行（TUI、headless）里没有这个页签，`.duck/` 里的文件照样写。Desktop 用的是同一套网页界面，我们没在 Desktop 上测过。
 
-## 道理从哪来
+### 4. 个人知识沉淀（`.duck/`）
+
+所有记录都是项目里 `.duck/` 下的 Markdown 文件：笔记本 `notebook.md`、决策记录 `decisions.md`、复盘与讲解报告 `reports/`。可以随论文代码一起提交进 Git；不想提交，把 `.duck/` 写进 `.git/info/exclude`。
+
+### 5. 可溯源的导师知识库
 
 规则要求 Ducktor：讲道理时，名家和出处只从经验卡、名家文章的转述（`cards/MENTORS.md`）和科研手册（`handbook/`）的具体章节里取；找不到出处，就直说这是它自己的判断。
 
 经验卡有两组。Ducktor 带 23 张。这个插件另带 11 张（`mentor/cards/`），讲读论文、进新方向、实验习惯、和导师开会、用 AI 做研究和审稿的规矩。每张写明出处，附原文链接。写卡时对过原文，发布前又让两个独立的模型会话当红队逐条复核过（不是人工审）。
 
-## 安装
+---
 
-需要 DeepSeek Harness 0.2.1-rc.2 及以上、0.3 以下（`package.json` 的 `engines.dsh`，dsh 安装时会检查）。
+## 仓库架构
+
+* `index.js`：dsh 插件入口。把 `duck/skills/` 下的 14 条命令登记成技能（技能的基础目录就是 Ducktor 根目录，命令里「相对插件根目录」的路径因此对得上）；在每一步模型请求之前检查开场说明是否需要给、是否过期。
+* `lib/duck.js`：和 dsh 无关的部分（找根目录、读 SKILL.md、生成和判断开场说明），单元测试直接用 Node 跑。开场说明后面那段 DeepSeek Harness 附注也在这里，附注里还写着另带的卡片在哪、参考文献要带链接、第一次摸方向时写 `background.md`。
+* `client/client.js`：「Ducktor」页签，手写的浏览器端插件，不用打包；React 用页面自带的那份，文件通过 dsh 的工作区文件接口读。
+* `lib/cards.js`：读卡片（Ducktor 的和 `mentor/cards/` 的），服务端读好后随网页一起发给页签。
+* `mentor/cards/`：本插件另带的 11 张经验卡片，格式和 Ducktor 的卡一样，卡号不重；`INDEX.md` 由 `node scripts/mentor-index.mjs` 生成。
+* `duck/`：Ducktor 原样拷贝，不手改。`duck.lock.json` 记着来自哪个提交和每个文件的 sha256。更新 Ducktor：
+
+  ```sh
+  node scripts/sync-duck.mjs --from /path/to/Ducktor --ref main
+  npm test
+  ```
+
+插件运行时只读本地文件，自己不发网络请求；服务端只用 dsh 自带的三个包（`@deepseek-ai/schemastery`、`@deepseek-ai/dsh-skill`、`@deepseek-ai/dsh-llm`），页签只用页面自带的 React，没有别的依赖。
+
+---
+
+## 安装与快速开始
+
+让你的 agent 帮忙，把下面这段话发给它：
+
+```text
+帮我安装 DeepSeek-Ducktor 插件：https://github.com/yinwu01/DeepSeek-Ducktor
+照仓库 README 里「安装与快速开始」一节的步骤装好，装完告诉我怎么开始用。
+```
+
+也可以照下面的步骤自己装。
+
+**环境要求**：DeepSeek Harness 0.2.1-rc.2 及以上、0.3 以下（`package.json` 的 `engines.dsh`，dsh 安装时会检查）。
+*(注：当前仓库处于私有测试期，请先确认你的 GitHub 账号已开通访问权限，可通过 `gh repo view yinwu01/DeepSeek-Ducktor` 验证。)*
 
 三种方式任选一种。方式二、方式三都是让 dsh 直接用你放仓库的那个文件夹，不复制（方式一走的是和方式二同一套安装，没单独核对过）：装好以后，这个文件夹别删、别挪，要挪就先卸载，挪完重装。项目里的 `.duck/` 是学生自己的记录，装、卸插件都不会动它。
-
-以前装过这个插件的旧版本（id 是 deepseek-supervisor，更早是 deepseek-ducktor），先照原来的方式把它卸掉，再照下面装：插件页点「卸载」；命令行是 `dsh plugin --profile <名字> remove <旧 id>`；方式三删掉旧 id 那一行。id 换了，不卸掉的话，dsh 会把新旧两个当成两个插件。
 
 ### 方式一：插件页（Web、Desktop）
 
 1. 把这个仓库放到本机任意位置（`git clone` 或下载解压）。
-2. 在 DeepSeek Harness 里打开侧边栏的「插件」，选「安装第三方插件」，在「包名或地址」里填仓库的绝对路径，例如 `/Users/you/DeepSeek-Doctor`。
-3. 装好就生效，不用重启。插件卡片上显示「DeepSeek-Doctor」。
+2. 在 DeepSeek Harness 里打开侧边栏的「插件」，选「安装第三方插件」，在「包名或地址」里填仓库的绝对路径，例如 `/Users/you/DeepSeek-Ducktor`。
+3. 装好就生效，不用重启。插件卡片上显示「DeepSeek-Ducktor」。
 
 卸载在同一页面里点「卸载」。npm 装的 dsh 用 PATH 上的 `pnpm` 装插件；Desktop 自带 pnpm。
 
 ### 方式二：命令行
 
 ```sh
-dsh plugin --profile web add /绝对路径/DeepSeek-Doctor
-dsh plugin --profile headless add /绝对路径/DeepSeek-Doctor
+dsh plugin --profile web add /绝对路径/DeepSeek-Ducktor
+dsh plugin --profile headless add /绝对路径/DeepSeek-Ducktor
 ```
 
-每个 profile 单独装，需要 PATH 上有 `pnpm`。装的时候 pnpm 会打一段 `peerDependencies` 的 WARN，说这些包要从 dsh 那边找：插件运行时用的就是 dsh 自带的那几个包，这段警告可以不管。卸载把 `add /绝对路径/DeepSeek-Doctor` 换成 `remove deepseek-doctor`。
+每个 profile 单独装，需要 PATH 上有 `pnpm`。装的时候 pnpm 会打一段 `peerDependencies` 的 WARN，说这些包要从 dsh 那边找：插件运行时用的就是 dsh 自带的那几个包，这段警告可以不管。卸载把 `add /绝对路径/DeepSeek-Ducktor` 换成 `remove deepseek-ducktor`。
 
-Desktop 的 profile 名是 `desktop`：先打开一次 Desktop，完全退出，再用 Desktop 自带的 `dsh` 命令（Desktop 菜单「管理 dsh 命令…」可以把它注册到终端）运行 `dsh plugin --profile desktop add /绝对路径/DeepSeek-Doctor`，然后重新打开 Desktop。
+Desktop 的 profile 名是 `desktop`：先打开一次 Desktop，完全退出，再用 Desktop 自带的 `dsh` 命令（Desktop 菜单「管理 dsh 命令…」可以把它注册到终端）运行 `dsh plugin --profile desktop add /绝对路径/DeepSeek-Ducktor`，然后重新打开 Desktop。
 
 ### 方式三：不装 pnpm（命令行）
 
@@ -105,8 +180,8 @@ Desktop 的 profile 名是 `desktop`：先打开一次 Desktop，完全退出，
 
 ```yaml
 - insert:
-    - id: deepseek-doctor
-      name: /绝对路径/DeepSeek-Doctor/index.js
+    - id: deepseek-ducktor
+      name: /绝对路径/DeepSeek-Ducktor/index.js
 ```
 
 这一行对所有 profile 生效，下次启动 dsh 时加载。卸载就删掉这一行。
@@ -115,28 +190,32 @@ Desktop 用户不要用这种方式：这一行对 Desktop 也生效，会盖过
 
 这一行和方式一、二装上的那一行 id 相同，会盖过它们，不会注册两遍。所以要改设置，也写在这一行里（见「设置」）。
 
-### 装好以后
+### 启动验证
 
-开一个新会话，在输入框里敲 `/`，能看到全部 14 条命令。方式一装好就生效；方式二、方式三装好以后，先重启一次 dsh（Desktop 要重新打开）。从 `/duck` 开始，它会列出菜单。命令行的 headless 没有输入框，也不用重启：`dsh plugin --profile headless list` 里有 `deepseek-doctor` 就是装上了，再到项目文件夹里跑 `dsh --profile headless "/duck"`。
+1. 开一个新会话，在输入框里敲 `/`，能看到全部 14 条命令。方式一装好就生效；方式二、方式三装好以后，先重启一次 dsh（Desktop 要重新打开）。
+2. 从 `/duck` 开始，它会列出菜单。命令行的 headless 没有输入框，也不用重启：`dsh plugin --profile headless list` 里有 `deepseek-ducktor` 就是装上了，再到项目文件夹里跑 `dsh --profile headless "/duck"`。
+3. 希望在日常对话中开启伴随指导，在项目里敲一次 `/duck on`。开关存在当前项目的 `.duck/config.md` 里，不影响其他项目。
 
-刚装好时，Ducktor 在每个项目里都没开启，只在你敲 `/duck-*` 命令时说话。在一个项目里敲 `/duck on`，它就在这个项目里一直跟着：
+<details>
+<summary><b>以前装过旧版本（deepseek-doctor、deepseek-supervisor）</b></summary>
+<br>
 
-- AI 做完一步实质性的工作，比如定了方法、改了实验、写完一段，Ducktor 在回复末尾用一两行讲为什么。
-- 会改变做法的决定，AI 动手之前先问你，一次最多问三件。
-- 有取舍时，Ducktor 记一行决策，写明是你定的还是 AI 定的。
+以前用方式一、二装过这个插件的，先卸载旧的，再更新文件夹（`git pull`，或重新下载解压），最后照上面装。旧 id 是 deepseek-doctor 或 deepseek-supervisor，最早的版本是 deepseek-ducktor。插件页里，旧插件卡片的标题是「DeepSeek-Doctor」，或以「Doctor Duck」开头，点这张卡片上的「卸载」。用命令行卸载时，在每个装过的 profile 里运行 `dsh plugin --profile <名字> remove <旧 id>`。已经更新过文件夹的，也用这条命令按旧 id 卸载。旧 id 是 deepseek-doctor 或 deepseek-supervisor 的，不卸载的话，dsh 会同时加载新旧两个插件。
 
-`/duck quiet` 照样先问、照样记，只是不在对话里讲。`/duck off` 回到刚装好的样子：平时不出声，敲命令时照常讲、照常记。
+以前用方式三装过的，不用卸载。更新文件夹以后，把那一行的 id 改成 deepseek-ducktor，文件夹换了位置或名字的话路径也改，`config:` 留着，不用再加一行。
 
-全部命令和开关的说明见 [docs/DETAIL.zh.md](docs/DETAIL.zh.md)。
+id 从 deepseek-doctor 或 deepseek-supervisor 换过来以后，插件页「配置」里改过的设置不会转到新 id 下。改过设置的，装好以后在「配置」里再改一次。
 
-## 设置
+</details>
+
+### 设置
 
 三项都可以不填。用方式一、二装的，在插件页插件的「配置」里改。用了方式三那一行的，改那一行的 `config:`；它优先级更高，插件页里改的会被它盖过（插件页会提示「被更高优先级的配置覆盖」）：
 
 ```yaml
 - insert:
-    - id: deepseek-doctor
-      name: /绝对路径/DeepSeek-Doctor/index.js
+    - id: deepseek-ducktor
+      name: /绝对路径/DeepSeek-Ducktor/index.js
       config:
         duckRoot: /绝对路径/Ducktor
         sessionContext: true
@@ -149,6 +228,31 @@ Desktop 用户不要用这种方式：这一行对 Desktop 也生效，会盖过
 | `sessionContext` | `true` | 关掉以后只剩命令，会话不再带开场说明和常驻规则 |
 | `subagents` | `false` | 子代理会话也带开场说明。默认不带，因为子代理没法停下来问学生 |
 
+---
+
+## 命令参考
+
+| 命令 | 核心作用与适用场景 |
+| :--- | :--- |
+| `/duck [on \| quiet \| off]` | **总控与智能路由**。不带参数时展示菜单；`on` 开启项目伴随模式；`quiet` 照样先问、照样记，不在对话里讲；`off` 恢复按需触发模式。后接自然语言（如 `/duck 帮我写引言`）时，自动匹配并执行对应子命令。 |
+| `/duck-survey` | **文献调研**：探索研究方向，生成结构化文献综述。 |
+| `/duck-idea` | **课题评估**：审视研究 Idea 的新颖性、可行性与潜在审稿风险。 |
+| `/duck-vibe` | **人机边界划分**：评估当前模块哪些工作可托管给 AI，哪些核心科学判断必须由研究者亲自把关。 |
+| `/duck-outline` | **逻辑架构**：梳理整篇论文的论证脉络（内置技术论文与 Benchmark 论文双模板）。 |
+| `/duck-intro` | **引言撰写**：构建“背景→挑战→方法映射→贡献”严密咬合的 Introduction。 |
+| `/duck-write` | **正文撰写**：基于真实实验证据撰写方法与实验章节，严控引用真实性。 |
+| `/duck-figure` | **图表设计**：规划科研图表结构并核查可视化信息密度与规范。 |
+| `/duck-polish` | **学术润色**：提升学术表达的精准度、可读性与行文节奏。 |
+| `/duck-review` | **模拟审稿**：在投稿前以顶会 Reviewer 的严苛视角对稿件进行全面体检。 |
+| `/duck-why` | **方法论溯源**：剖析上一步操作（或指定文件、段落）背后的学术取舍与依据。 |
+| `/duck-learn` | **阶段性复盘**：对比预期与结果，诊断薄弱环节，盘点交给 AI 的隐性决策。 |
+| `/duck-notes` | **知识库管理**：查看、检索或编辑本地沉淀的 `.duck/notebook.md` 科研原则。 |
+| `/duck-skill` | **定制与扩展**：启停特定命令、针对当前项目微调规则，或注入课题组专属经验卡。 |
+
+*注：在 DeepSeek Harness 里，这些命令只能由你在输入框里敲，模型不会自己调用。全部命令和开关的说明见 [docs/DETAIL.zh.md](docs/DETAIL.zh.md)。*
+
+---
+
 ## 和 Claude Code、Codex 版有什么不同
 
 | | Claude Code、Codex | DeepSeek Harness（本插件） |
@@ -160,23 +264,9 @@ Desktop 用户不要用这种方式：这一行对 Desktop 也生效，会盖过
 | 学生自己加的命令 | 放项目的 `.claude/skills/duck-xxx/` 或 `.agents/skills/duck-xxx/` | dsh 只读 `.agents/skills/`（和 `.dsh/skills/`），不读 `.claude/skills/`。名字别和插件的 14 条重复：dsh 里插件自带的技能优先级最低，同名的会盖过插件的命令 |
 | 项目目录 | 开场 hook 收到的目录 | 会话创建时的目录。开场说明里写明它和 `.duck/` 的绝对路径，让模型在会话里换了工作目录也读写原来的 `.duck/`（模型照不照做，没用真模型验证） |
 
-## 怎么做的
+---
 
-- `index.js`：dsh 插件入口。把 `duck/skills/` 下的 14 条命令登记成技能（技能的基础目录就是 Ducktor 根目录，命令里「相对插件根目录」的路径因此对得上）；在每一步模型请求之前检查开场说明是否需要给、是否过期。
-- `lib/duck.js`：和 dsh 无关的部分（找根目录、读 SKILL.md、生成和判断开场说明），单元测试直接用 Node 跑。开场说明后面那段 DeepSeek Harness 附注也在这里，附注里还写着另带的卡片在哪、参考文献要带链接、第一次摸方向时写 `background.md`。
-- `client/client.js`：「Ducktor」页签，手写的浏览器端插件，不用打包；React 用页面自带的那份，文件通过 dsh 的工作区文件接口读。
-- `lib/cards.js`：读卡片（Ducktor 的和 `mentor/cards/` 的），服务端读好后随网页一起发给页签。
-- `mentor/cards/`：本插件另带的 11 张经验卡片，格式和 Ducktor 的卡一样，卡号不重；`INDEX.md` 由 `node scripts/mentor-index.mjs` 生成。
-- `duck/`：Ducktor 原样拷贝，不手改。`duck.lock.json` 记着来自哪个提交和每个文件的 sha256。更新 Ducktor：
-
-  ```sh
-  node scripts/sync-duck.mjs --from /path/to/Ducktor --ref main
-  npm test
-  ```
-
-插件运行时只读本地文件，自己不发网络请求；服务端只用 dsh 自带的三个包（`@deepseek-ai/schemastery`、`@deepseek-ai/dsh-skill`、`@deepseek-ai/dsh-llm`），页签只用页面自带的 React，没有别的依赖。
-
-## 测试
+## 测试与验证
 
 | 命令 | 要什么 | 测什么 |
 |---|---|---|
@@ -187,35 +277,69 @@ Desktop 用户不要用这种方式：这一行对 Desktop 也生效，会盖过
 
 `check.mjs` 建议在断网的环境里跑（例如 `unshare -rn`，打开 loopback），这样能确认没有东西出本机。
 
-## 验证了什么，没验证什么
-
 细节在 [docs/验证记录.md](docs/验证记录.md)。简单说：
 
-- 验证了：dsh 0.2.1-rc.2 和 rc.3 上三种安装方式都能装上、卸掉（卸掉后不再加载）；命令在 Web 和 headless 里都列出来、指向真实文件；开场说明和 Ducktor 开场 hook 的输出逐字相同，位置在学生消息之后、命令之前；续接会话不重复给，开关变了给替换的一份；照 dsh 建子代理会话的写法、用被测 dsh 的代码建出会话，插件认得出子代理（dsh 真建子代理时这么写，是读代码确认的）。
+- 验证了：dsh 0.2.1-rc.2 和 rc.3 上三种安装方式都能装上、卸载（卸载后不再加载）；命令在 Web 和 headless 里都列出来、指向真实文件；开场说明和 Ducktor 开场 hook 的输出逐字相同，位置在学生消息之后、命令之前；续接会话不重复给，开关变了给替换的一份；照 dsh 建子代理会话的写法、用被测 dsh 的代码建出会话，插件认得出子代理（dsh 真建子代理时这么写，是读代码确认的）。
 - 真模型（10-25、10-26 跑的，用的是 10-27 同步以前的 `duck/` 和那时的检查项）：在 dsh rc.2 上用 DeepSeek（默认的 `deepseek-flash`）跑完 Ducktor 的四套学生流程，必须项全过；建议项里有一条没过：参考文献没给链接（10-26 只重跑了 survey 这一段，这一条过了）。运行里模型起的真子代理都没拿到开场说明；调低压缩阈值后，对话压缩掉开场说明，插件在下一步补发了。
 - 没验证：rc.3 和 `deepseek-v4-pro` 上的真模型流程，真模型结果的波动（每套只跑了一次）；10-27 同步以后的真模型流程（这次同步改了规则和命令的内容，不只是名字：菜单、`/duck-why`、名家文章的转述）；红队改过的 11 张卡还没被真模型读过；Desktop（只有 macOS、Windows 版，我们只在 Linux 上测过）；插件页的点击流程本身（测的是它调用的后端接口），插件的「配置」页也没看过；模型换了工作目录后照不照附注里的路径读写 `.duck/`（流程里模型没换过目录）。
 
-## 常见问题
+---
 
-**是 DeepSeek 官方的插件吗？**
+## 常见问题 (FAQ)
+
+<details>
+<summary><b>1. 是 DeepSeek 官方的插件吗？</b></summary>
+<br>
 不是。这是社区做的插件，和 DeepSeek 公司没有关系。
+</details>
 
-**和 Ducktor 是什么关系？**
-`duck/` 是 Ducktor 的原样拷贝，`duck.lock.json` 记着它来自哪个提交。这个插件加的是 DeepSeek Harness 的接入、「Ducktor」页签和另带的 11 张卡。
+<details>
+<summary><b>2. 和 Ducktor 是什么关系？</b></summary>
+<br>
+<code>duck/</code> 是 Ducktor 的原样拷贝，<code>duck.lock.json</code> 记着它来自哪个提交。这个插件加的是 DeepSeek Harness 的接入、「Ducktor」页签和另带的 11 张卡。
+</details>
 
-**会把我的东西发出去吗？**
-插件自己不发网络请求，页签只读项目里的本地文件。AI 读到的内容照常发给模型。`/duck-survey`、`/duck-idea` 这类命令会让 AI 上网查文献；Ducktor 开着或你敲命令时，AI 给论文、数据集附的链接也要上网查。
+<details>
+<summary><b>3. 会把我的东西发出去吗？</b></summary>
+<br>
+插件自己不发网络请求，页签只读项目里的本地文件。AI 读到的内容照常发给模型。<code>/duck-survey</code>、<code>/duck-idea</code> 这类命令会让 AI 上网查文献；Ducktor 开着或你敲命令时，AI 给论文、数据集附的链接也要上网查。
+</details>
 
-**以前叫什么？**
-2026-10-27 以前叫 deepseek-supervisor，10-26 以前叫 deepseek-ducktor；里面的 Ducktor 那时叫 Doctor Duck。`evals/runs/` 和 `docs/验证记录.md` 里的旧记录保留了当时的名字。装过旧版本的，先卸掉再装，见「安装」。
+<details>
+<summary><b>4. Ducktor 讲的方法论或引用的数据会出错吗？</b></summary>
+<br>
+<b>有可能，请始终保持研究者的最终核验权。</b>外部文献请点链接核对标题与摘要；文内数据请对照源文件复核（<code>/duck-why</code> 会给出要核对的文件和行号）。复盘时关于“AI 当时为何这样做”的分析，是照文件和对话记录推出来的，不代表模型当时真实的推理。
+</details>
 
-## 许可
+<details>
+<summary><b>5. 会对研究者进行能力评分吗？</b></summary>
+<br>
+不会。Ducktor 不出考题，也不对使用者打分。<code>/duck-idea</code> 评估的是课题方案，<code>/duck-review</code> 审视的是论文手稿：<b>我们评估的是研究客体，而非研究者本人。</b>
+</details>
 
-- 插件代码和配置（`index.js`、`lib/`、`client/`、`scripts/`、`tests/`、`cordis.patch.yml`）：MIT。
-- 文档、展示文字和图（`README.md`、`docs/`、`locale/`、`assets/`、`icon.png`）、运行记录（`evals/`）和另带的经验卡片（`mentor/`）：CC BY-NC-SA 4.0，和 Ducktor 的文字一样（里面有改写自 Ducktor 的段落）。
-- `duck/`：Ducktor 原样拷贝，按它自己的 `duck/LICENSE` 分目录许可：文字（skills/、rules/、cards/、handbook/）是 CC BY-NC-SA 4.0，不可商用；`library/` 里的原技能各自保留原来的许可（CC BY 4.0 或 CC BY-NC-SA 4.0）；代码是 MIT。
-- Ducktor 改编自 [Supervisor-Skills](https://github.com/HKUSTDial/Supervisor-Skills)（骆昱宇及贡献者，CC BY-NC-SA 4.0）。
-- 动图里两个窗口滚过的 LaTeX 行，取自一次 Claude Code 运行写的论文；论文数字取自《Attention Is All You Need》（[arXiv 1706.03762](https://arxiv.org/abs/1706.03762)）的表 2 和表 3。
-- 截图里的 DeepSeek Harness 界面归其所有者，不在本许可内。
+<details>
+<summary><b>6. 以前叫什么？</b></summary>
+<br>
+2026-10-25 的第一版叫 deepseek-ducktor。10-26 改名 deepseek-supervisor，10-27 改名 deepseek-doctor（显示名 DeepSeek-Doctor），10-29 改回 deepseek-ducktor。里面的 Ducktor 在 10-27 以前叫 Doctor Duck。<code>evals/runs/</code> 和 <code>docs/验证记录.md</code> 里的旧记录保留了当时的名字。装过旧版本的，见「安装与快速开始」里的旧版本说明。
+</details>
 
-详见 [LICENSE](LICENSE)。
+---
+
+## 来源与致谢
+
+* **命名灵感**：源自《程序员修炼之道》（*The Pragmatic Programmer*）提出的小黄鸭调试法（[Rubber Duck Debugging](https://en.wikipedia.org/wiki/Rubber_duck_debugging)）。
+* **核心方法论与技能库**：本插件内置的 [Ducktor](https://github.com/yinwu01/Ducktor) 改编自香港科技大学（广州）数据智能与分析实验室开源的 [Supervisor-Skills](https://github.com/HKUSTDial/Supervisor-Skills)（骆昱宇及贡献者，CC BY-NC-SA 4.0）。
+* **示例数据说明**：动图里滚过的 LaTeX 行，取自一次 Claude Code 运行写的论文；右边窗口第 49 行讲翻译难在哪，是为示意另加的，后面的行号随之后移；论文数字取自《Attention Is All You Need》（[arXiv 1706.03762](https://arxiv.org/abs/1706.03762)）的表 2 和表 3。
+* **Supervisor 系列**：我们正式将 Supervisor 作为一个实验室系列：[Supervisor-Skills](https://github.com/HKUSTDial/Supervisor-Skills) 是系列的第一个，[Ducktor](https://github.com/yinwu01/Ducktor) 与 DeepSeek-Ducktor 是第二和第三个。接下来我们还会继续开源，并与社区合作。
+
+---
+
+## 许可证 (License)
+
+本项目采用分目录多重许可策略：
+* **插件代码和配置**（`index.js`、`lib/`、`client/`、`scripts/`、`tests/`、`cordis.patch.yml`）：**MIT**。
+* **文档、展示文字和图**（`README.md`、`docs/`、`locale/`、`assets/`、`icon.png`）、运行记录（`evals/`）和另带的经验卡片（`mentor/`）：**CC BY-NC-SA 4.0**，和 Ducktor 的文字一样（里面有改写自 Ducktor 的段落）。
+* **`duck/`**：Ducktor 原样拷贝，按它自己的 `duck/LICENSE` 分目录许可：文字（skills/、rules/、cards/、handbook/）是 CC BY-NC-SA 4.0，不可商用；`library/` 里的原技能各自保留原来的许可（CC BY 4.0 或 CC BY-NC-SA 4.0）；代码是 MIT。
+* 截图里的 DeepSeek Harness 界面归其所有者，不在本许可内。
+
+完整许可条款请参阅 [LICENSE](LICENSE)。

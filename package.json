@@ -1,5 +1,5 @@
 {
-  "name": "deepseek-doctor",
+  "name": "deepseek-ducktor",
   "version": "0.2.0",
   "description": "Ducktor, the research mentor that explains why, as a native DeepSeek Harness plugin.",
   "private": true,

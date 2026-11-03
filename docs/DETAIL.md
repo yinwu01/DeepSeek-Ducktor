@@ -1,4 +1,4 @@
-# DeepSeek-Doctor
+# DeepSeek-Ducktor
 
 > Trust me, I'm a Ducktor.
 
@@ -8,7 +8,7 @@ Ducktor brings that step back. When the AI finishes a real piece of work, Duckto
 
 This plugin brings Ducktor into DeepSeek Harness unchanged. The rules, commands and cards are the ones Claude Code and Codex users get, pinned to one Ducktor commit (named in `duck.lock.json` in the plugin folder). Ducktor itself speaks Chinese.
 
-DeepSeek-Doctor is a community plugin. It is not made by DeepSeek and has no connection to the company.
+DeepSeek-Ducktor is a community plugin. It is not made by DeepSeek and has no connection to the company.
 
 ## Use
 

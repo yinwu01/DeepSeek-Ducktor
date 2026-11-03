@@ -26,7 +26,7 @@
 // Environment:
 //   DEEPSEEK_API_KEY  required; read by dsh itself (nothing here touches it)
 //   DSH               the dsh command (default: dsh on PATH)
-//   DSH_HOME          dsh's home; the profile below must have deepseek-doctor installed
+//   DSH_HOME          dsh's home; the profile below must have deepseek-ducktor installed
 //                     (dsh plugin --profile headless add <this checkout>) or a cordis.patch.yml row
 //   DUCK_E2E_PROFILE  dsh profile (default: headless); it must take headless's --json and
 //                     --session-id, so web or acp will not work here
@@ -207,7 +207,7 @@ const notebookLines = () => text('notebook.md').split('\n').filter((l) => l.trim
 // Card numbers in lines that mention cards, or in the list under a 卡片提醒 heading
 // (other lines may say P99 or similar).
 const cardFiles = (dir) => (fs.existsSync(dir) ? fs.readdirSync(dir).filter((f) => /^[A-Z]\d{2}\.md$/.test(f)).map((f) => f.slice(0, 3)) : []);
-// Ducktor's cards and the ones deepseek-doctor adds (mentor/cards).
+// Ducktor's cards and the ones deepseek-ducktor adds (mentor/cards).
 const PLUGIN_CARDS = new Set([...cardFiles(path.join(ROOT, 'cards')), ...cardFiles(path.join(REPO, 'mentor', 'cards'))]);
 const cardIds = (s) => {
   const lines = [];
@@ -335,7 +335,7 @@ const MENTOR_NAMES = (() => {
 const SPEECH = /说|认为|主张|提醒|建议|强调|提出|指出|提到|写过|写道|讲过|讲的是|批评|觉得|看来|观点|看法/;
 // The host and the plugin's own names are not authorities.
 const HOSTS = new Set(['AI', 'Claude', 'Codex', 'GPT', 'ChatGPT', 'Doctor', 'Duck', 'Ducktor',
-  'DeepSeek', 'DeepSeek Harness', 'Harness', 'DeepSeek-Doctor']);
+  'DeepSeek', 'DeepSeek Harness', 'Harness', 'DeepSeek-Ducktor']);
 const unknownSpeakers = (reply, everySentence = false) => {
   const allowed = allowedText();
   const out = [];
@@ -660,10 +660,10 @@ function setup() {
     process.exit(2);
   };
   // The installed plugin must be this checkout, or the run tests something else. The last
-  // deepseek-doctor row wins: a package name (pnpm link in the profile) or a file.
+  // deepseek-ducktor row wins: a package name (pnpm link in the profile) or a file.
   const row = idRows(host(['--profile', PROFILE, '--dump-config']).stdout || '').at(-1);
-  if (!row) refuse('no deepseek-doctor row');
-  if (row.disabled === true) refuse(`the deepseek-doctor row (${row.name}) is disabled`);
+  if (!row) refuse('no deepseek-ducktor row');
+  if (row.disabled === true) refuse(`the deepseek-ducktor row (${row.name}) is disabled`);
   const target = rowCheckout(row.name, { dshHome: DSH_HOME, profile: PROFILE });
   if (!target || target !== fs.realpathSync(REPO)) refuse(`does not load this checkout (row ${row.name} -> ${target || 'missing'})`);
   // The dump also lists a row dsh's compatibility check refuses to start. So, before any paid
@@ -672,7 +672,7 @@ function setup() {
   // first request would carry. It must hold this checkout's context and the /duck command.
   // (dsh's title model follows the request's route unless a patch names one for it.)
   const probePatch = path.join(path.dirname(PROJECT), 'probe.patch.yml');
-  fs.writeFileSync(probePatch, "- id: agent-default-model\n  name: '@deepseek-ai/dsh-agent-default-model'\n  config:\n    provider: deepseek-doctor-probe-no-adapter\n    model: none\n");
+  fs.writeFileSync(probePatch, "- id: agent-default-model\n  name: '@deepseek-ai/dsh-agent-default-model'\n  config:\n    provider: deepseek-ducktor-probe-no-adapter\n    model: none\n");
   const probe = parse(host(['--profile', PROFILE, '--patch', probePatch, '--json', '/duck 菜单'], { timeout: 120000 }).stdout || '');
   const file = probe.session && sessionLogPath(DSH_HOME, probe.session);
   const events = file ? readSessionEvents(file) : [];
