@@ -64,6 +64,57 @@
 
 ---
 
+## 加入社区
+
+**交流群**
+
+群已超过 200 人，无法通过二维码直接入群。请扫码添加管理员微信 `xyp619`，备注 **"Ducktor + 姓名"**，由管理员邀请入群。
+
+您也可以关注 **数据智能与分析实验室 DIAL 官方公众号** 与 **蟹哥聊科研**，获取科研资讯、论文写作经验、AI 前沿动态与科研工具分享。
+
+加入后您可以：
+- 🔔 第一时间获取项目更新
+- 💬 与同路人交流论文写作、AI 辅助科研心得
+- 🎙️ 参与不定期的线上答疑与经验分享活动
+
+<table align="center">
+  <tr>
+    <td align="center" width="360">
+      <strong>微信交流群</strong>
+    </td>
+    <td align="center" width="360">
+      <strong>官方公众号</strong>
+    </td>
+    <td align="center" width="360">
+      <strong>科研分享号</strong>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" valign="middle" height="360">
+      <img src="assets/wechat-admin.JPG" height="300" />
+    </td>
+    <td align="center" valign="middle" height="360">
+      <img src="assets/wechat-official-account.jpg" height="280" />
+    </td>
+    <td align="center" valign="middle" height="360">
+      <img src="assets/wechat-xiebro-research.jpg" height="280" />
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <sub>添加管理员 xyp619，邀请入群交流</sub>
+    </td>
+    <td align="center">
+      <sub>数据智能与分析实验室 DIAL 官方公众号</sub>
+    </td>
+    <td align="center">
+      <sub>蟹哥聊科研：AI 前沿、论文与科研工具分享</sub>
+    </td>
+  </tr>
+</table>
+
+---
+
 ## 核心体验：之前 vs. 之后
 
 当你把实验结果交给常规 AI 撰写论文时，AI 会一次性输出初稿。**核心贡献如何提炼、结论措辞的强弱边界、对比基线的合理性**，全部由模型在黑盒中自行决断。它也许在最后提几句，但不拆成道理，不给出处，也不记下来。
