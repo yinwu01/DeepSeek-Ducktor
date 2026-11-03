@@ -65,13 +65,9 @@ The idea comes from <a href="https://en.wikipedia.org/wiki/Rubber_duck_debugging
 
 ---
 
-## Join the community
+## Join the discussion group
 
-**Discussion group**
-
-The group has exceeded 200 members and can no longer be joined via QR code. Please scan to add the admin on WeChat (`xyp619`) with the remark **"Ducktor + your name"** to be invited in.
-
-You can also follow the official WeChat account of the **Data Intelligence and Analytics Lab (DIAL)** and **Xie Bro Talks Research** for research news, paper-writing tips, AI frontier updates, and research tool sharing.
+The group has exceeded 200 members and can no longer be joined via QR code. Please scan to add the admin on WeChat (`xyp619`) with the remark **"Ducktor + your name"** to be invited in. You can also follow the official WeChat account of the **Data Intelligence and Analytics Lab (DIAL)** and **Xie Bro Talks Research** for research news, paper-writing tips, AI frontier updates, and research tool sharing.
 
 By joining, you get:
 - 🔔 First-hand updates on the project
