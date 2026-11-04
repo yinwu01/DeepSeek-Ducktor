@@ -329,3 +329,50 @@ This project uses different licenses for different folders:
 * The DeepSeek Harness interface in the screenshot belongs to its owner and is not covered by this license.
 
 For the full terms, see [LICENSE](../LICENSE).
+
+---
+
+## Join the discussion group
+
+The group has exceeded 200 members and can no longer be joined via QR code. Please scan to add the admin on WeChat (`xyp619`) with the remark **"Ducktor + your name"** to be invited in. You can also follow the official WeChat account of the **Data Intelligence and Analytics Lab (DIAL)** and **Xie Bro Talks Research** for research news, paper-writing tips, AI frontier updates, and research tool sharing.
+
+By joining, you get:
+- 🔔 First-hand updates on the project
+- 💬 Exchange paper writing and AI-assisted research tips with peers
+- 🎙️ Join occasional online Q&A and experience-sharing sessions
+
+<table align="center">
+  <tr>
+    <td align="center" width="360">
+      <strong>Discussion Group</strong>
+    </td>
+    <td align="center" width="360">
+      <strong>Official Account</strong>
+    </td>
+    <td align="center" width="360">
+      <strong>Research Updates</strong>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" valign="middle" height="360">
+      <img src="../assets/wechat-admin.JPG" height="300" />
+    </td>
+    <td align="center" valign="middle" height="360">
+      <img src="../assets/wechat-official-account.jpg" height="280" />
+    </td>
+    <td align="center" valign="middle" height="360">
+      <img src="../assets/wechat-xiebro-research.jpg" height="280" />
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <sub>Add admin xyp619 to join the group</sub>
+    </td>
+    <td align="center">
+      <sub>Data Intelligence and Analytics Lab (DIAL)</sub>
+    </td>
+    <td align="center">
+      <sub>Xie Bro Talks Research: AI, papers, and research tools</sub>
+    </td>
+  </tr>
+</table>
