@@ -650,6 +650,13 @@ function globalChecks(transcripts) {
     ['should', 'new notebook lines say what happened this time (｜这次：)', () => { const fresh = notebook.filter((l) => !LOOP_NOTEBOOK.includes(l)); return (fresh.length > 0 || FLOW === 'loop') && fresh.every((l) => /｜这次[:：]/.test(l)); }],
     ['must', 'no bold marks in notebook lines', () => !/\*\*/.test(text('notebook.md'))],
     ['must', 'no em-dash in notebook or decisions', () => !/\u2014/.test(text('notebook.md') + text('decisions.md'))],
+    // A decision line shown in a reply is written to decisions.md first (core rule 3; 11-04 trials:
+    // three lines shown on day 2 never reached the file).
+    ['should', 'every decision line shown in a reply is in decisions.md', () => {
+      const norm = (s) => s.replace(/[\s:：,，。.()（）「」"'`*]/g, '');
+      const log = norm(text('decisions.md'));
+      return transcripts.every((t) => [...t.reply.matchAll(/▸ ?决策[:：]\s*([^\n]{6,})/g)].every((m) => log.includes(norm(m[1]).slice(0, 12))));
+    }],
     // The short why names cards by title; a bare card number is jargon the student cannot read.
     ['should', 'no card number on its own in a short why', () => transcripts.map((t) => lastWhy(t.reply)).every((w) => !bareCardId(w))],
     // Most notebook lines are written by the AI; quoting one as the student's own is wrong.
