@@ -73,7 +73,7 @@ When you give your experimental results to a regular AI to write the paper, the 
 With Ducktor, the AI still finishes the work, but the same task becomes a transparent loop of teaching and research:
 - Use `/duck-outline` to set the main line of the argument, `/duck-write` to write the body, and `/duck-review` to check the draft strictly, as a reviewer would.
 - You can also send `/duck` followed by a question, for example `/duck 可不可以告诉我这个内容里我要学什么？` ("Can you tell me what I should learn here?"). Ducktor first says which command it uses, then explains with that command.
-- After each key stage, Ducktor gives you: **the core trade-off of this step (Why)**, **a research principle that carries over to other work (Principle)**, and **an action you can take earlier next time (Next Time)**. The principles go into `.duck/notebook.md` and also show in the "Ducktor" tab.
+- After each key stage, Ducktor explains **the core trade-off of this step (Why)**: the common alternative, why this choice, and when it does not hold. When there is **a research principle that carries over (Principle)** or **an action you can take earlier next time (Next Time)**, it says that too. The principles go into `.duck/notebook.md` and also show in the "Ducktor" tab.
 
 ---
 
@@ -86,16 +86,16 @@ DeepSeek-Ducktor does not replace your model. It is a layer of rules, skills and
 Right after the install, Ducktor is not on in any project, and it speaks only when you type a `/duck-*` command. Type `/duck on` in a project to turn on **companion mode** for that project:
 
 * **Short notes on method, right away**: when the AI finishes a real step of work (it chooses a method, changes an experiment, or finishes a paragraph), Ducktor adds one or two lines at the end of the reply about why.
-* **Ask before key decisions**: for a decision that changes the approach, the AI asks you before it acts, at most three things at a time.
+* **Ask before key decisions**: for a decision that changes the approach, the AI asks you before it acts, at most three things at a time. If you said you want to decide a kind of judgment yourself, it always asks about that kind.
 * **Decision history**: when there is a trade-off, Ducktor records one decision line and writes whether you or the AI decided.
-* **The "evidence guardrail" before results go into the paper**: when you ask the AI to put experimental results into a table or the paper, it first checks three things: the experiment ran only once, or the gap was not compared with seed variation; a large gain, but its source is not separated; a conclusion stronger than the evidence. If one applies, it stops and asks you first.
+* **The "evidence guardrail" before results go into the paper**: when you ask the AI to put experimental results into a table or the paper, it first checks three things: the experiment ran only once, or the gap was not compared with the result's own variation; a large gain, but its source is not separated; a conclusion stronger than the evidence. If one applies, it stops and asks you first. Outside computer science it uses your field's standards instead (for example sample size, analyses chosen after seeing the data, effect sizes and intervals).
 
 `/duck quiet` still asks first and still records, but does not explain in the conversation. `/duck off` goes back to the state right after the install: quiet in everyday work, with the usual explanations and records when you type a command.
 
 ### 2. Ask afterwards (`/duck-why`) and look back on a stage (`/duck-learn`)
 
-* **Ask right away**: even after the AI has finished, you can ask `/duck <your question>` at any time, or use `/duck-why` on the last action (or a file or paragraph that you name). It explains the one point most worth learning: the common approach and how experienced people think, the source, the files and line numbers to check, a principle, and what to do first next time.
-* **Look back on a stage**: when a stage ends, use `/duck-learn`. It compares what you meant to do with what happened, points out the weak spots that a top mentor would examine, and lists the judgments that you left to the AI this time.
+* **Ask right away**: even after the AI has finished, you can ask `/duck <your question>` at any time, or use `/duck-why` on the last action (or a file or paragraph that you name). It explains the one judgment most worth learning: the common approach, why experienced people choose otherwise, when that does not hold, and the files and line numbers to check. If you made this call and never said why, it first asks what you were thinking. Ideas from the cards and well-known researchers are turned into experience; the sources go into the report, and it gives them when you ask.
+* **Look back on a stage**: when a stage ends, use `/duck-learn`. It reads the records of this stretch first; if you made calls in it and have not looked back yet, it asks you for one sentence on what you would change (you can skip). Then it compares what you meant to do with what happened, points out the weak spots an experienced advisor would examine, lists the judgments left to the AI, and gives one or two next steps; it also says whether the last look-back's next steps were done.
 
 ### 3. The "Ducktor" tab in the web interface
 
@@ -107,7 +107,7 @@ All records are Markdown files in `.duck/` of the project: the notebook `noteboo
 
 ### 5. A traceable mentor knowledge base
 
-The rules tell Ducktor: when it explains a principle, the names of mentors and the sources come only from the experience cards, the summaries of mentors' essays (`cards/MENTORS.md`), and named sections of the research handbook (`handbook/`). If it finds no source, it says that this is its own judgment.
+The rules tell Ducktor: when it explains a principle, the grounds come only from the experience cards, the summaries of mentors' essays (`cards/MENTORS.md`), and named sections of the research handbook (`handbook/`). In the conversation it turns them into experience; names, titles and card numbers go into the report, and it gives them when you ask. If nothing fits, it says that this is its own judgment.
 
 There are two sets of experience cards. Ducktor has 23. This plugin adds 11 (`mentor/cards/`), on reading papers, entering a new field, experiment habits, meetings with your advisor, and rules for research and review with AI. Each card names its source and links to the original. We checked the cards against the originals when we wrote them, and before release two independent model sessions checked them line by line as a red team (not a human review).
 
