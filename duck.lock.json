@@ -2,10 +2,10 @@
   "note": "duck/ and tests/e2e/fixtures/grad-project are verbatim copies of these Ducktor paths at this commit. Re-run scripts/sync-duck.mjs instead of editing them.",
   "source": {
     "repository": "yinwu01/Ducktor",
-    "ref": "ef9ac5e",
-    "commit": "ef9ac5e69f54e8d6891eaacb9f5bd5fd4338e793",
-    "committedAt": "2026-11-04T10:46:11-08:00",
-    "subject": "docs/walkthrough.md: replaced the 0.2.0 transcripts with excerpts from the rc7 e2e main run (review and its explanation, a small /duck-why, /duck-learn without fixed headings, the notebook with 「AI 的判断」)"
+    "ref": "d9f3a33",
+    "commit": "d9f3a33666477de5d3cb9f9bc22a8f39d22861d9",
+    "committedAt": "2026-11-04T10:49:10-08:00",
+    "subject": "/duck hub: the three cases are spelled out at the top; with a sentence after /duck, a fitting command is used even when the question looks quick"
   },
   "paths": [
     "bin",
@@ -171,7 +171,7 @@
     "rules/idle.md": "792a73dddba7cceb27f2aa41a39436d16a5ae5ceca3d18cec422705b86d6bb52",
     "rules/wrapper-template.md": "949e42a55c8db356442643518960b5d41c5e239c829800a329403a9974324570",
     "skills/duck/agents/openai.yaml": "ccf50e7c85317179009e728771457fb1e88ae257be42b3175df837feefa80b7c",
-    "skills/duck/SKILL.md": "5b48d620ee4b274a02f62f524256f31d799868586dc553e434be283158821875",
+    "skills/duck/SKILL.md": "83ab4ebe7a3c9c5d8789297cb66240a01e164d3e3742b496a488759eaf270268",
     "skills/duck-figure/agents/openai.yaml": "d5825d32e7252e5939926aa9ea9a6fbadb3689a20491251223dafbf1ca9a683c",
     "skills/duck-figure/SKILL.md": "eed731d98ed61001f839eb637dade720cc95b5dfc3015101d6d4226836a14cd3",
     "skills/duck-idea/agents/openai.yaml": "8410d0ecad9d861338395d585173b7527e9189c6582909c83fe6b937d003671c",
