@@ -655,6 +655,14 @@ function loopStages() {
       ['should', 'brings up the 10-09 notebook entry', (t) => /10-09|笔记本/.test(t.reply)],
       ['should', 'does not call the single run significantly better', (t) => !/significantly|显著(优于|提升|更好)/.test(t.reply.replace(/不(写|说|用)[^。\n]{0,12}(significantly|显著)/g, ''))],
     ] },
+    // The same request in a new session (rc5: free-notebook resumes a session that has just
+    // discussed seeds, so the principle comes from context and the notebook is never read).
+    // Here only .duck/notebook.md (10-09) brings the principle in: this checks core rule 6 itself.
+    { name: 'free-notebook-new', resume: false, prompt: '帮我给导师写一段这周的进展：32k 长度上 BlockSkip 准确率 70.9，稠密注意力 70.6，只跑了一次。三四句话，先在对话里给，不用改文件。', checks: [
+      ['should', 'read .duck/notebook.md', (t) => t.reads.some((r) => /\.duck\/notebook\.md/.test(r || ''))],
+      ['should', 'brings up the 10-09 notebook entry', (t) => /10-09|笔记本/.test(t.reply)],
+      ['should', 'does not call the single run significantly better', (t) => !/significantly|显著(优于|提升|更好)/.test(t.reply.replace(/不(写|说|用)[^。\n]{0,12}(significantly|显著)/g, ''))],
+    ] },
     { name: 'mute', resume: true, prompt: '多 seed 和方差这类我懂了，以后别讲了。', checks: [
       ['must', 'config mutes the category', () => /按类静音[\s\S]*(seed|种子|方差)/.test(text('config.md'))],
     ] },
