@@ -210,8 +210,8 @@ function allowRead(input) {
 // the project's .duck/: notebook.md, decisions.md and reports/*.md. A denied prompt there
 // loses the record. notebook.md and decisions.md are logs the student may show at a group
 // meeting, so only adding goes through without a prompt: creating the file, a Write that keeps
-// the old text at its start, an Edit whose new text starts with the old text. Rewriting or
-// deleting a line asks as usual. Files the next session loads as settings or rules
+// the old text at its start, an Edit whose new text starts with the old text. An Edit that
+// rewrites or deletes a line asks as usual; a Write that drops the old text is refused. Files the next session loads as settings or rules
 // (config.md, skills/, cards/) also ask, so changing them stays the student's call.
 // A symlinked or hard-linked .duck/, reports/ or record file is not followed.
 const RECORDS = /^(?:(?:notebook|decisions)\.md|reports\/[^/]+\.md)$/;
@@ -273,6 +273,21 @@ function onlyAdds(input, target, stat) {
   return next === 0x0a || (next === 0x0d && bytes[old.length + 1] === 0x0a);
 }
 
+// A Write that does not keep a log's old text at its start replaces every entry in it. The model
+// does this when it has not read the file: on 11-04 a new session wrote one line over a notebook
+// it never opened, and the two entries of the day before were lost (the session ran with edits
+// accepted, so no prompt came). Such a Write is refused with a note on how to add. Changing or
+// deleting an entry goes through Edit, which names the lines it changes and asks as usual.
+function refuseRewrite(rel) {
+  fs.writeSync(1, JSON.stringify({
+    hookSpecificOutput: {
+      hookEventName: 'PreToolUse',
+      permissionDecision: 'deny',
+      permissionDecisionReason: `.duck/${rel} keeps the student's earlier entries and this Write would replace them. Read the file, then add the new line at its end with Edit. To change or delete an entry the student asked about, Edit only that entry.`,
+    },
+  }));
+}
+
 function allowRecord(input) {
   const file = (input.tool_input || {}).file_path;
   // Claude Code's project root, not the shell's current folder: after `cd paper` the hook's
@@ -295,7 +310,10 @@ function allowRecord(input) {
   const target = path.join(duck, rel);
   const stat = lstatOrNull(target);
   if (stat && !(stat.isFile() && stat.nlink === 1)) return;
-  if (LOGS.test(rel) && !onlyAdds(input, target, stat)) return;
+  if (LOGS.test(rel) && !onlyAdds(input, target, stat)) {
+    if (input.tool_name === 'Write' && stat && stat.size > 0) refuseRewrite(rel);
+    return;
+  }
   fs.writeSync(1, JSON.stringify({
     hookSpecificOutput: {
       hookEventName: 'PreToolUse',
