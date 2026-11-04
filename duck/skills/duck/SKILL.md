@@ -97,7 +97,7 @@ When you say "I've got this kind", Ducktor adds a line here and stops explaining
 ## 三、后面是一句话：替学生挑命令
 
 1. 按上面那张表，挑最贴合的一条。问一整段做完的工作（一篇稿子、一轮实验）里要学什么，挑 /duck-learn；问某一步、某处改动为什么这么做，挑 /duck-why。拿不准时，把两条候选摆给学生，问一句，不要猜。
-2. 先说一句按哪条处理，例如「按润色处理（/duck-polish）；要审稿请敲 /duck-review。」
+2. 先说一句按哪条命令处理，命令名要写出来，例如「按润色处理（/duck-polish）；要审稿请敲 /duck-review。」
 3. 然后读那条命令的说明文件「插件根目录/skills/duck-xxx/SKILL.md」，把学生这句话当作敲在命令后面的内容，照说明从头做到尾，开头和收尾的步骤一步都不跳。
 4. 学生自己加的命令（.claude/skills/duck-xxx/ 或 .agents/skills/duck-xxx/）也在挑选范围里，挑中了就读那一份。
 5. 说明文件不存在，就告诉学生这条命令还没装好，照常帮学生做这件事。

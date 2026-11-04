@@ -273,7 +273,10 @@ const afterLastQuote = (s) => {
   while (i >= 0 && !/^[ \t]*>/.test(lines[i])) i -= 1;
   return i < 0 ? s : lines.slice(i + 1).join('\n');
 };
-const WHY_BLOCK = { test: (s) => quoteText(lastWhy(s)).length > 0 && afterLastQuote(s).replace(/\s/g, '').length <= 400 };
+// Claude Code's web search tool makes the model end with a 「Sources:」 list; it is not part of
+// what follows the explanation (rc4 more, stage survey).
+const withoutSources = (s) => s.replace(/\n+(Sources|来源)[:：][ \t]*\n(?:[ \t]*[-*][^\n]*(?:\n|$))+\s*$/, '\n');
+const WHY_BLOCK = { test: (s) => quoteText(lastWhy(s)).length > 0 && afterLastQuote(withoutSources(s)).replace(/\s/g, '').length <= 400 };
 // The old fixed principle line: a quote line bold from end to end.
 const BOLD_LINE = /^[ \t]*>\s*\*\*[^\n]+\*\*\s*$/m;
 // A step of the wrapped skill given as the reason, e.g. 这是原技能 Step 0 的要求. Broad on purpose:
@@ -393,6 +396,13 @@ const whyChecks = () => [
 // /duck-learn since Ducktor 0.2.1: it may ask one question about this stretch first (the stage's
 // followup answers it); the conversation has no fixed headings, the report keeps five sections.
 // The 「下一步」 (Next steps) section of a report: from that heading to the next heading.
+// From the heading to the end of the report: the answer may get its own section after 下一步
+// (rc4 main: 「## 学生的回看」 right after 「## 下一步」, with the next step in it).
+const reportFrom = (text, heading) => {
+  const lines = text.split('\n');
+  const at = lines.findIndex((l) => /^#+\s/.test(l) && heading.test(l));
+  return at < 0 ? '' : lines.slice(at + 1).join('\n');
+};
 const reportSection = (text, heading) => {
   const lines = text.split('\n');
   const at = lines.findIndex((l) => /^#+\s/.test(l) && heading.test(l));
@@ -411,7 +421,7 @@ const learnChecks = (answerWords) => [
   ['should', 'the fixed 我自己定 sentence stays in the report', (t) => !/下次哪类事想自己定/.test(t.reply)],
   // The closing question is answered by the stage's answer; the answer goes into 下一步.
   ...(answerWords ? [['must', "the student's answer went into the report's next steps", (t) => !t.reply.includes('[学生]')
-    || answerWords.test(reportSection(newestReport('learn'), /下一步|Next steps/))]] : []),
+    || answerWords.test(reportFrom(newestReport('learn'), /下一步|Next steps/))]] : []),
   // The look-back comes first; one question on a concrete decision closes the last reply.
   // Judged on the first reply: after the stage's answer the conversation goes on (rc3 paper run).
   ['should', 'ends with one look-back question', (t) => /[？?][^？?]{0,40}$/.test(t.reply.split('\n\n[学生]')[0].trim())],
