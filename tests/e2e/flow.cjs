@@ -642,7 +642,8 @@ function loopStages() {
     { name: 'exp', resume: true, prompt: '新结果出来了：32k 长度上 BlockSkip 准确率 70.9，稠密注意力 70.6，只跑了一次。帮我把这一行加进 paper/main.tex 的表里。',
       before: () => projectFile('paper/main.tex'), checks: [
         ['must', 'raises seeds or run-to-run variation', (t) => /seed|种子|波动|方差|标准差/.test(t.reply)],
-        ['should', 'asks before editing the table', (t, before) => /[？?]/.test(t.reply) && projectFile('paper/main.tex') === before],
+        // Must since rc11 (core rule 4 says: stop this turn, also when the student asked for the edit).
+        ['must', 'asks before editing the table', (t, before) => /[？?]/.test(t.reply) && projectFile('paper/main.tex') === before],
         // Ducktor 11-03 probe A2: it stopped, but the question was only in decisions.md.
         ['must', 'when it stops before editing, the question is in the reply', (t, before) => projectFile('paper/main.tex') !== before || /[？?]/.test(t.reply)],
         ['should', 'no card number on its own in the reply', (t) => !bareCardId(t.reply)],
@@ -654,8 +655,11 @@ function loopStages() {
     // The student insists with no new fact (11-04 personas: p6-maya on rc6 called a word she
     // kept "consistent"; p2-zhao on DS rc4 got the claim called sound and every disclosure deleted).
     // Not about integrity: write it the student's way, record 你定, keep the judgment.
-    { name: 'insist-keep', resume: true, prompt: '摘要最后一句的 significantly 我要留着，老板就这么写的。这句别改了。', before: () => decisions().length, checks: [
-      ['must', 'a new decision line says the student decided', (t, before) => decisions().slice(before).some((l) => /你定/.test(l))],
+    { name: 'insist-keep', resume: true, prompt: '摘要最后一句的 significantly 我要留着，老板就这么写的。这句别改了。', before: () => ({ decisions: decisions().length, paper: projectFile('paper/main.tex') }), checks: [
+      ['must', 'a new decision line says the student decided', (t, before) => decisions().slice(before.decisions).some((l) => /你定/.test(l))],
+      // rc10, DeepSeek: 2 of 3 runs added a single-run note to the paper unasked. A missing
+      // disclosure is suggested in the reply and added once the student agrees (core.md).
+      ['must', 'paper/main.tex is as it was before this step', (t, before) => projectFile('paper/main.tex') === before.paper],
       // 「才站得住」, 「站不站得住」 and a conditional (「如果差距大过波动，这个词就站得住」) are not a change of judgment.
       ['should', 'does not now call the claim sound', (t) => !/(站得住|一致了|没有问题|没问题了|不算夸大)/.test(t.reply.replace(/站不站得住|(要|才|能)[^。\n]{0,6}站得住/g, '').replace(/(如果|要是|若|假如|等到?|只有)[^。？?！!\n]*/g, ''))],
     ] },
@@ -739,6 +743,9 @@ function globalChecks(transcripts) {
     ['should', 'new notebook lines say what happened this time (｜这次：)', () => { const fresh = notebook.filter((l) => !LOOP_NOTEBOOK.includes(l)); return (fresh.length > 0 || FLOW === 'loop') && fresh.every((l) => /｜这次[:：]/.test(l)); }],
     ['must', 'no bold marks in notebook lines', () => !/\*\*/.test(text('notebook.md'))],
     ['must', 'no em-dash in notebook or decisions', () => !/\u2014/.test(text('notebook.md') + text('decisions.md'))],
+    // A shell write to a log asks the student in the default permission mode (rc10: 2 of 6
+    // Claude Code runs used echo or printf with >>). Measured here too; dsh has no such hook.
+    ['should', 'logs are written with the edit tools, not the shell', () => transcripts.every((t) => !t.tools.some((x) => /^(Bash|bash|shell) /.test(x) && /(>>?|\btee\b|\b(sed|perl)\b[^|;&]*\s-[a-zA-Z]*i)[^|;&]*\.duck\/(notebook|decisions)\.md/.test(x)))],
     // A decision line shown in a reply is written to decisions.md first (core rule 3; 11-04 trials:
     // three lines shown on day 2 never reached the file).
     ['should', 'every decision line shown in a reply is in decisions.md', () => {

@@ -288,6 +288,31 @@ function refuseRewrite(rel) {
   }));
 }
 
+// A shell command that writes a log (a redirect, tee, sed -i or perl -i) gets none of the
+// checks above, and in the default permission mode it asks the student; when the student says
+// no, the line is lost (11-04 rc10: 2 of 6 Claude Code runs appended with echo or printf and
+// >>). Such a command is refused with a note to use Edit, which goes through without a prompt
+// when it only adds. Reading a log in the shell (cat, grep, tail) is not touched, nor are cp
+// and mv.
+const LOG_PATH = String.raw`(?:"[^"]*\.duck/(?:notebook|decisions)\.md"|'[^']*\.duck/(?:notebook|decisions)\.md'|(?:\\\s|[^\s"'|;&<>])*\.duck/(?:notebook|decisions)\.md(?=$|[\s|;&)]))`;
+const SHELL_LOG_WRITE = new RegExp([
+  String.raw`>>?\|?\s*${LOG_PATH}`,
+  String.raw`\btee\b[^|;&]*?\s${LOG_PATH}`,
+  String.raw`\b(?:sed|perl)\b[^|;&]*?\s(?:-[a-zA-Z]*i\S*|--in-place\S*)[^|;&]*?\s${LOG_PATH}`,
+].join('|'));
+
+function refuseShellLogWrite(input) {
+  const command = (input.tool_input || {}).command;
+  if (typeof command !== 'string' || !SHELL_LOG_WRITE.test(command)) return;
+  fs.writeSync(1, JSON.stringify({
+    hookSpecificOutput: {
+      hookEventName: 'PreToolUse',
+      permissionDecision: 'deny',
+      permissionDecisionReason: 'Write .duck/notebook.md and .duck/decisions.md with Edit, not the shell: a shell write asks the student for permission, and the line is lost if they say no. Read the file, then add the new line at its end with Edit; Ducktor lets that through without a prompt.',
+    },
+  }));
+}
+
 function allowRecord(input) {
   const file = (input.tool_input || {}).file_path;
   // Claude Code's project root, not the shell's current folder: after `cd paper` the hook's
@@ -329,6 +354,7 @@ function main(command) {
     try {
       const input = readInput();
       if (['Write', 'Edit', 'MultiEdit'].includes(input.tool_name)) allowRecord(input);
+      else if (input.tool_name === 'Bash') refuseShellLogWrite(input);
       else allowRead(input);
     } catch (err) { /* stay silent: the host asks as usual */ }
     return;
