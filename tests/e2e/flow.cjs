@@ -321,7 +321,8 @@ const DUCK_QUOTE = /^[ \t]*>/m;
 // The principle part of a notebook line: between the first ｜ and ｜这次 (or the end).
 const principleOf = (l) => l.split('｜')[1] || l;
 // 「最小测试」「小测试」are test runs, not a quiz.
-const QUIZ = /考考你|(?<!最)小测(?!试)|测验|测一测|思考题|练习题|课后作业|留个作业|布置.{0,4}作业|给你打分|打几分|你的得分|成长档案/;
+// 「先小测、再全量」 plans a small experiment run, not a quiz (11-04 rc11, DeepSeek more).
+const QUIZ = /考考你|(?<![最先再])小测(?![试、，,])|测验|测一测|思考题|练习题|课后作业|留个作业|布置.{0,4}作业|给你打分|打几分|你的得分|成长档案/;
 // /duck-why talks like a mentor and grounds the lesson in named researchers. Names and views may
 // only come from the plugin's cards (MENTORS.md and mentor/cards included), handbook and original
 // skills, or from the student's own project (paper authors, the survey report, background.md),
