@@ -109,8 +109,9 @@ function parseNotebook(text) {
 }
 
 // Chinese headings as Ducktor writes them; English ones are the fixed titles in Ducktor's
-// rules (wrapper-template step 4, /duck-learn step 4).
-const CHECK_HEADING = /核对|自己先做|导师会盯|交给 ?AI ?的判断|^(?:\d+[.)]?\s*)?(?:next time\b|where a top advisor would look|judgments? left to AI)/i
+// rules (wrapper-template step 6.4, /duck-learn step 5). Older reports (Ducktor 0.2.0 and
+// before) used "Next time, do this first" and "Where a top advisor would look"; both stay.
+const CHECK_HEADING = /核对|自己先做|导师会盯|交给 ?AI ?的判断|^(?:\d+[.)]?\s*)?(?:next time\b|to take away\b|where an? (?:top|experienced) advisor would look|judgments? left to AI)/i
 const CARD_HEADING = /卡片提醒|^(?:\d+[.)]?\s*)?card reminders?\b/i
 
 /** One report: its title, its check sections, and the cards its 卡片提醒 section names. */

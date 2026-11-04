@@ -249,11 +249,10 @@ const duckSnapshot = () => {
   walk(path.join(PROJECT, '.duck'));
   return out.sort().join('\n');
 };
-// The short why after a command: a quote line that is bold from end to end, and a quote line
-// starting with 下次. The original skills quote sentences too, so neither alone is enough.
-const WHY_BLOCK = { test: (s) => /^[ \t]*>\s*\*\*[^\n]+\*\*\s*$/m.test(s) && /^[ \t]*>\s*下次/m.test(s) };
-// The duck's closing blockquote: the last run of > lines that holds a 下次 line.
-// A blank line inside the block does not end it; any other non-quote line does.
+// The duck's explanation (after a command, a step, or in /duck-why): the last run of > lines in
+// the reply. A blank line inside the block does not end it; any other non-quote line does.
+// Since Ducktor 0.2.1 it has no fixed parts (no all-bold principle line, no 下次 line, no
+// closing sentence), so the check is that it is there and says something besides the decision line.
 const lastWhy = (s) => {
   const blocks = [];
   let cur = [];
@@ -263,8 +262,12 @@ const lastWhy = (s) => {
     else if (cur.length) { blocks.push(cur.join('\n')); cur = []; }
   }
   if (cur.length) blocks.push(cur.join('\n'));
-  return blocks.filter((b) => /^[ \t]*>\s*下次/m.test(b)).at(-1) || '';
+  return blocks.at(-1) || '';
 };
+const quoteText = (b) => b.split('\n').map((l) => l.replace(/^[ \t]*>\s?/, '').trim()).filter((l) => l && !/^▸/.test(l)).join('\n');
+const WHY_BLOCK = { test: (s) => quoteText(lastWhy(s)).length > 0 };
+// The old fixed principle line: a quote line bold from end to end.
+const BOLD_LINE = /^[ \t]*>\s*\*\*[^\n]+\*\*\s*$/m;
 // A step of the wrapped skill given as the reason, e.g. 这是原技能 Step 0 的要求. Broad on purpose:
 // it also catches a short why that only mentions the skill, so it stays a should.
 const PROCEDURE_REASON = /原技能[^\n。]{0,24}(要求|规定|规则|说明|标准)|[按照依]原技能|技能(的)?要求|Step ?\d|SKILL\.md|references\/|\.md ?第 ?\d/;
@@ -274,6 +277,9 @@ const procedureReason = (why) => why.split(/[。；\n]/).some((c) => PROCEDURE_R
 const shortWhyChecks = () => [
   ['should', 'the short why gives a reason, not a step of the skill', (t) => lastWhy(t.reply) && !procedureReason(lastWhy(t.reply))],
   ['should', 'the short why has no labels like 为什么这么做：', (t) => lastWhy(t.reply) && !/^[ \t]*>\s*\**(为什么这么做|为什么|取舍|依据|你能带走的一条|下次自己先做什么|下次自己先做)\**[：:]/m.test(lastWhy(t.reply))],
+  ['should', 'the short why has no all-bold principle line', (t) => lastWhy(t.reply) && !BOLD_LINE.test(lastWhy(t.reply))],
+  // Names, titles and card numbers go to the report; the conversation turns them into experience.
+  ['should', 'the short why names no researcher and no plugin card number', (t) => namesIn(lastWhy(t.reply)).length === 0 && !cardIds(lastWhy(t.reply)).some((id) => PLUGIN_CARDS.has(id))],
   ['must', 'every Latin name the short why reports as saying something is in the plugin or the project', (t) => unknownSpeakers(lastWhy(t.reply)).length === 0],
   // The short why is short, so any capitalized name in it is checked, not only in reported speech.
   ['should', 'every Latin name in the short why is in the plugin or the project', (t) => unknownSpeakers(lastWhy(t.reply), true).length === 0],
@@ -332,6 +338,10 @@ const MENTOR_NAMES = (() => {
   for (const n of NOT_PEOPLE) names.delete(n);
   return names;
 })();
+// Researchers named in a text, by whole word. Surnames that are also English words or common
+// Latin words (Might, Hill, Long) are left out, so 「might」 or 「Bradford Hill」 do not count.
+const COMMON_WORDS = new Set(['Might', 'Hill', 'Long', 'Young', 'Wise', 'Rich', 'Brown', 'Gray', 'Green', 'White', 'Black', 'Rice', 'Love', 'Guo']);
+const namesIn = (s) => [...MENTOR_NAMES].filter((n) => n.length > 2 && !COMMON_WORDS.has(n) && new RegExp(`(^|[^A-Za-z])${n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}([^A-Za-z]|$)`).test(s));
 const SPEECH = /说|认为|主张|提醒|建议|强调|提出|指出|提到|写过|写道|讲过|讲的是|批评|觉得|看来|观点|看法/;
 // The host and the plugin's own names are not authorities.
 const HOSTS = new Set(['AI', 'Claude', 'Codex', 'GPT', 'ChatGPT', 'Doctor', 'Duck', 'Ducktor',
@@ -355,14 +365,31 @@ const unknownTitles = (reply) => {
   return [...reply.matchAll(/《([^》]+)》/g)].map((m) => m[1]).filter((t) => !allowed.includes(t)).concat(/施一公/.test(reply) ? ['施一公'] : []);
 };
 const OLD_OR_NEW_LABELS = /^[ \t]*>\s*\**(用的思路|要核对的话|放弃了什么|这次的过程|为什么|名家怎么看|回到这次|新手常怎么做|有经验的人怎么想|最值得学的|你能带走的一条|过程还原)\**[：:]/m;
+// /duck-why since Ducktor 0.2.1: no fixed items or closing line in the conversation; the report
+// carries the grounds and the line that the account is reconstructed from records.
 const whyChecks = () => [
-  ['must', 'says the account of this step is worked out from the records, not known', (t) => /没法确认|can(no|')t (be )?(confirm|know)|no way to (know|confirm)/i.test(t.reply)],
-  ['should', 'one blockquote with an all-bold line and a 下次 line', (t) => WHY_BLOCK.test(t.reply)],
+  ['must', 'wrote a why report', () => reports('why').length > 0],
+  ['must', 'the reply carries the explanation, not only a pointer to the report', (t) => quoteText(lastWhy(t.reply)).replace(/\s/g, '').length > 40],
+  ['must', 'the why report says the account is reconstructed from records', () => /看不出来|没法确认|无法确认|not in the records|can(no|')t (be )?(confirm|know)|no way to (know|confirm)/i.test(newestReport('why'))],
+  ['should', 'the why report lists its grounds or says it is its own judgment', () => /依据|自己的判断|Grounds|Sources|own judgment/i.test(newestReport('why'))],
+  ['should', 'no all-bold principle line', (t) => !BOLD_LINE.test(t.reply)],
+  ['should', 'no fixed closing line about what cannot be confirmed', (t) => !/没法确认|AI 当时是不是这么想的/.test(t.reply)],
   ['should', 'no section labels like 用的思路： or 名家怎么看：', (t) => !OLD_OR_NEW_LABELS.test(t.reply)],
-  ['should', 'names a researcher or says it is its own judgment', (t) => [...MENTOR_NAMES].some((n) => t.reply.includes(n)) || /陈天奇|自己的判断/.test(t.reply)],
+  ['should', 'names no researcher and no plugin card number in the conversation', (t) => namesIn(t.reply).length === 0 && !cardIds(t.reply).some((id) => PLUGIN_CARDS.has(id))],
   ['must', 'every Latin name it reports as saying something is in the plugin or the project', (t) => unknownSpeakers(t.reply).length === 0],
   ['should', 'every 《title》 it names is in the plugin or the project', (t) => unknownTitles(t.reply).length === 0],
-  ['must', 'wrote a why report', () => reports('why').length > 0],
+];
+// /duck-learn since Ducktor 0.2.1: it may ask one question about this stretch first (the stage's
+// followup answers it); the conversation has no fixed headings, the report keeps five sections.
+const learnChecks = () => [
+  ['must', 'wrote a learn report', () => reports('learn').length > 0],
+  ['must', 'the reply carries the review itself, not only the report name', (t) => t.reply.replace(/\s/g, '').length > 200 && /AI ?定|交给 ?AI|下一步|接下来/.test(t.reply)],
+  ['should', 'lists what was left to the AI', (t) => /交给 ?AI|AI ?定/.test(t.reply)],
+  ['should', 'no fixed bold headings in the conversation', (t) => !/^\s*\*\*(本来想干什么|实际怎样|顶级导师会盯哪里|这次交给 ?AI 的判断|下一步)\*\*/m.test(t.reply)],
+  ['should', 'no fixed opening question', (t) => !/哪一步最想重来/.test(t.reply)],
+  ['should', 'names no researcher and no plugin card number in the conversation', (t) => namesIn(t.reply).length === 0 && !cardIds(t.reply).some((id) => PLUGIN_CARDS.has(id))],
+  ['should', 'the report keeps the five sections', () => ['本来想干什么', '实际怎样', '会盯哪里', '交给 ?AI', '下一步'].every((k) => new RegExp(k).test(newestReport('learn')))],
+  ['should', 'the report says how to record 我自己定', () => /我自己定/.test(newestReport('learn'))],
 ];
 
 // Each stage: name, prompt, resume (continue the session), optional search and timeout, and
@@ -445,14 +472,7 @@ function mainStages() {
       ['must', 'wrote .duck/cards/G01.md', () => exists('cards/G01.md')],
       ['must', 'INDEX lists G01', () => /G01/.test(text('cards/INDEX.md'))],
     ] },
-    { name: 'learn-ask', resume: true, prompt: cmd('duck-learn'), checks: [
-      ['must', 'opens with the one question', (t) => /最想重来/.test(t.reply)],
-    ] },
-    { name: 'learn', resume: true, prompt: '补 seed 是我定的。最想重来的是摸方向，搜得太窄了。', checks: [
-      ['must', 'wrote a learn report', () => reports('learn').length > 0],
-      ['should', 'lists what was left to the AI', (t) => /交给 ?AI|AI 定/.test(t.reply)],
-      ['should', 'next step uses the answer', (t) => /摸方向|检索|搜/.test(t.reply)],
-    ] },
+    { name: 'learn', resume: true, prompt: cmd('duck-learn'), followup: '补 seed 是我定的。回头看，最想重来的是摸方向，搜得太窄了。', checks: learnChecks() },
     { name: 'off', resume: true, prompt: `${cmd('duck')} off`, checks: [
       ['must', 'config says off', () => switchIs('off')],
       // off is the fresh-install state, not a stronger "off" than that.
@@ -476,8 +496,9 @@ function moreStages() {
     ['must', `wrote a ${short} report`, () => reports(short).length > 0],
     ['should', 'reply has the why block', (t) => WHY_BLOCK.test(t.reply)],
     ...shortWhyChecks(),
-    ['should', 'shows a card reminder with a plugin card number', (t) => /卡片提醒/.test(t.reply + newestReport(short))
-      && cardIds(t.reply + newestReport(short)).some((id) => PLUGIN_CARDS.has(id))],
+    // Since Ducktor 0.2.1 card reminders are in the report, not in the conversation.
+    ['should', 'the report has card reminders with a plugin card number', (t) => /卡片提醒|Card reminders/.test(newestReport(short))
+      && cardIds(newestReport(short)).some((id) => PLUGIN_CARDS.has(id))],
     ...extra,
   ] });
   const untouched = (rel) => ['should', `${rel} untouched`, () => projectFile(rel) === fixture(rel)];
@@ -537,7 +558,7 @@ const LOOP_NOTEBOOK = [
 ];
 
 // The loop flow's .duck/config.md: the format /duck on writes (skills/duck/SKILL.md, section 二).
-const LOOP_CONFIG = '# Ducktor 设定\n\n开关：on\n\n## 按类静音\n学生说「这类我懂了」时，在这里记一行。\n\n## 静音的卡\n\n## 关掉的命令\n';
+const LOOP_CONFIG = '# Ducktor 设定\n\n开关：on\n\n## 我自己定\n你说某类事以后想自己定时，Ducktor 在这里记一行，碰到这类事先问你。\n\n## 按类静音\n你说「这类我懂了」时，Ducktor 在这里记一行，以后这类只记不讲。\n\n## 静音的卡\n\n## 关掉的命令\n';
 
 // The knowledge loop and the resident rules: /duck picks a command, old notebook entries come
 // back in later commands, a free conversation about a single-run result, and 「这类我懂了」.
@@ -560,6 +581,8 @@ function loopStages() {
       before: () => projectFile('paper/main.tex'), checks: [
         ['must', 'raises seeds or run-to-run variation', (t) => /seed|种子|波动|方差|标准差/.test(t.reply)],
         ['should', 'asks before editing the table', (t, before) => /[？?]/.test(t.reply) && projectFile('paper/main.tex') === before],
+        // Ducktor 11-03 probe A2: it stopped, but the question was only in decisions.md.
+        ['must', 'when it stops before editing, the question is in the reply', (t, before) => projectFile('paper/main.tex') !== before || /[？?]/.test(t.reply)],
         ['should', 'no card number on its own in the reply', (t) => !bareCardId(t.reply)],
       ] },
     { name: 'exp-ok', resume: true, prompt: '先补到 3 个 seed，表等结果出来再改。', before: () => decisions().length, checks: [
@@ -589,11 +612,8 @@ function paperStages() {
       ...shortWhyChecks(),
     ] },
     { name: 'why', resume: true, prompt: cmd('duck-why'), checks: whyChecks() },
-    { name: 'learn-ask', resume: true, prompt: cmd('duck-learn'), checks: [
-      ['must', 'opens with the one question', (t) => /最想重来/.test(t.reply)],
-    ] },
-    { name: 'learn', resume: true, prompt: '审稿是我让做的，怎么审都交给你了。最想重来的是实验部分，我想先弄清审稿人最可能抓哪一条。', checks: [
-      ['must', 'wrote a learn report', () => reports('learn').length > 0],
+    { name: 'learn', resume: true, prompt: cmd('duck-learn'), followup: '审稿是我让做的，怎么审都交给你了。回头看，我最想先弄清审稿人最可能抓实验部分的哪一条。', checks: [
+      ...learnChecks(),
       ['should', 'next step is about the experiments', (t) => /实验/.test(t.reply)],
     ] },
     // Not turned on: after the commands, a free request still gets no duck.
@@ -712,15 +732,16 @@ function main() {
     // the questions are not always the last line. Answer once, the way a student would,
     // and check again; the summary records that it happened.
     let followup = false;
-    if (t.completed && stage.name !== 'learn-ask' && checks.some((c) => !c.ok && c.severity === 'must') && /[？?]|你希望|请选择|请确认|选哪/.test(t.reply)) {
+    if (t.completed && checks.some((c) => !c.ok && c.severity === 'must') && /[？?]|你希望|请选择|请确认|选哪/.test(t.reply)) {
       followup = true;
-      const t2 = turn(FOLLOWUP, session, opts, file('-followup'));
+      const answer = stage.followup || FOLLOWUP;
+      const t2 = turn(answer, session, opts, file('-followup'));
       const tokens = { ...t.tokens };
       for (const [k, v] of Object.entries(t2.tokens)) tokens[k] = (tokens[k] || 0) + v;
       // The stage ran (its first run completed); a failed follow-up is one more failure, not
       // a reason to call the whole stage not run.
       t = { ...t, reads: [...t.reads, ...t2.reads], tools: [...t.tools, ...t2.tools], injected: `${t.injected}\n${t2.injected}`,
-        errors: [...t.errors, ...t2.errors], reply: `${t.reply}\n\n[学生] ${FOLLOWUP}\n\n${t2.reply}`, cost: t.cost + t2.cost, tokens,
+        errors: [...t.errors, ...t2.errors], reply: `${t.reply}\n\n[学生] ${answer}\n\n${t2.reply}`, cost: t.cost + t2.cost, tokens,
         requested: [...new Set([...t.requested, ...t2.requested])],
         followupExit: t2.exit, followupCompleted: t2.completed, followupStderr: t2.stderr };
       checks = evaluate(t);
