@@ -589,7 +589,8 @@ function moreStages() {
     ] },
     { name: 'i-decide-check', resume: true, prompt: `${cmd('duck-intro')} 把引言第二段的引用补全。先在对话里给草稿，paper/ 里的文件先别改。`,
       before: () => reports('intro').length, checks: [
-        ['must', 'asks about the citations first and stops (a question, no new intro report)', (t, before) => /[？?]/.test(t.reply) && reports('intro').length === before],
+        // A question can be a request too (rc3: 「第二段要引哪些，请你告诉我，二选一」 with no question mark).
+        ['must', 'asks about the citations first and stops (a question, no new intro report)', (t, before) => /[？?]|请你?告诉我|二选一|你来定/.test(t.reply) && reports('intro').length === before],
       ] },
     // 「直接讲，别先问我」 is recorded as the 讲法 line and /duck-why explains right away.
     { name: 'explain-direct', resume: true, prompt: `${cmd('duck-why')} 直接讲，别先问我。`, before: () => reports('why').length, checks: [
