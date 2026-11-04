@@ -265,7 +265,15 @@ const lastWhy = (s) => {
   return blocks.at(-1) || '';
 };
 const quoteText = (b) => b.split('\n').map((l) => l.replace(/^[ \t]*>\s?/, '').trim()).filter((l) => l && !/^▸/.test(l)).join('\n');
-const WHY_BLOCK = { test: (s) => quoteText(lastWhy(s)).length > 0 };
+// The explanation closes the reply: after the last quote block only a short question or a pointer
+// to the report may follow (red team, 11-04: a quote inside the skill's own result also passed).
+const afterLastQuote = (s) => {
+  const lines = s.split('\n');
+  let i = lines.length - 1;
+  while (i >= 0 && !/^[ \t]*>/.test(lines[i])) i -= 1;
+  return i < 0 ? s : lines.slice(i + 1).join('\n');
+};
+const WHY_BLOCK = { test: (s) => quoteText(lastWhy(s)).length > 0 && afterLastQuote(s).replace(/\s/g, '').length <= 400 };
 // The old fixed principle line: a quote line bold from end to end.
 const BOLD_LINE = /^[ \t]*>\s*\*\*[^\n]+\*\*\s*$/m;
 // A step of the wrapped skill given as the reason, e.g. 这是原技能 Step 0 的要求. Broad on purpose:
@@ -285,7 +293,10 @@ const shortWhyChecks = () => [
   ['should', 'every Latin name in the short why is in the plugin or the project', (t) => unknownSpeakers(lastWhy(t.reply), true).length === 0],
 ];
 // What quiet must not show: the 下次 line or a decision line inside a quote.
-const DUCK_QUOTE = /^[ \t]*>\s*(下次|▸ ?决策)/m;
+// Since 0.2.1 the explanation has no fixed 下次 line, so quiet is checked for any quote line: the
+// explanation and the decision line are the duck's quotes, and the skills' own results quote with
+// code blocks or quotation marks (rules/wrapper-template.md, step 6).
+const DUCK_QUOTE = /^[ \t]*>/m;
 // The principle part of a notebook line: between the first ｜ and ｜这次 (or the end).
 const principleOf = (l) => l.split('｜')[1] || l;
 // 「最小测试」「小测试」are test runs, not a quiz.
@@ -381,12 +392,26 @@ const whyChecks = () => [
 ];
 // /duck-learn since Ducktor 0.2.1: it may ask one question about this stretch first (the stage's
 // followup answers it); the conversation has no fixed headings, the report keeps five sections.
-const learnChecks = () => [
+// The 「下一步」 (Next steps) section of a report: from that heading to the next heading.
+const reportSection = (text, heading) => {
+  const lines = text.split('\n');
+  const at = lines.findIndex((l) => /^#+\s/.test(l) && heading.test(l));
+  if (at < 0) return '';
+  const end = lines.findIndex((l, i) => i > at && /^#+\s/.test(l));
+  return lines.slice(at + 1, end < 0 ? undefined : end).join('\n');
+};
+const learnChecks = (answerWords) => [
   ['must', 'wrote a learn report', () => reports('learn').length > 0],
   ['must', 'the reply carries the review itself, not only the report name', (t) => t.reply.replace(/\s/g, '').length > 200 && /AI ?定|交给 ?AI|下一步|接下来/.test(t.reply)],
   ['should', 'lists what was left to the AI', (t) => /交给 ?AI|AI ?定/.test(t.reply)],
-  ['should', 'no fixed bold headings in the conversation', (t) => !/^\s*\*\*(本来想干什么|实际怎样|顶级导师会盯哪里|这次交给 ?AI 的判断|下一步)\*\*/m.test(t.reply)],
+  // Also inside the quote and with a full stop or colon inside the bold: 「> **本来想干什么。**」.
+  ['should', 'no fixed bold headings in the conversation', (t) => !/^[\s>]*\*\*(本来想干什么|实际怎样|(顶级|有经验的)导师会盯哪里|(这次)?交给 ?AI 的判断|下一步|最要紧)/m.test(t.reply)],
   ['should', 'no fixed opening question', (t) => !/哪一步最想重来/.test(t.reply)],
+  // The 我自己定 sentence is fixed text for the report; the conversation says it in its own words.
+  ['should', 'the fixed 我自己定 sentence stays in the report', (t) => !/下次哪类事想自己定/.test(t.reply)],
+  // The closing question is answered by the stage's answer; the answer goes into 下一步.
+  ...(answerWords ? [['must', "the student's answer went into the report's next steps", (t) => !t.reply.includes('[学生]')
+    || answerWords.test(reportSection(newestReport('learn'), /下一步|Next steps/))]] : []),
   // The look-back comes first; one question on a concrete decision closes the last reply.
   ['should', 'ends with one look-back question', (t) => /[？?][^？?]{0,40}$/.test(t.reply.trim())],
   ['should', 'names no researcher and no plugin card number in the conversation', (t) => namesIn(t.reply).length === 0 && !cardIds(t.reply).some((id) => PLUGIN_CARDS.has(id))],
@@ -474,7 +499,7 @@ function mainStages() {
       ['must', 'wrote .duck/cards/G01.md', () => exists('cards/G01.md')],
       ['must', 'INDEX lists G01', () => /G01/.test(text('cards/INDEX.md'))],
     ] },
-    { name: 'learn', resume: true, prompt: cmd('duck-learn'), followup: '补 seed 是我定的。回头看，最想重来的是摸方向，搜得太窄了。', checks: learnChecks() },
+    { name: 'learn', resume: true, prompt: cmd('duck-learn'), answer: '补 seed 是我定的。回头看，最想重来的是摸方向，搜得太窄了。', checks: learnChecks(/摸方向|太窄|检索|搜/) },
     { name: 'off', resume: true, prompt: `${cmd('duck')} off`, checks: [
       ['must', 'config says off', () => switchIs('off')],
       // off is the fresh-install state, not a stronger "off" than that.
@@ -550,6 +575,27 @@ function moreStages() {
       ['must', 'did not turn Ducktor on', () => !switchIs('on') && !switchIs('quiet')],
       ['should', 'wrote no switch line', () => !/^[\s>*#-]*开关\s*[:：]/m.test(text('config.md'))],
     ] },
+    // 「我自己定」 (new in 0.2.1): shown before it is recorded, recorded on a yes, and a command that
+    // reaches that kind of decision asks first, even though Ducktor is not on here.
+    { name: 'i-decide', resume: true, prompt: '以后引言里引哪些文献，我想自己定。', checks: [
+      ['must', 'nothing recorded before the student agrees', () => !/我自己定[\s\S]*(文献|引用|引)/.test(text('config.md'))],
+      ['should', 'shows the line it would record', (t) => /我自己定/.test(t.reply) && /文献|引用/.test(t.reply)],
+      ['should', 'says that without Ducktor on it asks only when a command is typed', (t) => /敲.{0,12}命令|命令.{0,6}时/.test(t.reply)],
+    ] },
+    { name: 'i-decide-ok', resume: true, prompt: '可以，记吧。', checks: [
+      ['must', 'config records the kind under 我自己定', () => /我自己定[\s\S]*(文献|引用|引)/.test(text('config.md'))],
+      ['must', 'did not turn Ducktor on', () => !switchIs('on') && !switchIs('quiet')],
+    ] },
+    { name: 'i-decide-check', resume: true, prompt: `${cmd('duck-intro')} 把引言第二段的引用补全。先在对话里给草稿，paper/ 里的文件先别改。`,
+      before: () => reports('intro').length, checks: [
+        ['must', 'asks about the citations first and stops (a question, no new intro report)', (t, before) => /[？?]/.test(t.reply) && reports('intro').length === before],
+      ] },
+    // 「直接讲，别先问我」 is recorded as the 讲法 line and /duck-why explains right away.
+    { name: 'explain-direct', resume: true, prompt: `${cmd('duck-why')} 直接讲，别先问我。`, before: () => reports('why').length, checks: [
+      ['must', 'config records 讲法：直接讲', () => /讲法[^\n]*直接讲/.test(text('config.md'))],
+      ['must', 'wrote a why report', (t, before) => reports('why').length > before],
+      ['should', 'explains right away (the reply has the explanation block)', (t) => WHY_BLOCK.test(t.reply)],
+    ] },
   ];
 }
 
@@ -621,9 +667,9 @@ function paperStages() {
       ...shortWhyChecks(),
     ] },
     { name: 'why', resume: true, prompt: cmd('duck-why'), checks: whyChecks() },
-    { name: 'learn', resume: true, prompt: cmd('duck-learn'), followup: '审稿是我让做的，怎么审都交给你了。回头看，我最想先弄清审稿人最可能抓实验部分的哪一条。', checks: [
-      ...learnChecks(),
-      ['should', 'next step is about the experiments', (t) => /实验/.test(t.reply)],
+    { name: 'learn', resume: true, prompt: cmd('duck-learn'), answer: '审稿是我让做的，怎么审都交给你了。回头看，我最想先弄清审稿人最可能抓实验部分的哪一条。', checks: [
+      // The answer names the experiments; the report's next steps should pick that up (the must in learnChecks).
+      ...learnChecks(/实验|审稿人/),
     ] },
     // Not turned on: after the commands, a free request still gets no duck.
     { name: 'free', resume: true, prompt: `帮我把 paper/${main} 里摘要的第一句改得更紧凑一点（摘要在别的文件里就去那里找）。先在对话里给，文件先别改。`,
@@ -721,7 +767,16 @@ function setup() {
   if (fs.realpathSync(context.root) !== fs.realpathSync(ROOT)) refuse(`the plugin reads Ducktor at ${context.root}, the checks expect ${ROOT}`);
 }
 
+// The plugin's commit and whether tracked files differ from it: taken when the run starts and when it
+// ends, so a run whose plugin files changed halfway is marked (red team, 11-04: one main run
+// started on one commit and finished on another).
+const gitState = () => ({
+  commit: spawnSync('git', ['-C', REPO, 'rev-parse', '--short', 'HEAD'], { encoding: 'utf8' }).stdout.trim(),
+  dirty: spawnSync('git', ['-C', REPO, 'status', '--porcelain', '--untracked-files=no'], { encoding: 'utf8' }).stdout.trim() !== '',
+});
+
 function main() {
+  const startState = gitState();
   setup();
   const results = [];
   const transcripts = [];
@@ -748,9 +803,11 @@ function main() {
     // the questions are not always the last line. Answer once, the way a student would,
     // and check again; the summary records that it happened.
     let followup = false;
-    if (t.completed && checks.some((c) => !c.ok && c.severity === 'must') && /[？?]|你希望|请选择|请确认|选哪/.test(t.reply)) {
+    // A stage with an answer (the learn steps) also answers a closing question when nothing failed.
+    const closingQuestion = /[？?][^？?]{0,60}$/.test(t.reply.trim());
+    if (t.completed && ((checks.some((c) => !c.ok && c.severity === 'must') && /[？?]|你希望|请选择|请确认|选哪/.test(t.reply)) || (stage.answer && closingQuestion))) {
       followup = true;
-      const answer = stage.followup || FOLLOWUP;
+      const answer = stage.answer || stage.followup || FOLLOWUP;
       const t2 = turn(answer, session, opts, file('-followup'));
       const tokens = { ...t.tokens };
       for (const [k, v] of Object.entries(t2.tokens)) tokens[k] = (tokens[k] || 0) + v;
@@ -796,10 +853,12 @@ function main() {
   for (const r of results) for (const [k, v] of Object.entries(r.tokens || {})) tokens[k] = (tokens[k] || 0) + v;
   const lock = JSON.parse(fs.readFileSync(path.join(REPO, 'duck.lock.json'), 'utf8'));
   const version = host(['--version']);
+  const endState = gitState();
   const summary = {
     host: HOST, dsh: (version.stdout || '').trim(), profile: PROFILE, flow: FLOW, model: MODEL || '(profile default)',
     models_requested: [...new Set(results.flatMap((r) => r.models_requested || []))],
-    commit: spawnSync('git', ['-C', REPO, 'rev-parse', '--short', 'HEAD'], { encoding: 'utf8' }).stdout.trim(),
+    commit: startState.commit, start: startState, end: endState,
+    plugin_changed_during_run: startState.commit !== endState.commit || startState.dirty || endState.dirty,
     duck: process.env.DUCK_ROOT ? ROOT : lock.source.commit.slice(0, 7),
     when: new Date().toISOString(), tokens,
     must_failed: all.filter((c) => !c.ok && c.severity === 'must').length,
@@ -809,6 +868,7 @@ function main() {
   if (fs.existsSync(path.join(PROJECT, '.duck'))) fs.cpSync(path.join(PROJECT, '.duck'), path.join(OUT, 'duck-files'), { recursive: true });
   fs.writeFileSync(path.join(OUT, 'summary.json'), `${JSON.stringify(summary, null, 2)}\n`);
   const md = [`# e2e ${HOST} ${summary.dsh} ${FLOW} ${summary.commit}, Ducktor ${summary.duck} (${summary.model})`, '',
+    ...(summary.plugin_changed_during_run ? [`**The plugin's files changed during this run** (start ${startState.commit}${startState.dirty ? ' with uncommitted changes' : ''}, end ${endState.commit}${endState.dirty ? ' with uncommitted changes' : ''}): the result belongs to no single commit.`, ''] : []),
     `${summary.passed}/${summary.total} checks passed; must failed ${summary.must_failed}, should failed ${summary.should_failed}`, '',
     `Model requested: ${summary.models_requested.join(', ') || 'none'}. Tokens reported in the --json stream (agent steps only): ${JSON.stringify(tokens)}`, ''];
   for (const r of results) {
