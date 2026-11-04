@@ -73,7 +73,7 @@ When you give your experimental results to a regular AI to write the paper, the 
 With Ducktor, the AI still finishes the work, but the same task becomes a transparent loop of teaching and research:
 - Use `/duck-outline` to set the main line of the argument, `/duck-write` to write the body, and `/duck-review` to check the draft strictly, as a reviewer would.
 - You can also send `/duck` followed by a question, for example `/duck 可不可以告诉我这个内容里我要学什么？` ("Can you tell me what I should learn here?"). Ducktor first says which command it uses, then explains with that command.
-- After each key stage, Ducktor explains **the core trade-off of this step (Why)**: the common alternative, why this choice, and when it does not hold. When there is **a research principle that carries over (Principle)** or **an action you can take earlier next time (Next Time)**, it says that too. The principles go into `.duck/notebook.md` and also show in the "Ducktor" tab.
+- After each key stage, Ducktor explains **the most important trade-off of this step (Why)**: the common alternative, why this choice, and when it does not hold (when the step was routine, one sentence says so). When there is **a research principle that carries over (Principle)** or **an action you can take earlier next time (Next Time)**, it says that too. The principles go into `.duck/notebook.md` and also show in the "Ducktor" tab.
 
 ---
 
