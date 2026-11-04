@@ -161,7 +161,7 @@ dsh plugin --profile web add /绝对路径/DeepSeek-Ducktor
 dsh plugin --profile headless add /绝对路径/DeepSeek-Ducktor
 ```
 
-每个 profile 单独装，需要 PATH 上有 `pnpm`。装的时候 pnpm 会打一段 `peerDependencies` 的 WARN，说这些包要从 dsh 那边找：插件运行时用的就是 dsh 自带的那几个包，这段警告可以不管。卸载把 `add /绝对路径/DeepSeek-Ducktor` 换成 `remove deepseek-ducktor`。
+第一行装给浏览器里的 `dsh web`，第二行装给终端里直接敲的 `dsh`（headless）。只用其中一种，就只跑那一行。每个 profile 单独装，需要 PATH 上有 `pnpm`。装的时候 pnpm 会打一段 `peerDependencies` 的 WARN（「This might cause issues in your project」），说这些包要从 dsh 那边找：插件运行时用的就是 dsh 自带的那几个包，这段警告可以不管；它提示升级 pnpm 的那几行也不用管。卸载把 `add /绝对路径/DeepSeek-Ducktor` 换成 `remove deepseek-ducktor`。
 
 Desktop 的 profile 名是 `desktop`：先打开一次 Desktop，完全退出，再用 Desktop 自带的 `dsh` 命令（Desktop 菜单「管理 dsh 命令…」可以把它注册到终端）运行 `dsh plugin --profile desktop add /绝对路径/DeepSeek-Ducktor`，然后重新打开 Desktop。
 

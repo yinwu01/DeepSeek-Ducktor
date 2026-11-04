@@ -162,7 +162,7 @@ dsh plugin --profile web add /absolute/path/DeepSeek-Ducktor
 dsh plugin --profile headless add /absolute/path/DeepSeek-Ducktor
 ```
 
-Install for each profile separately; `pnpm` must be on PATH. During the install, pnpm prints a `peerDependencies` WARN saying that these packages must come from dsh: at run time the plugin uses exactly the packages that come with dsh, so you can ignore this warning. To uninstall, replace `add /absolute/path/DeepSeek-Ducktor` with `remove deepseek-ducktor`.
+The first line installs for `dsh web` in the browser, the second for `dsh` typed in a terminal (headless). If you use only one of them, run only that line. Install for each profile separately; `pnpm` must be on PATH. During the install, pnpm prints a `peerDependencies` WARN ("This might cause issues in your project") saying that these packages must come from dsh: at run time the plugin uses exactly the packages that come with dsh, so you can ignore this warning, and the lines suggesting a pnpm upgrade as well. To uninstall, replace `add /absolute/path/DeepSeek-Ducktor` with `remove deepseek-ducktor`.
 
 The Desktop profile is named `desktop`: open Desktop once, quit it completely, then use the `dsh` command that comes with Desktop (the Desktop menu "管理 dsh 命令…" (manage the dsh command) can register it in your terminal) to run `dsh plugin --profile desktop add /absolute/path/DeepSeek-Ducktor`, and open Desktop again.
 
