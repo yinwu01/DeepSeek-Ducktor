@@ -713,7 +713,7 @@ function loopStages() {
     { name: 'mute-check', resume: true, prompt: '64k 长度上也出来了：BlockSkip 69.8，稠密 69.9，也只跑了一次。先记进 notes.md，表等补完 seed 再说。', checks: [
       ['should', 'notes.md got the 64k result', () => /64k/i.test(projectFile('notes.md'))],
       // A decision line (「> ▸ 决策：……表等 seed 补完再改」) is a record, not an explanation.
-      ['should', 'does not explain seeds again', (t) => !/为什么[:：]/.test(t.reply) && !/波动/.test(t.reply) && !/^[ \t]*>(?![ \t]*▸)[^\n]*(seed|种子|方差)/im.test(t.reply)],
+      ['should', 'does not explain seeds again', (t) => !/为什么[:：]/.test(t.reply) && !/波动/.test(t.reply) && !/^[ \t]*>(?![ \t]*(-[ \t]*\d{4}-\d{2}-\d{2}[ \t]*)?▸)[^\n]*(seed|种子|方差)/im.test(t.reply)],
     ] },
   ];
 }
