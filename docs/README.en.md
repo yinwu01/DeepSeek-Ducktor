@@ -73,7 +73,7 @@ When you give your experimental results to a regular AI to write the paper, the 
 With Ducktor, the AI still finishes the work, but the same task becomes a transparent loop of teaching and research:
 - Use `/duck-outline` to set the main line of the argument, `/duck-write` to write the body, and `/duck-review` to check the draft strictly, as a reviewer would.
 - You can also send `/duck` followed by a question, for example `/duck 可不可以告诉我这个内容里我要学什么？` ("Can you tell me what I should learn here?"). Ducktor first says which command it uses, then explains with that command.
-- After each key stage, Ducktor explains **the most important trade-off of this step (Why)**: the common alternative, why this choice, and when it does not hold (when the step was routine, one sentence says so). When there is **a research principle that carries over (Principle)** or **an action you can take earlier next time (Next Time)**, it says that too. The principles go into `.duck/notebook.md` and also show in the "Ducktor" tab.
+- After each key stage, Ducktor explains **the most important trade-off of this step (Why)**, picking what applies from the common alternative, why this choice, and when it does not hold (when the step was routine, one sentence says so). When there is **a research principle that carries over (Principle)** or **an action you can take earlier next time (Next Time)**, it says that too. The principles go into `.duck/notebook.md` and also show in the "Ducktor" tab.
 
 ---
 
@@ -85,7 +85,7 @@ DeepSeek-Ducktor does not replace your model. It is a layer of rules, skills and
 
 Right after the install, Ducktor is not on in any project, and it speaks only when you type a `/duck-*` command. Type `/duck on` in a project to turn on **companion mode** for that project:
 
-* **Short notes on method, right away**: when the AI finishes a real step of work (it chooses a method, changes an experiment, or finishes a paragraph), Ducktor adds one or two lines at the end of the reply about why.
+* **Short notes on method, right away**: when the AI finishes a real step of work (it chooses a method, changes an experiment, or finishes a paragraph), Ducktor adds one to three lines at the end of the reply about why.
 * **Ask before key decisions**: for a decision that changes the approach, the AI asks you before it acts, at most three things at a time. If you said you want to decide a kind of judgment yourself, it always asks about that kind.
 * **Decision history**: when there is a trade-off, Ducktor records one decision line and writes whether you or the AI decided.
 * **The "evidence guardrail" before results go into the paper**: when you ask the AI to put experimental results into a table or the paper, it first checks three things: the experiment ran only once, or the gap was not compared with the result's own variation; a large gain, but its source is not separated; a conclusion stronger than the evidence. If one applies, it stops and asks you first. Outside computer science it uses your field's standards instead (for example sample size, analyses chosen after seeing the data, effect sizes and intervals).
@@ -94,8 +94,8 @@ Right after the install, Ducktor is not on in any project, and it speaks only wh
 
 ### 2. Ask afterwards (`/duck-why`) and look back on a stage (`/duck-learn`)
 
-* **Ask right away**: even after the AI has finished, you can ask `/duck <your question>` at any time, or use `/duck-why` on the last action (or a file or paragraph that you name). It explains the one judgment most worth learning: the common approach, why experienced people choose otherwise, when that does not hold, and the files and line numbers to check. If you made this call and never said why, it first asks what you were thinking. Ideas from the cards and well-known researchers are turned into experience; the sources go into the report, and it gives them when you ask.
-* **Look back on a stage**: when a stage ends, use `/duck-learn`. It reads the records of this stretch first, compares what you meant to do with what happened, points out the weak spots an experienced advisor would examine, lists the judgments left to the AI, and gives one or two next steps; it also says whether the last look-back's next steps were done. At the end it asks you to look back on one concrete decision and say how you would decide it now (you can skip it).
+* **Ask right away**: even after the AI has finished, you can ask `/duck <your question>` at any time, or use `/duck-why` on the last action (or a file or paragraph that you name). It explains the one judgment most worth learning: the common approach and why experienced people choose this one, when that does not hold, and the files and line numbers to check. If you made this call and never said why, it first asks what you were thinking. Ideas from the cards and well-known researchers are turned into experience; the sources go into the report, and it gives them when you ask.
+* **Look back on a stage**: when a stage ends, use `/duck-learn`. It reads the records of this stretch first, compares what you meant to do with what happened, points out the weak spots an experienced advisor would examine, lists the judgments left to the AI, and gives one or two next steps; when the records touch the last look-back's next steps, it says whether they were done. At the end it asks you to look back on one concrete decision and say how you would decide it now (you can skip it).
 
 ### 3. The "Ducktor" tab in the web interface
 
