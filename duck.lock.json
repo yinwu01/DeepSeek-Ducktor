@@ -2,10 +2,10 @@
   "note": "duck/ and tests/e2e/fixtures/grad-project are verbatim copies of these Ducktor paths at this commit. Re-run scripts/sync-duck.mjs instead of editing them.",
   "source": {
     "repository": "yinwu01/Ducktor",
-    "ref": "3010634",
-    "commit": "3010634070688e65a4a7d62241f85735c1e94aab",
-    "committedAt": "2026-11-04T10:31:47-08:00",
-    "subject": "e2e loop: free-notebook-new, the progress note in a new session, so core rule 6 (read the notebook before a stretch of work) is tested without the principle already in context"
+    "ref": "e4d2267",
+    "commit": "e4d226795e3e92f52d7683175df336e17e69466a",
+    "committedAt": "2026-11-04T10:33:53-08:00",
+    "subject": "/duck-learn: each paragraph opens with its content, not with a label like 「最要紧的两处」「交给 AI 的判断」「下一步」"
   },
   "paths": [
     "bin",
@@ -179,7 +179,7 @@
     "skills/duck-intro/agents/openai.yaml": "c0066741eaed62578e7d25b114043bd139b5898514d3cde8c216d4918bc27119",
     "skills/duck-intro/SKILL.md": "37c6072343fc501d3e2fe85c179236364f08b2a4ecaee4b0bc761c9378110611",
     "skills/duck-learn/agents/openai.yaml": "6d2610fa9b993fd0867d0d3c5e7a4dd7b43b9a8d7b4a29a049531de82d89de77",
-    "skills/duck-learn/SKILL.md": "1f1e7fde1a966fc4830d3335e26a3102413b47c044978e9911b23dcd77ef801c",
+    "skills/duck-learn/SKILL.md": "99932f6d838735003a7d1f7242c60fa35a9e7eed483a2453743e209e7dbf3734",
     "skills/duck-notes/agents/openai.yaml": "15ff2cab6555b31f0b3b7f4a5d3a06cdd8a32b27deb1d4cfdbd1bd9ea2c1ee64",
     "skills/duck-notes/SKILL.md": "cd47549408629630861f49307017449811950d842b34b9445660f1bf5f417b6d",
     "skills/duck-outline/agents/openai.yaml": "299659fbb05a1000afa26919b226bb7b424daecaa61bcd2c3cf4b7507e5d32d4",
