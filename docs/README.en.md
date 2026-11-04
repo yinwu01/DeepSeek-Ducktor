@@ -95,7 +95,7 @@ Right after the install, Ducktor is not on in any project, and it speaks only wh
 ### 2. Ask afterwards (`/duck-why`) and look back on a stage (`/duck-learn`)
 
 * **Ask right away**: even after the AI has finished, you can ask `/duck <your question>` at any time, or use `/duck-why` on the last action (or a file or paragraph that you name). It explains the one judgment most worth learning: the common approach, why experienced people choose otherwise, when that does not hold, and the files and line numbers to check. If you made this call and never said why, it first asks what you were thinking. Ideas from the cards and well-known researchers are turned into experience; the sources go into the report, and it gives them when you ask.
-* **Look back on a stage**: when a stage ends, use `/duck-learn`. It reads the records of this stretch first; if you made calls in it and have not looked back yet, it asks you for one sentence on what you would change (you can skip). Then it compares what you meant to do with what happened, points out the weak spots an experienced advisor would examine, lists the judgments left to the AI, and gives one or two next steps; it also says whether the last look-back's next steps were done.
+* **Look back on a stage**: when a stage ends, use `/duck-learn`. It reads the records of this stretch first, compares what you meant to do with what happened, points out the weak spots an experienced advisor would examine, lists the judgments left to the AI, and gives one or two next steps; it also says whether the last look-back's next steps were done. At the end it asks you to look back on one concrete decision and say how you would decide it now (you can skip it).
 
 ### 3. The "Ducktor" tab in the web interface
 

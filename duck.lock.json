@@ -2,10 +2,10 @@
   "note": "duck/ and tests/e2e/fixtures/grad-project are verbatim copies of these Ducktor paths at this commit. Re-run scripts/sync-duck.mjs instead of editing them.",
   "source": {
     "repository": "yinwu01/Ducktor",
-    "ref": "c5a53b8",
-    "commit": "c5a53b8a43973ea0eb746b216299cd3ee408a4ab",
-    "committedAt": "2026-11-04T08:59:23-08:00",
-    "subject": "Never write into the student's draft that they did what they did not; notes to the student stay out of the draft"
+    "ref": "859e867",
+    "commit": "859e867083d0bed27cc8d2f5cfe134ec32f23e04",
+    "committedAt": "2026-11-04T09:05:20-08:00",
+    "subject": "/duck-learn reviews first and closes with one question on a concrete decision; e2e checks everyday notebook use"
   },
   "paths": [
     "bin",
@@ -166,7 +166,7 @@
     "package.json": "9d5da1cf8773cd99cdaa6b9c302b5303f2c3c1f6eccce54010c43e8f82872076",
     "rules/agents-header.md": "0919abb3ae5c51e9e149613447ae8dc44560bb7c1e2d7ff08eedda4f2ea80c00",
     "rules/commands.json": "04d04f607b2d449505b98f1abbcb28a0841b8bfd50f3af699d5c0bfaab660670",
-    "rules/core.md": "d16fcaf6cfc633b35a8dad1ed9e5b8abf2ec70bbcfb60258b6753cc253771f11",
+    "rules/core.md": "37543152ad0c419c68422d0ddc866d4f15b3a642842093f9a6430c6a9708552b",
     "rules/idle.md": "a631f4da488292b8afd38ad9234238b659e529628b397e4e53f733b099c91098",
     "rules/wrapper-template.md": "1f7110a03dae54c421ff648fa9bdf80ad1cb5a374b3cff53e2a3dd27d5053f0a",
     "skills/duck/agents/openai.yaml": "ccf50e7c85317179009e728771457fb1e88ae257be42b3175df837feefa80b7c",
@@ -178,7 +178,7 @@
     "skills/duck-intro/agents/openai.yaml": "c0066741eaed62578e7d25b114043bd139b5898514d3cde8c216d4918bc27119",
     "skills/duck-intro/SKILL.md": "e0494b3351a9a29442bf1d73f594365ff3ff6d46b174b7e40b30613dfb8e0cf3",
     "skills/duck-learn/agents/openai.yaml": "6d2610fa9b993fd0867d0d3c5e7a4dd7b43b9a8d7b4a29a049531de82d89de77",
-    "skills/duck-learn/SKILL.md": "d0e7ba4796359230df224f7ca8beb36d1402de1e6c3df0daf22438a05376217e",
+    "skills/duck-learn/SKILL.md": "7bb6d75ca9fdb194e152679773941c0b06d6b33a07f14db5cc53de4e2606cb60",
     "skills/duck-notes/agents/openai.yaml": "15ff2cab6555b31f0b3b7f4a5d3a06cdd8a32b27deb1d4cfdbd1bd9ea2c1ee64",
     "skills/duck-notes/SKILL.md": "df0792ff9796b9aa464832e42991dc146b5904183372e666f7f9c5c616dbd434",
     "skills/duck-outline/agents/openai.yaml": "299659fbb05a1000afa26919b226bb7b424daecaa61bcd2c3cf4b7507e5d32d4",

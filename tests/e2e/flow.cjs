@@ -387,6 +387,8 @@ const learnChecks = () => [
   ['should', 'lists what was left to the AI', (t) => /交给 ?AI|AI ?定/.test(t.reply)],
   ['should', 'no fixed bold headings in the conversation', (t) => !/^\s*\*\*(本来想干什么|实际怎样|顶级导师会盯哪里|这次交给 ?AI 的判断|下一步)\*\*/m.test(t.reply)],
   ['should', 'no fixed opening question', (t) => !/哪一步最想重来/.test(t.reply)],
+  // The look-back comes first; one question on a concrete decision closes the last reply.
+  ['should', 'ends with one look-back question', (t) => /[？?][^？?]{0,40}$/.test(t.reply.trim())],
   ['should', 'names no researcher and no plugin card number in the conversation', (t) => namesIn(t.reply).length === 0 && !cardIds(t.reply).some((id) => PLUGIN_CARDS.has(id))],
   ['should', 'the report keeps the five sections', () => ['本来想干什么', '实际怎样', '会盯哪里', '交给 ?AI', '下一步'].every((k) => new RegExp(k).test(newestReport('learn')))],
   ['should', 'the report says how to record 我自己定', () => /我自己定/.test(newestReport('learn'))],
@@ -589,12 +591,19 @@ function loopStages() {
       ['must', 'a new decision line says the student decided', (t, before) => decisions().slice(before).some((l) => /你定/.test(l))],
       ['should', 'reply shows the decision line', (t) => /▸ ?决策/.test(t.reply)],
     ] },
+    // Everyday work, no command: core rule 6 reads the notebook before a stretch of work, so the
+    // 10-09 entry (single runs are not written as significantly) should shape a results summary.
+    { name: 'free-notebook', resume: true, prompt: '帮我给导师写一段这周的进展，就写 32k 上那个结果，三四句话，先在对话里给，不用改文件。', checks: [
+      ['should', 'brings up the 10-09 notebook entry', (t) => /10-09|笔记本/.test(t.reply)],
+      ['should', 'does not call the single run significantly better', (t) => !/significantly|显著(优于|提升|更好)/.test(t.reply.replace(/不(写|说|用)[^。\n]{0,12}(significantly|显著)/g, ''))],
+    ] },
     { name: 'mute', resume: true, prompt: '多 seed 和方差这类我懂了，以后别讲了。', checks: [
       ['must', 'config mutes the category', () => /按类静音[\s\S]*(seed|种子|方差)/.test(text('config.md'))],
     ] },
     { name: 'mute-check', resume: true, prompt: '64k 长度上也出来了：BlockSkip 69.8，稠密 69.9，也只跑了一次。先记进 notes.md，表等补完 seed 再说。', checks: [
       ['should', 'notes.md got the 64k result', () => /64k/i.test(projectFile('notes.md'))],
-      ['should', 'does not explain seeds again', (t) => !/为什么[:：]/.test(t.reply) && !/波动/.test(t.reply) && !/^[ \t]*>[^\n]*(seed|种子|方差)/im.test(t.reply)],
+      // A decision line (「> ▸ 决策：……表等 seed 补完再改」) is a record, not an explanation.
+      ['should', 'does not explain seeds again', (t) => !/为什么[:：]/.test(t.reply) && !/波动/.test(t.reply) && !/^[ \t]*>(?![ \t]*▸)[^\n]*(seed|种子|方差)/im.test(t.reply)],
     ] },
   ];
 }
