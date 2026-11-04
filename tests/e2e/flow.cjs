@@ -413,7 +413,8 @@ const learnChecks = (answerWords) => [
   ...(answerWords ? [['must', "the student's answer went into the report's next steps", (t) => !t.reply.includes('[学生]')
     || answerWords.test(reportSection(newestReport('learn'), /下一步|Next steps/))]] : []),
   // The look-back comes first; one question on a concrete decision closes the last reply.
-  ['should', 'ends with one look-back question', (t) => /[？?][^？?]{0,40}$/.test(t.reply.trim())],
+  // Judged on the first reply: after the stage's answer the conversation goes on (rc3 paper run).
+  ['should', 'ends with one look-back question', (t) => /[？?][^？?]{0,40}$/.test(t.reply.split('\n\n[学生]')[0].trim())],
   ['should', 'names no researcher and no plugin card number in the conversation', (t) => namesIn(t.reply).length === 0 && !cardIds(t.reply).some((id) => PLUGIN_CARDS.has(id))],
   ['should', 'the report keeps the five sections', () => ['本来想干什么', '实际怎样', '会盯哪里', '交给 ?AI', '下一步'].every((k) => new RegExp(k).test(newestReport('learn')))],
   ['should', 'the report says how to record 我自己定', () => /我自己定/.test(newestReport('learn'))],

@@ -40,7 +40,7 @@ disable-model-invocation: true
 
 在 Codex 里，命令写成 $duck:duck-review 这样，最省事的用法写成 $duck:duck 帮我审一下论文初稿。
 
-学生只敲了 /duck，这次会话里也没有学生写的别的话时，看 .duck/config.md 和项目里的文稿（论文、笔记、README）：是英文写的，就用英文列；都看不出来，用中文列，最后加一行英文：「Prefer English? Write to me in English and I will answer in English.」
+学生只敲了 /duck，这次会话里也没有学生写的别的话时，看 .duck/ 里已有的文字和学生自己的笔记（notes 这类）：这些都是英文写的，才用英文列。论文和 README 不算：很多学生用中文交流，论文和 README 用英文写。有中文的，或者看不出来，用中文列，最后加一行英文：「Prefer English? Write to me in English and I will answer in English.」
 
 列完再做三件事：
 - 读项目的 .duck/config.md，用一句话说 Ducktor 在这个项目开没开、开在哪一档，不用提文件名。没有这个文件，文件里没有「开关：」那一行（英文写的 config 里是「Switch:」），或者写的不是 on、quiet（中文的开、打开、开启、启用算 on，静音、安静算 quiet），就是没开启：平时不出声，只有敲命令时才动。写的是 off 时，也说没开启，可以补一句开关写着 off，和刚装好时一样；不说「关掉了」。config.md 里关掉的命令，在表里标「已关」；一条都没关，就不提。
