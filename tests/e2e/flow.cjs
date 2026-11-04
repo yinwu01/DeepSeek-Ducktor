@@ -67,7 +67,23 @@ const WRAP = (process.env.DUCK_E2E_WRAP || '').split(' ').filter(Boolean);
 const ONLY = (process.env.DUCK_E2E_ONLY || '').split(',').filter(Boolean);
 const DSH_HOME = process.env.DSH_HOME || path.join(os.homedir(), '.dsh');
 const STAMP = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-const OUT = path.join(REPO, 'evals', 'results', `e2e-${HOST}-${FLOW}-${STAMP}`);
+const OUT_BASE = path.join(REPO, 'evals', 'results', `e2e-${HOST}-${FLOW}-${STAMP}`);
+// Two runs started in the same second (loops run in parallel) would share one folder and
+// overwrite each other's records (11-04, rc11: two Claude Code loops and six DeepSeek loops
+// did). setup() claims the folder with a mkdir that fails when another run took the name first.
+let OUT = OUT_BASE;
+function claimOut() {
+  fs.mkdirSync(path.dirname(OUT_BASE), { recursive: true });
+  for (let i = 1; ; i += 1) {
+    const dir = i === 1 ? OUT_BASE : `${OUT_BASE}-${i}`;
+    try {
+      fs.mkdirSync(dir);
+      return dir;
+    } catch (err) {
+      if (err.code !== 'EEXIST') throw err;
+    }
+  }
+}
 const PROJECT = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'ducktor-e2e-dsh-')), 'project');
 
 // In dsh the commands keep Claude Code's short names.
@@ -768,7 +784,7 @@ function globalChecks(transcripts) {
 // ---------- main ----------
 
 function setup() {
-  fs.mkdirSync(OUT, { recursive: true });
+  OUT = claimOut();
   if (FLOW === 'paper') {
     if (!process.env.DUCK_E2E_PAPER) { console.error('the paper flow needs DUCK_E2E_PAPER'); process.exit(2); }
     fs.cpSync(path.resolve(process.env.DUCK_E2E_PAPER), path.join(PROJECT, 'paper'), { recursive: true });
