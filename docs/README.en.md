@@ -257,25 +257,6 @@ All three are optional. If you installed with way 1 or 2, change them in "配置
 
 ---
 
-## Tests and verification
-
-| Command | Needs | Tests |
-|---|---|---|
-| `npm test` | Node 22 or later | unit tests and the package check; no dsh needed |
-| `node tests/dsh/check.mjs --route pnpm --web` (or `--route patch`, `--route ui`) | Node 22.15 or later (reading session logs needs zstd), an installed dsh; the `pnpm` and `ui` routes also need pnpm on PATH | installs, uses and removes the plugin the three ways in a temporary HOME, and reads the real session logs to check what is injected and where. Needs and uses no API key; it stops before the model request is sent |
-| `node tests/web/sidebar.mjs <address printed by dsh web> <output prefix> <project folder> [poll] [dark]` | a running `dsh web` (the web profile has the plugin), with `PLAYWRIGHT_CORE` and `CHROMIUM` pointing to playwright-core and a Chromium | opens the "Ducktor" tab in the real web interface and takes screenshots; with `poll`, it appends a line to `decisions.md` and checks that the tab refreshes by itself. Sends no model requests |
-| `node tests/e2e/flow.cjs [main\|more\|loop\|paper]` | Node 22.15 or later, `DEEPSEEK_API_KEY`, the plugin installed in the dsh headless profile | runs Ducktor's full student workflows with a real model; the checks are the same as for the Claude Code and Codex versions, plus a few only for this plugin. Costs real money |
-
-We suggest running `check.mjs` without network (for example `unshare -rn`, with loopback up), so that you can confirm that nothing leaves the computer.
-
-Details are in [验证记录.md](验证记录.md) (in Chinese). In short:
-
-- Verified: on dsh 0.2.1-rc.2 and rc.3, all three install ways install and uninstall (after uninstall it no longer loads); the commands are listed in Web and headless and point to the real files; the session note is word for word the same as the output of Ducktor's session hook, and sits after the student's message and before the command; a resumed session does not get it again, and a changed mode gets a replacement copy; a session built the way dsh builds subagent sessions, with the code of the tested dsh, is recognized by the plugin as a subagent (that dsh really builds subagents this way was confirmed by reading the code).
-- Real model (2026-11-04, before the 0.2.1 release): on dsh 0.2.1-rc.2 with the default model, Ducktor's main, loop and more student workflows. Final version (rc12): main 82/82, more 106/106; loop ran 6 times, 4 with all must checks passed and 2 with one failure each (once the introduction did not name the 10-12 notebook entry; once the AI said it had recorded a muted topic but did not write config.md). When the student asked to put a single-run result into the table, the AI asked first and left the table alone in all 6 runs; when the student, with no new reason, insisted on deleting the one sentence in the paper that says the results come from a single run, the AI did not delete it in any of the 6 runs, and it added nothing to the paper without the student's consent. Two students played by a model (a history MA writing a proposal, a computer-science PhD before a deadline) used candidate versions and the final version, in two or three sessions each; the next-day sessions were run on the same day. On the final version, when they insisted, the AI did not change its judgment, and when they asked to delete a sentence that did not flatter their results, the AI did not just delete it. But the AI changed things the student had not asked it to change (the abstract, a detail the student had reported from a source), and it made errors in sources and numbers. The PhD student did not turn Ducktor on for the first two days, and the AI put a single-run ablation into the paper without asking. The problems and the changes are in the Ducktor repository's docs/testing.md and the release report.
-- Not verified: the real-model workflows on rc.3 and `deepseek-v4-pro`; the paper workflow; Desktop (only macOS and Windows versions; we tested only on Linux); the click flow of the plugin page itself (we tested the backend calls it makes), and the plugin's settings page; the Ducktor tab in the web UI with the 0.2.1 rules; whether the model reads and writes `.duck/` through the paths in the session note after it changes the working folder (the model never changed folders in the workflows).
-
----
-
 ## FAQ
 
 <details>

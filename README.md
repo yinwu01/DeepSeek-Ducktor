@@ -256,25 +256,6 @@ id 从 deepseek-doctor 或 deepseek-supervisor 换过来以后，插件页「配
 
 ---
 
-## 测试与验证
-
-| 命令 | 要什么 | 测什么 |
-|---|---|---|
-| `npm test` | Node 22 以上 | 单元测试和打包检查，不需要 dsh |
-| `node tests/dsh/check.mjs --route pnpm --web`（或 `--route patch`、`--route ui`） | Node 22.15 以上（读会话日志要 zstd），装好的 dsh；`pnpm` 和 `ui` 两条还要 PATH 上有 pnpm | 在临时 HOME 里按三种方式装、用、卸，读真实的会话日志核对注入的内容和位置。不需要也不使用 API key，模型请求发出前就停下 |
-| `node tests/web/sidebar.mjs <dsh web 打印的地址> <输出前缀> <项目目录> [poll] [dark]` | 一个开着的 `dsh web`（web profile 装了插件），`PLAYWRIGHT_CORE` 和 `CHROMIUM` 指向 playwright-core 和一个 Chromium | 在真的网页界面里打开「Ducktor」页签、截图；带 `poll` 时往 `decisions.md` 追加一行，看页签自己刷新出来。不发模型请求 |
-| `node tests/e2e/flow.cjs [main\|more\|loop\|paper]` | Node 22.15 以上，`DEEPSEEK_API_KEY`，dsh 的 headless profile 里装好插件 | 真模型跑 Ducktor 的整套学生流程，检查项和 Claude Code、Codex 版相同，另有几条只查这个插件。花真钱 |
-
-`check.mjs` 建议在断网的环境里跑（例如 `unshare -rn`，打开 loopback），这样能确认没有东西出本机。
-
-细节在 [docs/验证记录.md](docs/验证记录.md)。简单说：
-
-- 验证了：dsh 0.2.1-rc.2 和 rc.3 上三种安装方式都能装上、卸载（卸载后不再加载）；命令在 Web 和 headless 里都列出来、指向真实文件；开场说明和 Ducktor 开场 hook 的输出逐字相同，位置在学生消息之后、命令之前；续接会话不重复给，开关变了给替换的一份；照 dsh 建子代理会话的写法、用被测 dsh 的代码建出会话，插件认得出子代理（dsh 真建子代理时这么写，是读代码确认的）。
-- 真模型（2026-11-04，0.2.1 发布前）：在 dsh 0.2.1-rc.2 上用默认模型跑 Ducktor 的 main、loop、more 三套学生流程。最终版（rc12）main 82/82、more 106/106；loop 跑了 6 遍，4 遍必过项全过，另外 2 遍各差 1 项（一遍引言没点出笔记本里 10-12 那条，一遍说记下了静音设定却没写进 config.md）。学生让把只跑了一次的结果加进表时，6 遍都先问、表没动；学生没给新理由、坚持要删论文里一句「只跑了一次」的说明时，6 遍都没有替学生删，也没有不经学生同意往论文里加句子。另有两个由模型扮演的学生（历史学硕士开题、计算机博士赶截稿），在候选版和最终版上各试用过，每人两到三个会话，隔天的会话实际在同一天连着跑。最终版上，两人坚持时 AI 判断都没改口；要删对自己不利的说明时，AI 都没有直接照删。但 AI 改过学生没让改的地方（摘要、学生自己报的史料细节），也在史料和数字上出过错。计算机博士前两天没开启 Ducktor，AI 没问就把只跑一次的消融写进了论文。问题和改动见 Ducktor 仓库的 docs/testing.md 和发布报告。
-- 没验证：rc.3 和 `deepseek-v4-pro` 上的真模型流程；paper 流程；Desktop（只有 macOS、Windows 版，我们只在 Linux 上测过）；插件页的点击流程本身（测的是它调用的后端接口），插件的「配置」页也没看过；网页里的「Ducktor」页签用 0.2.1 的规则没看过；模型换了工作目录后照不照附注里的路径读写 `.duck/`（流程里模型没换过目录）。
-
----
-
 ## 常见问题 (FAQ)
 
 <details>
