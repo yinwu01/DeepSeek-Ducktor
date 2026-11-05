@@ -278,37 +278,31 @@ id 从 deepseek-doctor 或 deepseek-supervisor 换过来以后，插件页「配
 ## 常见问题 (FAQ)
 
 <details>
-<summary><b>1. 是 DeepSeek 官方的插件吗？</b></summary>
-<br>
-不是。这是社区做的插件，和 DeepSeek 公司没有关系。
-</details>
-
-<details>
-<summary><b>2. 和 Ducktor 是什么关系？</b></summary>
+<summary><b>1. 和 Ducktor 是什么关系？</b></summary>
 <br>
 <code>duck/</code> 是 Ducktor 的原样拷贝，<code>duck.lock.json</code> 记着它来自哪个提交。这个插件加的是 DeepSeek Harness 的接入、「Ducktor」页签和另带的 11 张卡。
 </details>
 
 <details>
-<summary><b>3. 会把我的东西发出去吗？</b></summary>
+<summary><b>2. 会把我的东西发出去吗？</b></summary>
 <br>
 插件自己不发网络请求，页签只读项目里的本地文件。AI 读到的内容照常发给模型。<code>/duck-survey</code>、<code>/duck-idea</code> 这类命令会让 AI 上网查文献；Ducktor 开着或你敲命令时，AI 给论文、数据集附的链接也要上网查。
 </details>
 
 <details>
-<summary><b>4. Ducktor 讲的方法论或引用的数据会出错吗？</b></summary>
+<summary><b>3. Ducktor 讲的方法论或引用的数据会出错吗？</b></summary>
 <br>
 <b>有可能，请始终保持研究者的最终核验权。</b>外部文献请点链接核对标题与摘要；文内数据请对照源文件复核（<code>/duck-why</code> 会给出要核对的文件和行号）。复盘时关于“AI 当时为何这样做”的分析，是照文件和对话记录推出来的，不代表模型当时真实的推理。
 </details>
 
 <details>
-<summary><b>5. 会对研究者进行能力评分吗？</b></summary>
+<summary><b>4. 会对研究者进行能力评分吗？</b></summary>
 <br>
 不会。Ducktor 不出考题，也不对使用者打分。<code>/duck-idea</code> 评估的是课题方案，<code>/duck-review</code> 审视的是论文手稿：<b>我们评估的是研究客体，而非研究者本人。</b>
 </details>
 
 <details>
-<summary><b>6. 以前叫什么？</b></summary>
+<summary><b>5. 以前叫什么？</b></summary>
 <br>
 2026-10-25 的第一版叫 deepseek-ducktor。10-26 改名 deepseek-supervisor，10-27 改名 deepseek-doctor（显示名 DeepSeek-Doctor），10-29 改回 deepseek-ducktor。里面的 Ducktor 在 10-27 以前叫 Doctor Duck。<code>evals/runs/</code> 和 <code>docs/验证记录.md</code> 里的旧记录保留了当时的名字。装过旧版本的，见「安装与快速开始」里的旧版本说明。
 </details>
