@@ -2,10 +2,10 @@
   "note": "duck/ and tests/e2e/fixtures/grad-project are verbatim copies of these Ducktor paths at this commit. Re-run scripts/sync-duck.mjs instead of editing them.",
   "source": {
     "repository": "yinwu01/Ducktor",
-    "ref": "225652a",
-    "commit": "225652a2a5f06a4b81e6f799ffd40c05a3f293b2",
-    "committedAt": "2026-11-05T05:29:57-08:00",
-    "subject": "0.2.3 round 4: rule 1 covers sections and whole plans and contradictions in the draft; rule 5's nod only covers taking the command; try-first in the wrapper template; stricter carry, carry-num, scope, insist checks and new try-first steps"
+    "ref": "8cbc158",
+    "commit": "8cbc15823637bb90f860aca3868fb58294baf6ac",
+    "committedAt": "2026-11-05T06:24:50-08:00",
+    "subject": "0.2.3: round-4 p5 retest (research decision changed before asking after misreading the model figure; gate not met), CHANGELOG known issues"
   },
   "paths": [
     "bin",
