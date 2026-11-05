@@ -294,8 +294,7 @@ The first version on 2026-10-25 was called deepseek-ducktor. On 10-26 it was ren
 ## Sources and thanks
 
 * **The name**: from rubber duck debugging ([Rubber Duck Debugging](https://en.wikipedia.org/wiki/Rubber_duck_debugging)), from the book *The Pragmatic Programmer*.
-* **Core method and skill library**: the [Ducktor](https://github.com/yinwu01/Ducktor) inside this plugin is adapted from [Supervisor-Skills](https://github.com/HKUSTDial/Supervisor-Skills), open-sourced by the Data Intelligence and Analytics Lab of the Hong Kong University of Science and Technology (Guangzhou) (Yuyu Luo and contributors, CC BY-NC-SA 4.0).
-* **Example data**: the LaTeX lines that scroll by in the animation come from a paper written in one Claude Code run; line 49 in the right window, on what makes translation hard, was added for the illustration, and the line numbers after it move down; the paper numbers come from Tables 2 and 3 of *Attention Is All You Need* ([arXiv 1706.03762](https://arxiv.org/abs/1706.03762)).
+* **Core method and skill library**: the [Ducktor](https://github.com/yinwu01/Ducktor) inside this plugin is adapted from [Supervisor-Skills](https://github.com/HKUSTDial/Supervisor-Skills), open-sourced by the Data Intelligence and Analytics Lab of the Hong Kong University of Science and Technology (Guangzhou).
 * **The Supervisor series**: we now officially make Supervisor a series of our lab. [Supervisor-Skills](https://github.com/HKUSTDial/Supervisor-Skills) is the first in the series, and [Ducktor](https://github.com/yinwu01/Ducktor) and DeepSeek-Ducktor are the second and the third. We will keep open-sourcing more work and collaborate with the community.
 
 ---

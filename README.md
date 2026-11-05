@@ -293,8 +293,7 @@ id 从 deepseek-doctor 或 deepseek-supervisor 换过来以后，插件页「配
 ## 来源与致谢
 
 * **命名灵感**：源自《程序员修炼之道》（*The Pragmatic Programmer*）提出的小黄鸭调试法（[Rubber Duck Debugging](https://en.wikipedia.org/wiki/Rubber_duck_debugging)）。
-* **核心方法论与技能库**：本插件内置的 [Ducktor](https://github.com/yinwu01/Ducktor) 改编自香港科技大学（广州）数据智能与分析实验室开源的 [Supervisor-Skills](https://github.com/HKUSTDial/Supervisor-Skills)（骆昱宇及贡献者，CC BY-NC-SA 4.0）。
-* **示例数据说明**：动图里滚过的 LaTeX 行，取自一次 Claude Code 运行写的论文；右边窗口第 49 行讲翻译难在哪，是为示意另加的，后面的行号随之后移；论文数字取自《Attention Is All You Need》（[arXiv 1706.03762](https://arxiv.org/abs/1706.03762)）的表 2 和表 3。
+* **核心方法论与技能库**：本插件内置的 [Ducktor](https://github.com/yinwu01/Ducktor) 改编自香港科技大学（广州）数据智能与分析实验室开源的 [Supervisor-Skills](https://github.com/HKUSTDial/Supervisor-Skills)。
 * **Supervisor 系列**：我们正式将 Supervisor 作为一个实验室系列：[Supervisor-Skills](https://github.com/HKUSTDial/Supervisor-Skills) 是系列的第一个，[Ducktor](https://github.com/yinwu01/Ducktor) 与 DeepSeek-Ducktor 是第二和第三个。接下来我们还会继续开源，并与社区合作。
 
 ---
