@@ -63,6 +63,9 @@
 灵感源于软件工程中的<a href="https://zh.wikipedia.org/wiki/%E5%B0%8F%E9%BB%84%E9%B8%AD%E8%B0%83%E8%AF%95%E6%B3%95">小黄鸭调试法（Rubber Duck Debugging）</a>：工程师通过向桌上的小黄鸭逐行解释代码逻辑，在自我审视与复述中发现盲区、厘清思路。<b>Ducktor（Duck + Doctor/Mentor）</b> 扮演的正是终端里这只戴博士帽的“学术小黄鸭”：通过高频、轻量的方法论互动，帮你夺回对研究过程的掌控力与思考深度。
 </details>
 
+> [!TIP]
+> **用 Claude Code 或 Codex？** 请用 [Ducktor](https://github.com/yinwu01/Ducktor)：命令和规则与 DeepSeek-Ducktor 一致，是 Claude Code、Codex 上的原版。
+
 ---
 
 ## 核心体验：之前 vs. 之后

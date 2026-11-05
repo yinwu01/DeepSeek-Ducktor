@@ -64,6 +64,9 @@ From community feedback, we found that many researchers rely on `Supervisor-Skil
 The idea comes from <a href="https://en.wikipedia.org/wiki/Rubber_duck_debugging">rubber duck debugging</a> in software engineering: an engineer explains the code, line by line, to a rubber duck on the desk, and finds the blind spots and clears up the thinking while explaining. <b>Ducktor (Duck + Doctor/Mentor)</b> is this "academic rubber duck" in a graduation cap in your terminal: with frequent, light interactions about method, it helps you take back control of the research process and the depth of your thinking.
 </details>
 
+> [!TIP]
+> **Using Claude Code or Codex?** Use [Ducktor](https://github.com/yinwu01/Ducktor/blob/main/i18n/README.en.md): the same commands and rules as DeepSeek-Ducktor, the original version for Claude Code and Codex.
+
 ---
 
 ## The core experience: before vs. after
