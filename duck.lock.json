@@ -2,10 +2,10 @@
   "note": "duck/ and tests/e2e/fixtures/grad-project are verbatim copies of these Ducktor paths at this commit. Re-run scripts/sync-duck.mjs instead of editing them.",
   "source": {
     "repository": "yinwu01/Ducktor",
-    "ref": "bd93327",
-    "commit": "bd93327b960073a69309306bdd85650b59f5123b",
-    "committedAt": "2026-11-05T01:47:39-08:00",
-    "subject": "0.2.2 round 2 (user, 11-05): drop or keep on the student's first ask with the cost said once; rule 4 writes what the student asked for after one warning"
+    "ref": "duck--v0.2.2",
+    "commit": "b5d4d5fcce6475f947eddb3e8cc95a03b7e791f8",
+    "committedAt": "2026-11-05T02:21:11-08:00",
+    "subject": "Merge release-0.2.2: Ducktor 0.2.2"
   },
   "paths": [
     "bin",
