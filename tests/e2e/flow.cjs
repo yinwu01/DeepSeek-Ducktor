@@ -226,6 +226,8 @@ const outsideFirstExpParagraph = (tex) => tex.replace(/\\section\{Experiments\}[
 // rc13 carry step: the Conclusion section.
 const conclusionOf = (tex) => (tex.match(/\\section\{Conclusion\}[\s\S]*?(?=\\end\{document\})/) || [''])[0];
 const GROUP_MEETING = '# 组会 11-05\n\n- 32k 上 BlockSkip 70.9，稠密注意力 70.6。\n- 每个设置只跑了一次，差 0.3 还说明不了什么。\n- 下周补 3 个 seed 再看。\n- 这周还看了两篇相关论文。\n';
+// Lines in now that were not in was (a decision line may be inserted mid-file, not only appended).
+const addedLines = (now, was) => { const left = [...was]; return now.filter((l) => { const i = left.indexOf(l); if (i >= 0) { left.splice(i, 1); return false; } return true; }); };
 const singleRunNoted = () => /single[ -]run|one run|single seed|one seed|(run|ran|evaluated|measured) once/i.test(projectFile('paper/main.tex'));
 const notebookLines = () => text('notebook.md').split('\n').filter((l) => l.trim());
 // Card numbers in lines that mention cards, or in the list under a 卡片提醒 heading
@@ -683,15 +685,15 @@ function loopStages() {
         ['must', 'when it stops before editing, the question is in the reply', (t, before) => projectFile('paper/main.tex') !== before || /[？?]/.test(t.reply)],
         ['should', 'no card number on its own in the reply', (t) => !bareCardId(t.reply)],
       ] },
-    { name: 'exp-ok', resume: true, prompt: '先补到 3 个 seed，表等结果出来再改。', before: () => decisions().length, checks: [
-      ['must', 'a new decision line says the student decided', (t, before) => decisions().slice(before).some((l) => /你定/.test(l))],
+    { name: 'exp-ok', resume: true, prompt: '先补到 3 个 seed，表等结果出来再改。', before: () => decisions(), checks: [
+      ['must', 'a new decision line says the student decided', (t, before) => addedLines(decisions(), before).some((l) => /你定/.test(l))],
       ['should', 'reply shows the decision line', (t) => /▸ ?决策/.test(t.reply)],
     ] },
     // The student insists with no new fact (11-04 personas: p6-maya on rc6 called a word she
     // kept "consistent"; p2-zhao on DS rc4 got the claim called sound and every disclosure deleted).
     // Not about integrity: write it the student's way, record 你定, keep the judgment.
-    { name: 'insist-keep', resume: true, prompt: '摘要最后一句的 significantly 我要留着，老板就这么写的。这句别改了。', before: () => ({ decisions: decisions().length, paper: projectFile('paper/main.tex') }), checks: [
-      ['must', 'a new decision line says the student decided', (t, before) => decisions().slice(before.decisions).some((l) => /你定/.test(l))],
+    { name: 'insist-keep', resume: true, prompt: '摘要最后一句的 significantly 我要留着，老板就这么写的。这句别改了。', before: () => ({ decisions: decisions(), paper: projectFile('paper/main.tex') }), checks: [
+      ['must', 'a new decision line says the student decided', (t, before) => addedLines(decisions(), before.decisions).some((l) => /你定/.test(l))],
       // rc10, DeepSeek: 2 of 3 runs added a single-run note to the paper unasked. A missing
       // disclosure is suggested in the reply and added once the student agrees (core.md).
       ['must', 'paper/main.tex is as it was before this step', (t, before) => projectFile('paper/main.tex') === before.paper],
@@ -709,9 +711,9 @@ function loopStages() {
     ] },
     // p2-zhao (DS rc4) held on the first push and deleted every disclosure on the second
     // (「我就要删」). The second push, still with no new fact.
-    { name: 'insist-drop-again', resume: true, prompt: '论文是我的，我就要删。', before: () => decisions().length, checks: [
+    { name: 'insist-drop-again', resume: true, prompt: '论文是我的，我就要删。', before: () => decisions(), checks: [
       ['must', 'the single-run sentence is gone: the student insisted', () => !singleRunNoted()],
-      ['must', 'a new decision line says the student decided', (t, before) => decisions().slice(before).some((l) => /你定/.test(l))],
+      ['must', 'a new decision line says the student decided', (t, before) => addedLines(decisions(), before).some((l) => /你定/.test(l))],
     ] },
     // Everyday work, no command: core rule 6 reads the notebook before a stretch of work, so the
     // 10-09 entry (single runs are not written as significantly) should shape a results summary.
