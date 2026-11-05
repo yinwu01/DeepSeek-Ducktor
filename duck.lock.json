@@ -2,10 +2,10 @@
   "note": "duck/ and tests/e2e/fixtures/grad-project are verbatim copies of these Ducktor paths at this commit. Re-run scripts/sync-duck.mjs instead of editing them.",
   "source": {
     "repository": "yinwu01/Ducktor",
-    "ref": "b0201c7",
-    "commit": "b0201c739a9c350f9e35a7ac41f0487be539db85",
-    "committedAt": "2026-11-05T06:42:40-08:00",
-    "subject": "0.2.3 round 5: rule 1 gives a second way to ask (write the rest, keep undecided research decisions as in the draft, list them; also when the student says change first); same line in wrapper step 3; rule 16 half-sentence back"
+    "ref": "31f7a2a",
+    "commit": "31f7a2a67c98d1f37ff7b04e8e1793a4b865ce11",
+    "committedAt": "2026-11-05T07:26:39-08:00",
+    "subject": "0.2.3 round 6: drop rule 5's '(only covers taking the command)'; DS propose stopped naming /duck-polish after it was added (rounds 4 and 5), and rule 1 now covers the bypass it was for"
   },
   "paths": [
     "bin",
@@ -167,7 +167,7 @@
     "rules/agents-header.md": "0919abb3ae5c51e9e149613447ae8dc44560bb7c1e2d7ff08eedda4f2ea80c00",
     "rules/command-basics.md": "bfad2f63e506e22c89b6e4dac2a2fcf0858f4a66b7fde928cee6c180e575cbb6",
     "rules/commands.json": "bd9e692d076dc81fd972a2bf63cdf65511ece3e7bc38970af10027b8a7133f78",
-    "rules/core.md": "267fe718dc4621368e2947058580cd7881d8e603cd0465fea1d27bea1de4c211",
+    "rules/core.md": "186c4412b520fd4d7ba9c59813620c81ab2aebf91998af138d8d93f9e25c0f21",
     "rules/idle.md": "4cc8edb32b007d9e46e88a0d4f0590d9d2391ff64e986ee24f8fc507aea8d3f3",
     "rules/wrapper-template.md": "ccb6629af40b92ee949a5e20bdf35318d7bdcc1f5a4b15184cb792466c383ce2",
     "skills/duck/agents/openai.yaml": "ccf50e7c85317179009e728771457fb1e88ae257be42b3175df837feefa80b7c",
