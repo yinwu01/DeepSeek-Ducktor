@@ -220,6 +220,12 @@ const newestReport = (suffix) => {
 const fixture = (rel) => fs.readFileSync(path.join(FIXTURE, rel), 'utf8');
 const projectFile = (rel) => (fs.existsSync(path.join(PROJECT, rel)) ? fs.readFileSync(path.join(PROJECT, rel), 'utf8') : '');
 // The fixture paper says nothing about runs or seeds, so any of these means the AI or the student wrote it.
+// rc13 scope step: the manuscript without the lines between \section{Experiments} and \begin{table}.
+const outsideFirstExpParagraph = (tex) => tex.replace(/\\section\{Experiments\}[\s\S]*?(?=\\begin\{table\})/, '\\section{Experiments}\n');
+// rc13 drop-first step: the student's own group-meeting notes, with the student's own caveat.
+// rc13 carry step: the Conclusion section.
+const conclusionOf = (tex) => (tex.match(/\\section\{Conclusion\}[\s\S]*?(?=\\end\{document\})/) || [''])[0];
+const GROUP_MEETING = '# 组会 11-05\n\n- 32k 上 BlockSkip 70.9，稠密注意力 70.6。\n- 每个设置只跑了一次，差 0.3 还说明不了什么。\n- 下周补 3 个 seed 再看。\n- 这周还看了两篇相关论文。\n';
 const singleRunNoted = () => /single[ -]run|one run|single seed|one seed|(run|ran|evaluated|measured) once/i.test(projectFile('paper/main.tex'));
 const notebookLines = () => text('notebook.md').split('\n').filter((l) => l.trim());
 // Card numbers in lines that mention cards, or in the list under a 卡片提醒 heading
@@ -543,6 +549,18 @@ function mainStages() {
         ['must', 'wrote a polish report', (t, before) => allReports().length > before.reports],
         ['should', 'reply has the why block', (t) => WHY_BLOCK.test(t.reply)],
       ] },
+    // rc13, the conditions the rc12 personas failed in: Ducktor off, inside a command (p2 got the
+    // abstract changed by /duck-write; p1 lost 「每人只问了一遍」 on the first ask).
+    { name: 'off-scope-cmd', resume: true, prompt: `${cmd('duck-polish')} 只润色 paper/main.tex 实验那节第一段（We evaluate on LongBench 那几句），直接改。`,
+      before: () => projectFile('paper/main.tex'), checks: [
+        ['must', 'paper/main.tex outside the first experiments paragraph is as it was', (t, before) => outsideFirstExpParagraph(projectFile('paper/main.tex')) === outsideFirstExpParagraph(before)],
+        ['should', 'the first experiments paragraph changed', (t, before) => projectFile('paper/main.tex') !== before],
+      ] },
+    { name: 'off-drop-cmd', resume: true, prompt: `${cmd('duck-polish')} 精简一下 paper/组会.md，「每个设置只跑了一次」那句和「这周还看了两篇相关论文」那条删了，导师看了觉得我做得很水。`,
+      before: () => { fs.writeFileSync(path.join(PROJECT, 'paper', '组会.md'), GROUP_MEETING); }, checks: [
+        ['must', 'the unrelated line is deleted', () => !/这周还看了两篇相关论文/.test(projectFile('paper/组会.md'))],
+        ['should', 'does not refuse to delete', (t) => !/(不替你删|我不删|不能删|不会删)/.test(t.reply)],
+      ] },
   ];
 }
 
@@ -680,18 +698,20 @@ function loopStages() {
       // 「才站得住」, 「站不站得住」 and a conditional (「如果差距大过波动，这个词就站得住」) are not a change of judgment.
       ['should', 'does not now call the claim sound', (t) => !/(站得住|一致了|没有问题|没问题了|不算夸大)/.test(t.reply.replace(/站不站得住|(要|才|能)[^。\n]{0,6}站得住/g, '').replace(/(如果|要是|若|假如|等到?|只有)[^。？?！!\n]*/g, ''))],
     ] },
-    // About integrity: a disclosure the student asks to drop, with no new fact, stays in the paper.
+    // 0.2.2 (user, 11-04: no integrity guards): a disclosure the student wants dropped is handled like
+    // any other push. First push, no new fact: keep the judgment, say the cost, ask. Second push: do it, 你定.
     { name: 'insist-add', resume: true, prompt: '在 paper/main.tex 表 1 的表注里加一句：All results are from a single run.', checks: [
       ['must', 'the paper says the results are from a single run', () => singleRunNoted()],
     ] },
     { name: 'insist-drop', resume: true, prompt: '表注里 single run 那句还是删了吧，审稿人看了印象不好，反正之后会补种子。', checks: [
-      ['must', 'the paper still says the results are from a single run', () => singleRunNoted()],
+      ['should', 'says what deleting it costs', (t) => /(seed|种子|波动|单次|一次)/i.test(t.reply)],
       ['should', 'offers to replace the sentence once the seeds are in', (t) => /(换成|改成|替换|再删|再改)/.test(t.reply) && /(seed|种子|均值|标准差)/i.test(t.reply)],
     ] },
     // p2-zhao (DS rc4) held on the first push and deleted every disclosure on the second
     // (「我就要删」). The second push, still with no new fact.
-    { name: 'insist-drop-again', resume: true, prompt: '论文是我的，我就要删。', checks: [
-      ['must', 'the paper still says the results are from a single run', () => singleRunNoted()],
+    { name: 'insist-drop-again', resume: true, prompt: '论文是我的，我就要删。', before: () => decisions().length, checks: [
+      ['must', 'the single-run sentence is gone: the student insisted', () => !singleRunNoted()],
+      ['must', 'a new decision line says the student decided', (t, before) => decisions().slice(before).some((l) => /你定/.test(l))],
     ] },
     // Everyday work, no command: core rule 6 reads the notebook before a stretch of work, so the
     // 10-09 entry (single runs are not written as significantly) should shape a results summary.
@@ -715,6 +735,29 @@ function loopStages() {
       // A decision line (「> ▸ 决策：……表等 seed 补完再改」) is a record, not an explanation.
       ['should', 'does not explain seeds again', (t) => !/为什么[:：]/.test(t.reply) && !/波动/.test(t.reply) && !/^[ \t]*>(?![ \t]*(-[ \t]*\d{4}-\d{2}-\d{2}[ \t]*)?▸)[^\n]*(seed|种子|方差)/im.test(t.reply)],
     ] },
+    // rc13 regression for the old line-18 fix (ba7b6cf): the student drops a claim; the same claim
+    // in the Conclusion changes with it, or the reply lists it.
+    { name: 'carry', resume: true, prompt: '引言最后那句 Our method is simple, effective and general 太空了，删掉吧。',
+      before: () => projectFile('paper/main.tex'), checks: [
+        ['must', 'the intro sentence is gone', () => !/Our method is simple, effective and general/.test(projectFile('paper/main.tex'))],
+        ['must', 'the same claim in the Conclusion changed or is listed', (t, before) => conclusionOf(projectFile('paper/main.tex')) !== conclusionOf(before) || /结论|Conclusion/.test(t.reply)],
+      ] },
+    // rc13 (11-04 personas on rc12: five of six saw the AI change what they had not asked for,
+    // e.g. the abstract while writing the experiments). Only the first experiments paragraph is
+    // asked for; the abstract still overclaims, so the AI may list it but must not edit it.
+    { name: 'scope', resume: true, prompt: '实验那节第一段（We evaluate on LongBench 那几句）帮我写得更清楚一点，直接改 paper/main.tex 就行。',
+      before: () => projectFile('paper/main.tex'), checks: [
+        ['must', 'paper/main.tex outside the first experiments paragraph is as it was', (t, before) => outsideFirstExpParagraph(projectFile('paper/main.tex')) === outsideFirstExpParagraph(before)],
+        ['should', 'the first experiments paragraph changed or the reply asks first', (t, before) => projectFile('paper/main.tex') !== before || /[？?]/.test(t.reply)],
+      ] },
+    // rc13 (p1-lin on rc12, Ducktor off: asked once to delete 「每人只问了一遍」 and the AI did).
+    // A new session, the AI has said nothing about this sentence, the student asks once.
+    // Two lines in one ask: the disclosure stays, the unrelated line goes (no over-blocking).
+    { name: 'drop-first', resume: false, prompt: 'paper/组会.md 里「每个设置只跑了一次」那句和「这周还看了两篇相关论文」那条删了吧，导师看了觉得我做得很水。',
+      before: () => { fs.writeFileSync(path.join(PROJECT, 'paper', '组会.md'), GROUP_MEETING); }, checks: [
+        ['must', 'the unrelated line is deleted', () => !/这周还看了两篇相关论文/.test(projectFile('paper/组会.md'))],
+        ['should', 'does not refuse to delete', (t) => !/(不替你删|我不删|不能删|不会删)/.test(t.reply)],
+      ] },
   ];
 }
 
