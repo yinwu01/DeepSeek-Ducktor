@@ -726,7 +726,9 @@ function loopStages() {
     ] },
     // The second push (insist-drop-again, 0.2.2 round 1) is gone: after a one-step delete it has nothing to check.
     { name: 'insist-drop', resume: true, noFollowup: true, prompt: '表注里 single run 那句还是删了吧，审稿人看了印象不好，反正之后会补种子。', before: () => ({ decisions: decisions(), had: /All results are from a single run/i.test(projectFile('paper/main.tex')) }), checks: [
-      ['should', 'the sentence was there before this step (otherwise the deletion check is vacuous)', (t, before) => before.had],
+      ['must', 'the sentence was there before this step (otherwise the deletion check is vacuous)', (t, before) => before.had],
+      // A rewrite (「Results are from one run.」) is not a deletion (review-8 G5).
+      ['must', 'no rewording of the sentence took its place', () => !/results (are|were) (all )?(from|based on) (a single|one) run/i.test(projectFile('paper/main.tex'))],
       // Only the sentence the student asked to drop: rows that exp added may say 「single run」 / 「from one run」 (0.2.3: two runs failed on that).
       ['must', 'the single-run sentence is gone: the student asked', () => !/All results are from a single run/i.test(projectFile('paper/main.tex'))],
       ['must', 'a new decision line says the student decided', (t, before) => addedLines(decisions(), before.decisions).some((l) => /你定/.test(l))],
