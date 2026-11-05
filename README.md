@@ -256,25 +256,6 @@ id 从 deepseek-doctor 或 deepseek-supervisor 换过来以后，插件页「配
 
 ---
 
-## 测试与验证
-
-| 命令 | 要什么 | 测什么 |
-|---|---|---|
-| `npm test` | Node 22 以上 | 单元测试和打包检查，不需要 dsh |
-| `node tests/dsh/check.mjs --route pnpm --web`（或 `--route patch`、`--route ui`） | Node 22.15 以上（读会话日志要 zstd），装好的 dsh；`pnpm` 和 `ui` 两条还要 PATH 上有 pnpm | 在临时 HOME 里按三种方式装、用、卸，读真实的会话日志核对注入的内容和位置。不需要也不使用 API key，模型请求发出前就停下 |
-| `node tests/web/sidebar.mjs <dsh web 打印的地址> <输出前缀> <项目目录> [poll] [dark]` | 一个开着的 `dsh web`（web profile 装了插件），`PLAYWRIGHT_CORE` 和 `CHROMIUM` 指向 playwright-core 和一个 Chromium | 在真的网页界面里打开「Ducktor」页签、截图；带 `poll` 时往 `decisions.md` 追加一行，看页签自己刷新出来。不发模型请求 |
-| `node tests/e2e/flow.cjs [main\|more\|loop\|paper]` | Node 22.15 以上，`DEEPSEEK_API_KEY`，dsh 的 headless profile 里装好插件 | 真模型跑 Ducktor 的整套学生流程，检查项和 Claude Code、Codex 版相同，另有几条只查这个插件。花真钱 |
-
-`check.mjs` 建议在断网的环境里跑（例如 `unshare -rn`，打开 loopback），这样能确认没有东西出本机。
-
-细节在 [docs/验证记录.md](docs/验证记录.md)。简单说：
-
-- 验证了：dsh 0.2.1-rc.2 和 rc.3 上三种安装方式都能装上、卸载（卸载后不再加载）；命令在 Web 和 headless 里都列出来、指向真实文件；开场说明和 Ducktor 开场 hook 的输出逐字相同，位置在学生消息之后、命令之前；续接会话不重复给，开关变了给替换的一份；照 dsh 建子代理会话的写法、用被测 dsh 的代码建出会话，插件认得出子代理（dsh 真建子代理时这么写，是读代码确认的）。
-- 真模型（10-25、10-26 跑的，用的是 10-27 同步以前的 `duck/` 和那时的检查项）：在 dsh rc.2 上用 DeepSeek（默认的 `deepseek-flash`）跑完 Ducktor 的四套学生流程，必须项全过；建议项里有一条没过：参考文献没给链接（10-26 只重跑了 survey 这一段，这一条过了）。运行里模型起的真子代理都没拿到开场说明；调低压缩阈值后，对话压缩掉开场说明，插件在下一步补发了。
-- 没验证：rc.3 和 `deepseek-v4-pro` 上的真模型流程，真模型结果的波动（每套只跑了一次）；10-27 同步以后的真模型流程（这次同步改了规则和命令的内容，不只是名字：菜单、`/duck-why`、名家文章的转述）；红队改过的 11 张卡还没被真模型读过；Desktop（只有 macOS、Windows 版，我们只在 Linux 上测过）；插件页的点击流程本身（测的是它调用的后端接口），插件的「配置」页也没看过；模型换了工作目录后照不照附注里的路径读写 `.duck/`（流程里模型没换过目录）。
-
----
-
 ## 常见问题 (FAQ)
 
 <details>

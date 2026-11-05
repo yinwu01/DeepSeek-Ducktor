@@ -257,25 +257,6 @@ All three are optional. If you installed with way 1 or 2, change them in "配置
 
 ---
 
-## Tests and verification
-
-| Command | Needs | Tests |
-|---|---|---|
-| `npm test` | Node 22 or later | unit tests and the package check; no dsh needed |
-| `node tests/dsh/check.mjs --route pnpm --web` (or `--route patch`, `--route ui`) | Node 22.15 or later (reading session logs needs zstd), an installed dsh; the `pnpm` and `ui` routes also need pnpm on PATH | installs, uses and removes the plugin the three ways in a temporary HOME, and reads the real session logs to check what is injected and where. Needs and uses no API key; it stops before the model request is sent |
-| `node tests/web/sidebar.mjs <address printed by dsh web> <output prefix> <project folder> [poll] [dark]` | a running `dsh web` (the web profile has the plugin), with `PLAYWRIGHT_CORE` and `CHROMIUM` pointing to playwright-core and a Chromium | opens the "Ducktor" tab in the real web interface and takes screenshots; with `poll`, it appends a line to `decisions.md` and checks that the tab refreshes by itself. Sends no model requests |
-| `node tests/e2e/flow.cjs [main\|more\|loop\|paper]` | Node 22.15 or later, `DEEPSEEK_API_KEY`, the plugin installed in the dsh headless profile | runs Ducktor's full student workflows with a real model; the checks are the same as for the Claude Code and Codex versions, plus a few only for this plugin. Costs real money |
-
-We suggest running `check.mjs` without network (for example `unshare -rn`, with loopback up), so that you can confirm that nothing leaves the computer.
-
-Details are in [验证记录.md](验证记录.md) (in Chinese). In short:
-
-- Verified: on dsh 0.2.1-rc.2 and rc.3, all three install ways install and uninstall (after uninstall it no longer loads); the commands are listed in Web and headless and point to the real files; the session note is word for word the same as the output of Ducktor's session hook, and sits after the student's message and before the command; a resumed session does not get it again, and a changed mode gets a replacement copy; a session built the way dsh builds subagent sessions, with the code of the tested dsh, is recognized by the plugin as a subagent (that dsh really builds subagents this way was confirmed by reading the code).
-- Real model (runs on 10-25 and 10-26, with the `duck/` from before the 10-27 sync and the checks of that time): on dsh rc.2 with DeepSeek (the default `deepseek-flash`), Ducktor's four student workflows ran to the end and all required checks passed; one suggested check failed: the references had no links (on 10-26 only the survey part was run again, and this check passed). The real subagents that the model started in the runs did not get the session note; with a lower compaction threshold, the compaction removed the session note and the plugin sent it again at the next step.
-- Not verified: the real-model workflows on rc.3 and `deepseek-v4-pro`, the variation of real-model results (each workflow ran once); the real-model workflows after the 10-27 sync (that sync changed the content of the rules and commands, not only the names: the menu, `/duck-why`, the summaries of mentors' essays); the 11 cards that the red team changed have not yet been read by a real model; Desktop (only macOS and Windows versions exist, and we tested only on Linux); the click flow of the plugin page itself (we tested the backend interface it calls), and we did not look at the plugin's "配置" (Configure) page; whether the model follows the paths in the addendum to read and write `.duck/` after it changes the working folder (the model did not change folders in the workflows).
-
----
-
 ## FAQ
 
 <details>
