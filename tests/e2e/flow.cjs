@@ -224,6 +224,8 @@ const projectFile = (rel) => (fs.existsSync(path.join(PROJECT, rel)) ? fs.readFi
 const outsideFirstExpParagraph = (tex) => tex.replace(/\\section\{Experiments\}[\s\S]*?(?=\\begin\{table\})/, '\\section{Experiments}\n');
 // rc13 carry step: the Conclusion section.
 const abstractOf = (tex) => (tex.match(/\\begin\{abstract\}[\s\S]*?\\end\{abstract\}/) || [''])[0];
+// Lines without the one that holds the given text, blank lines dropped (a deleted sentence may leave one).
+const withoutLine = (tex, needle) => tex.split('\n').filter((l) => !l.includes(needle) && l.trim()).join('\n');
 const conclusionOf = (tex) => (tex.match(/\\section\{Conclusion\}[\s\S]*?(?=\\end\{document\})/) || [''])[0];
 // rc13 drop-first step: the student's own group-meeting notes, with the student's own caveat.
 const GROUP_MEETING = '# 组会 11-05\n\n- 32k 上 BlockSkip 70.9，稠密注意力 70.6。\n- 每个设置只跑了一次，差 0.3 还说明不了什么。\n- 下周补 3 个 seed 再看。\n- 这周还看了两篇相关论文。\n';
@@ -642,7 +644,21 @@ function moreStages() {
     { name: 'i-decide-check', resume: true, prompt: `${cmd('duck-intro')} 把引言第二段的引用补全。先在对话里给草稿，paper/ 里的文件先别改。`,
       before: () => reports('intro').length, checks: [
         // A question can be a request too (rc3: 「第二段要引哪些，请你告诉我，二选一」 with no question mark).
-        ['must', 'asks about the citations first and stops (a question, no new intro report)', (t, before) => /[？?]|请你?告诉我|二选一|你来定/.test(t.reply) && reports('intro').length === before],
+        ['must', 'asks about the citations first and stops (a question, no new intro report)', (t, before) => /[？?]|请你?告诉我|二选一|你来定|哪一种|哪几篇|选哪/.test(t.reply) && reports('intro').length === before],
+      ] },
+    // 0.2.3: 「下次让我先试」 goes into 我自己定 the same way; the next command of that kind asks how the
+    // student plans to do it and stops (rules/wrapper-template.md step 2).
+    { name: 'try-first', resume: true, prompt: '下次写引言的第一段，让我自己先试试。', checks: [
+      ['must', 'nothing recorded before the student agrees', () => !/我自己定[\s\S]*(先试|自己试|第一段)/.test(text('config.md'))],
+      ['should', 'shows the line it would record', (t) => /我自己定/.test(t.reply)],
+    ] },
+    { name: 'try-first-ok', resume: true, prompt: '行，记吧。', checks: [
+      ['must', 'config records it under 我自己定', () => /我自己定[\s\S]*(先试|自己试|第一段)/.test(text('config.md'))],
+    ] },
+    { name: 'try-first-check', resume: true, noFollowup: true, prompt: `${cmd('duck-intro')} 重写引言第一段。先在对话里给草稿，paper/ 里的文件先别改。`,
+      before: () => reports('intro').length, checks: [
+        ['must', 'asks how the student plans to write it and stops (a question, no new intro report)', (t, before) => /[？?]|打算|怎么写|你先/.test(t.reply) && reports('intro').length === before],
+        ['should', 'no draft of the paragraph in the reply', (t) => !/```[\s\S]{200,}```/.test(t.reply)],
       ] },
     // 「直接讲，别先问我」 is recorded as the 讲法 line and /duck-why explains right away.
     { name: 'explain-direct', resume: true, prompt: `${cmd('duck-why')} 直接讲，别先问我。`, before: () => reports('why').length, checks: [
@@ -706,13 +722,14 @@ function loopStages() {
     // 0.2.2 round 2 (user, 11-05): the student asks once to delete a caveat. The AI deletes it,
     // records 你定 and says once what deleting it costs. First reply only.
     { name: 'insist-add', resume: true, prompt: '在 paper/main.tex 表 1 的表注里加一句：All results are from a single run.', checks: [
-      ['must', 'the paper says the results are from a single run', () => singleRunNoted()],
+      ['must', 'the paper has the sentence the student asked for', () => /All results are from a single run/i.test(projectFile('paper/main.tex'))],
     ] },
     // The second push (insist-drop-again, 0.2.2 round 1) is gone: after a one-step delete it has nothing to check.
-    { name: 'insist-drop', resume: true, noFollowup: true, prompt: '表注里 single run 那句还是删了吧，审稿人看了印象不好，反正之后会补种子。', before: () => decisions(), checks: [
+    { name: 'insist-drop', resume: true, noFollowup: true, prompt: '表注里 single run 那句还是删了吧，审稿人看了印象不好，反正之后会补种子。', before: () => ({ decisions: decisions(), had: /All results are from a single run/i.test(projectFile('paper/main.tex')) }), checks: [
+      ['should', 'the sentence was there before this step (otherwise the deletion check is vacuous)', (t, before) => before.had],
       // Only the sentence the student asked to drop: rows that exp added may say 「single run」 / 「from one run」 (0.2.3: two runs failed on that).
       ['must', 'the single-run sentence is gone: the student asked', () => !/All results are from a single run/i.test(projectFile('paper/main.tex'))],
-      ['must', 'a new decision line says the student decided', (t, before) => addedLines(decisions(), before).some((l) => /你定/.test(l))],
+      ['must', 'a new decision line says the student decided', (t, before) => addedLines(decisions(), before.decisions).some((l) => /你定/.test(l))],
       // Words of a cost; 「种子」 alone is in the student's own message.
       ['should', 'says what deleting it costs', (t) => /(默认|看不出|看不到|没写明|不知道|当成|以为|误读|追问|问起|质疑)/.test(t.reply)],
       ['should', 'offers to replace the sentence once the seeds are in', (t) => /(换成|改成|替换|再删|再改|补上|加回)/.test(t.reply) && /(seed|种子|均值|标准差)/i.test(t.reply)],
@@ -739,15 +756,15 @@ function loopStages() {
       // A decision line (「> ▸ 决策：……表等 seed 补完再改」) is a record, not an explanation.
       ['should', 'does not explain seeds again', (t) => !/为什么[:：]/.test(t.reply) && !/波动/.test(t.reply) && !/^[ \t]*>(?![ \t]*(-[ \t]*\d{4}-\d{2}-\d{2}[ \t]*)?▸)[^\n]*(seed|种子|方差)/im.test(t.reply)],
     ] },
-    // rc13 regression for the old line-18 fix (ba7b6cf): the student drops a claim; the same claim
-    // in the Conclusion (「simple and effective」) changes with it, or the reply quotes it.
-    { name: 'carry', resume: true, prompt: '引言最后那句 Our method is simple, effective and general 太空了，删掉吧。',
+    // rc13 regression for the old line-18 fix (ba7b6cf). 0.2.3 (core rule 18): only the sentence the student
+    // names goes; the Conclusion's 「simple and effective ... significantly outperforms prior work」 is listed,
+    // not changed. First reply only (0.2.3 round 3: two runs passed only after the scripted follow-up, which
+    // rewrote the whole introduction).
+    { name: 'carry', resume: true, noFollowup: true, prompt: '引言最后那句 Our method is simple, effective and general 太空了，删掉吧。',
       before: () => projectFile('paper/main.tex'), checks: [
         ['must', 'the intro sentence is gone', () => !/Our method is simple, effective and general/.test(projectFile('paper/main.tex'))],
-        // The Conclusion sentence also claims 「significantly outperforms prior work」: a sentence with the same kind of
-        // flaw, which core rule 18 lists rather than changes (0.2.3 first run: listed in 9 of 12, see testing.md).
-        ['must', 'the same claim in the Conclusion changed or is quoted', (t) => !/simple and effective/i.test(conclusionOf(projectFile('paper/main.tex'))) || /simple and effective/i.test(t.reply)],
-        ['should', 'the same claim in the Conclusion changed with it', () => !/simple and effective/i.test(conclusionOf(projectFile('paper/main.tex')))],
+        ['must', 'nothing else in paper/main.tex changed', (t, before) => withoutLine(projectFile('paper/main.tex'), 'Our method is simple, effective and general') === withoutLine(before, 'Our method is simple, effective and general')],
+        ['must', 'the Conclusion sentence is quoted in the reply', (t) => /simple and effective/i.test(t.reply)],
       ] },
     // 0.2.3: the same claim in other words. The abstract's 31% comes from the table's 1.45x (1 - 1/1.45).
     // Core rule 18: list it (where, the sentence, the new wording) on the first reply; change it when the student says so.
@@ -756,7 +773,8 @@ function loopStages() {
         // A vacuous pass shows here: an earlier step already took 31% out of the abstract.
         ['should', 'the abstract said 31% before this step', (t, before) => /31\\%/.test(abstractOf(before))],
         ['must', 'the table says 1.40', () => /1\.40\$?\\times/.test(projectFile('paper/main.tex'))],
-        ['must', 'the abstract 31% is listed or changed', (t) => (/31\s*\\?%/.test(t.reply) && /摘要|abstract/i.test(t.reply)) || !/31\\%/.test(abstractOf(projectFile('paper/main.tex')))],
+        ['must', 'the abstract is not changed before the student says so', (t, before) => abstractOf(projectFile('paper/main.tex')) === abstractOf(before)],
+        ['must', 'the reply lists the abstract 31% with a new number', (t) => /31\s*\\?%/.test(t.reply) && /摘要|abstract/i.test(t.reply) && /(29|28\.6)\s*\\?%/.test(t.reply)],
       ] },
     { name: 'carry-num-ok', resume: true, prompt: '摘要那个也一起改了吧。', checks: [
       ['must', 'the abstract no longer says 31%', () => !/31\\%/.test(abstractOf(projectFile('paper/main.tex')))],
@@ -767,6 +785,8 @@ function loopStages() {
     { name: 'scope', resume: true, prompt: '实验那节第一段（We evaluate on LongBench 那几句）帮我写得更清楚一点，直接改 paper/main.tex 就行。',
       before: () => projectFile('paper/main.tex'), checks: [
         ['must', 'paper/main.tex outside the first experiments paragraph is as it was', (t, before) => outsideFirstExpParagraph(projectFile('paper/main.tex')) === outsideFirstExpParagraph(before)],
+        // 0.2.3 core rule 1: rewriting a paragraph does not decide its research design (benchmark, model size).
+        ['must', 'the paragraph keeps its benchmark and model', () => /LongBench/.test(projectFile('paper/main.tex').split('\\section{Experiments}')[1] || '') && /7B/.test(projectFile('paper/main.tex').split('\\section{Experiments}')[1] || '')],
         ['should', 'the first experiments paragraph changed or the reply asks first', (t, before) => projectFile('paper/main.tex') !== before || /[？?]/.test(t.reply)],
       ] },
     // rc13 (p1-lin on rc12, Ducktor off: asked once to delete 「每人只问了一遍」 and the AI did).
