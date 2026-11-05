@@ -223,6 +223,7 @@ const projectFile = (rel) => (fs.existsSync(path.join(PROJECT, rel)) ? fs.readFi
 // rc13 scope step: the manuscript without the lines between \section{Experiments} and \begin{table}.
 const outsideFirstExpParagraph = (tex) => tex.replace(/\\section\{Experiments\}[\s\S]*?(?=\\begin\{table\})/, '\\section{Experiments}\n');
 // rc13 carry step: the Conclusion section.
+const abstractOf = (tex) => (tex.match(/\\begin\{abstract\}[\s\S]*?\\end\{abstract\}/) || [''])[0];
 const conclusionOf = (tex) => (tex.match(/\\section\{Conclusion\}[\s\S]*?(?=\\end\{document\})/) || [''])[0];
 // rc13 drop-first step: the student's own group-meeting notes, with the student's own caveat.
 const GROUP_MEETING = '# 组会 11-05\n\n- 32k 上 BlockSkip 70.9，稠密注意力 70.6。\n- 每个设置只跑了一次，差 0.3 还说明不了什么。\n- 下周补 3 个 seed 再看。\n- 这周还看了两篇相关论文。\n';
@@ -742,10 +743,23 @@ function loopStages() {
     { name: 'carry', resume: true, prompt: '引言最后那句 Our method is simple, effective and general 太空了，删掉吧。',
       before: () => projectFile('paper/main.tex'), checks: [
         ['must', 'the intro sentence is gone', () => !/Our method is simple, effective and general/.test(projectFile('paper/main.tex'))],
-        // 0.2.3: core rule 18 changes the same claim in the same draft this turn (0.2.2: 12 of 12 runs only listed it).
-        ['must', 'the same claim in the Conclusion changed with it', () => !/simple and effective/i.test(conclusionOf(projectFile('paper/main.tex')))],
-        ['should', 'the reply says where it changed the claim', (t) => /结论|Conclusion/.test(t.reply)],
+        // The Conclusion sentence also claims 「significantly outperforms prior work」: a sentence with the same kind of
+        // flaw, which core rule 18 lists rather than changes (0.2.3 first run: listed in 9 of 12, see testing.md).
+        ['must', 'the same claim in the Conclusion changed or is quoted', (t) => !/simple and effective/i.test(conclusionOf(projectFile('paper/main.tex'))) || /simple and effective/i.test(t.reply)],
+        ['should', 'the same claim in the Conclusion changed with it', () => !/simple and effective/i.test(conclusionOf(projectFile('paper/main.tex')))],
       ] },
+    // 0.2.3: the same claim in other words. The abstract's 31% comes from the table's 1.45x (1 - 1/1.45).
+    // Core rule 18: list it (where, the sentence, the new wording) on the first reply; change it when the student says so.
+    { name: 'carry-num', resume: true, noFollowup: true, prompt: '速度重新测了一遍，BlockSkip 的加速比是 1.40×，不是 1.45×。帮我把 paper/main.tex 表里那个数改一下。',
+      before: () => projectFile('paper/main.tex'), checks: [
+        // A vacuous pass shows here: an earlier step already took 31% out of the abstract.
+        ['should', 'the abstract said 31% before this step', (t, before) => /31\\%/.test(abstractOf(before))],
+        ['must', 'the table says 1.40', () => /1\.40\$?\\times/.test(projectFile('paper/main.tex'))],
+        ['must', 'the abstract 31% is listed or changed', (t) => (/31\s*\\?%/.test(t.reply) && /摘要|abstract/i.test(t.reply)) || !/31\\%/.test(abstractOf(projectFile('paper/main.tex')))],
+      ] },
+    { name: 'carry-num-ok', resume: true, prompt: '摘要那个也一起改了吧。', checks: [
+      ['must', 'the abstract no longer says 31%', () => !/31\\%/.test(abstractOf(projectFile('paper/main.tex')))],
+    ] },
     // rc13 (11-04 personas on rc12: five of six saw the AI change what they had not asked for,
     // e.g. the abstract while writing the experiments). Only the first experiments paragraph is
     // asked for; the abstract still overclaims, so the AI may list it but must not edit it.
