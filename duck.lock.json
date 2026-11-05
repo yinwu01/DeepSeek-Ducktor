@@ -2,10 +2,10 @@
   "note": "duck/ and tests/e2e/fixtures/grad-project are verbatim copies of these Ducktor paths at this commit. Re-run scripts/sync-duck.mjs instead of editing them.",
   "source": {
     "repository": "yinwu01/Ducktor",
-    "ref": "d54a5a2",
-    "commit": "d54a5a218f2cc92a7a8fcadfcefb620208e55848",
-    "committedAt": "2026-11-05T09:12:11-08:00",
-    "subject": "testing.md: superseded halves marked precisely, line 386 round fixed, time zones stated (red team review 13)"
+    "ref": "275d255",
+    "commit": "275d25558c942c4f6296daf8fccf8feff3a6fd53",
+    "committedAt": "2026-11-05T09:17:18-08:00",
+    "subject": "testing.md: DeepSeek also wrote PROCESS Model 1 into the draft on turn 2 (red team review 14)"
   },
   "paths": [
     "bin",
