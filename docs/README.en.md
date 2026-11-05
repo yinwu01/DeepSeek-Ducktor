@@ -142,7 +142,6 @@ Follow the steps in the "Install and quick start" section of docs/README.en.md i
 You can also install it yourself with the steps below.
 
 **Requirement**: DeepSeek Harness 0.2.1-rc.2 or later, below 0.3 (`engines.dsh` in `package.json`; dsh checks it at install).
-*(Note: the repository is private during this test period. First make sure that your GitHub account has access to it. You can check with `gh repo view yinwu01/DeepSeek-Ducktor`.)*
 
 Choose one of the three ways. Ways 2 and 3 make dsh use the folder where you put the repository, with no copy (way 1 uses the same install as way 2; we did not check it separately): after the install, do not delete or move this folder; to move it, uninstall first, move it, and install again. The `.duck/` folder in a project is the student's own record; installing and removing the plugin does not touch it.
 

@@ -2,10 +2,10 @@
   "note": "duck/ and tests/e2e/fixtures/grad-project are verbatim copies of these Ducktor paths at this commit. Re-run scripts/sync-duck.mjs instead of editing them.",
   "source": {
     "repository": "yinwu01/Ducktor",
-    "ref": "8786f36",
-    "commit": "8786f363805486dd6bc39de08f02763f1513cc63",
-    "committedAt": "2026-11-04T14:04:12-08:00",
-    "subject": "rc12: a command-only first turn speaks the language of .duck/ and the student's notes (Chinese when unclear), as the /duck hub does; the reply's decision line format is written out again"
+    "ref": "duck--v0.2.1",
+    "commit": "93f26f55b157f5b42ab480bdb6bac55769122a64",
+    "committedAt": "2026-11-04T22:44:09-08:00",
+    "subject": "Public now: drop the private-repo notes from README and INSTALL (zh, en); CHANGELOG dates 0.2.1 as released on 2026-11-04 (user, 11-04)"
   },
   "paths": [
     "bin",
