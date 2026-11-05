@@ -139,6 +139,9 @@ describe('model and view', () => {
   test('an English report shows its checks and cards', () => {
     const report = parseReport('# Review\n\n## 2.2 Validity checks and evaluation interface\n- outline item\n\n## 7. Self-consistency checks\n- ran by the AI\n\n## Next time, do this first\n- rerun the main table with 3 seeds\n\n## Card reminders\n- E05 a gap must beat the seed spread\n')
     assert.equal(report.checks.map(s => s.heading).join('|'), 'Next time, do this first')
+    // Ducktor 0.2.1 headings: the command report's last section and the learn report's look section.
+    const newer = parseReport('# Polish\n\n## What I did\n- polished\n\n## To take away\n- claims follow evidence\n\n## Where an experienced advisor would look\n- the seed spread\n')
+    assert.equal(newer.checks.map(s => s.heading).join('|'), 'To take away|Where an experienced advisor would look')
     assert.equal(report.cards.join(','), 'E05')
   })
   test('an English notebook line splits the same way', () => {

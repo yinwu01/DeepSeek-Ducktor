@@ -15,7 +15,10 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..');
-const CONFIG_LIMIT = 1200; // characters of .duck/config.md passed through as-is
+// Characters of .duck/config.md passed through as-is. 1,000 holds the template and a few dozen
+// lines of settings; past that the AI is told to read the file. (1,200 until 0.2.1: the rules
+// grew, and the worst case must stay under the size test's 7,000.)
+const CONFIG_LIMIT = 1000;
 
 // Values the switch line may carry. The Chinese words are what students tend to type.
 const MODES = {
@@ -67,16 +70,18 @@ function modeOf(config) {
 }
 
 // The student's edited copy of the rules wins over the plugin's own. A copy made before
-// 「每次都照做」 existed gets that section from the plugin, so turning the duck on never
-// gives fewer of those rules than leaving it off.
+// 「每次都照做」 (0.1) or 「怎么讲」 (0.2.1) existed gets that section from the plugin, so turning
+// the duck on never gives fewer of those rules than a command carries when it is off.
 function coreRules(project) {
   const copy = path.join(project, '.duck', 'skills', 'core.md');
   const own = readText(copy);
   if (own !== null) {
     const parts = [own];
-    if (!EVERY_TIME.test(own)) {
-      const section = sectionOf(readText(path.join(ROOT, 'rules', 'core.md')) || '', EVERY_TIME);
-      if (section) parts.push(`${section}\n\n（上面「每次都照做」一节来自插件原版 rules/core.md：学生的副本里没有这一节。）`);
+    const plugin = readText(path.join(ROOT, 'rules', 'core.md')) || '';
+    for (const [heading, name] of [[EVERY_TIME, '每次都照做'], [HOW_TO_EXPLAIN, '怎么讲']]) {
+      if (heading.test(own)) continue;
+      const section = sectionOf(plugin, heading);
+      if (section) parts.push(`${section}\n\n（上面「${name}」一节来自插件原版 rules/core.md：学生的副本里没有这一节。）`);
     }
     parts.push('（这份常驻规则是项目里的副本 .duck/skills/core.md，学生改过。原版在插件根目录的 rules/core.md。）');
     return parts.join('\n\n');
@@ -90,6 +95,18 @@ function coreRules(project) {
 // files (scripts/build.js copies both in), so a project that has not turned Ducktor on
 // pays only for the short idle note.
 const EVERY_TIME = /^##[ \t]*每次都照做[ \t]*$/m;
+const HOW_TO_EXPLAIN = /^##[ \t]*怎么讲[ \t]*$/m;
+
+// 「回复：短」 (English config: Reply: short) holds for every reply of every session. On the
+// second day of an 11-04 trial the first reply of a new session came back long although the line
+// was in the config passed through below, so the hook says it again in words.
+// An English config (its switch line reads 「Switch:」) means the student works in English. The rules
+// are in Chinese; on day 2 of an 11-04 re-test a new session answered an English question in
+// Chinese although the student, the config and the records were all English. The reminder is
+// itself in English.
+const ENGLISH_CONFIG = /^[ \t>*-]*switch[ \t]*[:：]/im;
+
+const SHORT_REPLIES = /^[ \t>*-]*(?:回复[ \t]*[:：][ \t]*短|reply[ \t]*:[ \t]*short)[ \t。.]*$/im;
 
 // One "## " section of a rules file, heading included; '' when it is not there.
 function sectionOf(text, heading) {
@@ -118,6 +135,8 @@ function buildContext(project) {
     const label = { unset: '没开启', off: 'off，和没开启一样' }[mode] || mode;
     parts.push(`项目的 .duck/config.md（开关：${label}）：\n${shown}`);
     if (note) parts.push(note);
+    if (ENGLISH_CONFIG.test(config)) parts.push('The student works in English: reply in English, the first reply of this session included.');
+    if (SHORT_REPLIES.test(config)) parts.push('学生要过回复写短（config.md 里的「回复：短」）：这次会话的每条回复都写短，十行以内。');
     if (config.includes('�')) parts.push('.duck/config.md 里有读不出的字节（可能不是 UTF-8 编码），开关可能没认对。');
   }
   return parts.join('\n\n');
@@ -191,8 +210,8 @@ function allowRead(input) {
 // the project's .duck/: notebook.md, decisions.md and reports/*.md. A denied prompt there
 // loses the record. notebook.md and decisions.md are logs the student may show at a group
 // meeting, so only adding goes through without a prompt: creating the file, a Write that keeps
-// the old text at its start, an Edit whose new text starts with the old text. Rewriting or
-// deleting a line asks as usual. Files the next session loads as settings or rules
+// the old text at its start, an Edit whose new text starts with the old text. An Edit that
+// rewrites or deletes a line asks as usual; a Write that drops the old text is refused. Files the next session loads as settings or rules
 // (config.md, skills/, cards/) also ask, so changing them stays the student's call.
 // A symlinked or hard-linked .duck/, reports/ or record file is not followed.
 const RECORDS = /^(?:(?:notebook|decisions)\.md|reports\/[^/]+\.md)$/;
@@ -254,6 +273,46 @@ function onlyAdds(input, target, stat) {
   return next === 0x0a || (next === 0x0d && bytes[old.length + 1] === 0x0a);
 }
 
+// A Write that does not keep a log's old text at its start replaces every entry in it. The model
+// does this when it has not read the file: on 11-04 a new session wrote one line over a notebook
+// it never opened, and the two entries of the day before were lost (the session ran with edits
+// accepted, so no prompt came). Such a Write is refused with a note on how to add. Changing or
+// deleting an entry goes through Edit, which names the lines it changes and asks as usual.
+function refuseRewrite(rel) {
+  fs.writeSync(1, JSON.stringify({
+    hookSpecificOutput: {
+      hookEventName: 'PreToolUse',
+      permissionDecision: 'deny',
+      permissionDecisionReason: `.duck/${rel} keeps the student's earlier entries and this Write would replace them. Read the file, then add the new line at its end with Edit. To change or delete an entry the student asked about, Edit only that entry.`,
+    },
+  }));
+}
+
+// A shell command that writes a log (a redirect, tee, sed -i or perl -i) gets none of the
+// checks above, and in the default permission mode it asks the student; when the student says
+// no, the line is lost (11-04 rc10: 2 of 6 Claude Code runs appended with echo or printf and
+// >>). Such a command is refused with a note to use Edit, which goes through without a prompt
+// when it only adds. Reading a log in the shell (cat, grep, tail) is not touched, nor are cp
+// and mv.
+const LOG_PATH = String.raw`(?:"[^"]*\.duck/(?:notebook|decisions)\.md"|'[^']*\.duck/(?:notebook|decisions)\.md'|(?:\\\s|[^\s"'|;&<>])*\.duck/(?:notebook|decisions)\.md(?=$|[\s|;&)]))`;
+const SHELL_LOG_WRITE = new RegExp([
+  String.raw`>>?\|?\s*${LOG_PATH}`,
+  String.raw`\btee\b[^|;&]*?\s${LOG_PATH}`,
+  String.raw`\b(?:sed|perl)\b[^|;&]*?\s(?:-[a-zA-Z]*i\S*|--in-place\S*)[^|;&]*?\s${LOG_PATH}`,
+].join('|'));
+
+function refuseShellLogWrite(input) {
+  const command = (input.tool_input || {}).command;
+  if (typeof command !== 'string' || !SHELL_LOG_WRITE.test(command)) return;
+  fs.writeSync(1, JSON.stringify({
+    hookSpecificOutput: {
+      hookEventName: 'PreToolUse',
+      permissionDecision: 'deny',
+      permissionDecisionReason: 'Write .duck/notebook.md and .duck/decisions.md with Edit, not the shell: a shell write asks the student for permission, and the line is lost if they say no. Read the file, then add the new line at its end with Edit; Ducktor lets that through without a prompt.',
+    },
+  }));
+}
+
 function allowRecord(input) {
   const file = (input.tool_input || {}).file_path;
   // Claude Code's project root, not the shell's current folder: after `cd paper` the hook's
@@ -276,7 +335,10 @@ function allowRecord(input) {
   const target = path.join(duck, rel);
   const stat = lstatOrNull(target);
   if (stat && !(stat.isFile() && stat.nlink === 1)) return;
-  if (LOGS.test(rel) && !onlyAdds(input, target, stat)) return;
+  if (LOGS.test(rel) && !onlyAdds(input, target, stat)) {
+    if (input.tool_name === 'Write' && stat && stat.size > 0) refuseRewrite(rel);
+    return;
+  }
   fs.writeSync(1, JSON.stringify({
     hookSpecificOutput: {
       hookEventName: 'PreToolUse',
@@ -292,6 +354,7 @@ function main(command) {
     try {
       const input = readInput();
       if (['Write', 'Edit', 'MultiEdit'].includes(input.tool_name)) allowRecord(input);
+      else if (input.tool_name === 'Bash') refuseShellLogWrite(input);
       else allowRead(input);
     } catch (err) { /* stay silent: the host asks as usual */ }
     return;
