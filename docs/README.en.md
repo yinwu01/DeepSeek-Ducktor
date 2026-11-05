@@ -279,37 +279,31 @@ Details are in [验证记录.md](验证记录.md) (in Chinese). In short:
 ## FAQ
 
 <details>
-<summary><b>1. Is this an official DeepSeek plugin?</b></summary>
-<br>
-No. It is a community plugin and has no connection to the DeepSeek company.
-</details>
-
-<details>
-<summary><b>2. How is it related to Ducktor?</b></summary>
+<summary><b>1. How is it related to Ducktor?</b></summary>
 <br>
 <code>duck/</code> is an unchanged copy of Ducktor, and <code>duck.lock.json</code> records which commit it comes from. This plugin adds the DeepSeek Harness integration, the "Ducktor" tab and 11 extra cards.
 </details>
 
 <details>
-<summary><b>3. Does it send my data anywhere?</b></summary>
+<summary><b>2. Does it send my data anywhere?</b></summary>
 <br>
 The plugin itself sends no network requests, and the tab reads only local files in the project. What the AI reads goes to the model as usual. Commands such as <code>/duck-survey</code> and <code>/duck-idea</code> let the AI search the web for literature; when Ducktor is on or you type a command, the links that the AI gives for papers and datasets also need a web lookup.
 </details>
 
 <details>
-<summary><b>4. Can the methods Ducktor explains, or the data it quotes, be wrong?</b></summary>
+<summary><b>3. Can the methods Ducktor explains, or the data it quotes, be wrong?</b></summary>
 <br>
 <b>Yes, they can. Always keep the final check as the researcher.</b> For outside papers, click the link and check the title and abstract; for numbers in your own text, check them against the source files (<code>/duck-why</code> gives the files and line numbers to check). In a look-back, the analysis of "why the AI did it this way" is inferred from the files and the conversation record, and does not show what the model really reasoned at the time.
 </details>
 
 <details>
-<summary><b>5. Does it grade the researcher?</b></summary>
+<summary><b>4. Does it grade the researcher?</b></summary>
 <br>
 No. Ducktor gives no tests and does not grade the user. <code>/duck-idea</code> evaluates the research plan, and <code>/duck-review</code> examines the manuscript: <b>we evaluate the object of research, not the researcher.</b>
 </details>
 
 <details>
-<summary><b>6. What was it called before?</b></summary>
+<summary><b>5. What was it called before?</b></summary>
 <br>
 The first version on 2026-10-25 was called deepseek-ducktor. On 10-26 it was renamed deepseek-supervisor, on 10-27 deepseek-doctor (display name DeepSeek-Doctor), and on 10-29 back to deepseek-ducktor. The Ducktor inside was called Doctor Duck before 10-27. The old records in <code>evals/runs/</code> and <code>docs/验证记录.md</code> keep the names of their time. If you installed an older version, see the note on older versions in "Install and quick start".
 </details>
