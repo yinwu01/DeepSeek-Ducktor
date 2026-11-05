@@ -34,10 +34,6 @@
 </p>
 
 <p align="center">
-  <sub>A community plugin. It is not made by DeepSeek and has no connection to the company.</sub>
-</p>
-
-<p align="center">
   <sub><a href="../README.md">简体中文</a> · English</sub><br>
   <sub>This file is a translation of the Chinese README. If the two files are different, the Chinese file is correct. Ducktor's rules, commands and cards are in Chinese.</sub>
 </p>
