@@ -218,7 +218,7 @@ const newestReport = (suffix) => {
   const f = reports(suffix).sort().at(-1);
   return f ? fs.readFileSync(duckFile(path.join('reports', f)), 'utf8') : '';
 };
-const fixture = (rel) => fs.readFileSync(path.join(ROOT, 'tests', 'fixtures', 'grad-project', rel), 'utf8');
+const fixture = (rel) => fs.readFileSync(path.join(FIXTURE, rel), 'utf8');
 const projectFile = (rel) => (fs.existsSync(path.join(PROJECT, rel)) ? fs.readFileSync(path.join(PROJECT, rel), 'utf8') : '');
 // rc13 scope step: the manuscript without the lines between \section{Experiments} and \begin{table}.
 const outsideFirstExpParagraph = (tex) => tex.replace(/\\section\{Experiments\}[\s\S]*?(?=\\begin\{table\})/, '\\section{Experiments}\n');
