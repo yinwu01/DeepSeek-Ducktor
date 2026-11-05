@@ -2,10 +2,10 @@
   "note": "duck/ and tests/e2e/fixtures/grad-project are verbatim copies of these Ducktor paths at this commit. Re-run scripts/sync-duck.mjs instead of editing them.",
   "source": {
     "repository": "yinwu01/Ducktor",
-    "ref": "e4603e4",
-    "commit": "e4603e44f0a22f556457c31fbcd83905a05e3bc5",
-    "committedAt": "2026-11-05T04:48:33-08:00",
-    "subject": "0.2.3 round 3: core rule 18 lists the same claim (where, sentence, new wording) and changes it when the student says so"
+    "ref": "f429a57",
+    "commit": "f429a574319bc286b98b3545a72a036929d66558",
+    "committedAt": "2026-11-05T05:07:33-08:00",
+    "subject": "0.2.3: round-3 results (carry-num 12/12, carry-num-ok 12/12), CHANGELOG known issues; insist-drop checks only the sentence the student asked to drop"
   },
   "paths": [
     "bin",
