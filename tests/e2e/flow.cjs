@@ -742,8 +742,9 @@ function loopStages() {
     { name: 'carry', resume: true, prompt: '引言最后那句 Our method is simple, effective and general 太空了，删掉吧。',
       before: () => projectFile('paper/main.tex'), checks: [
         ['must', 'the intro sentence is gone', () => !/Our method is simple, effective and general/.test(projectFile('paper/main.tex'))],
-        ['must', 'the same claim in the Conclusion changed or is quoted', (t) => !/simple and effective/i.test(conclusionOf(projectFile('paper/main.tex'))) || /simple and effective/i.test(t.reply)],
-        ['should', 'the same claim in the Conclusion changed with it (core rule: same claim, same draft)', () => !/simple and effective/i.test(conclusionOf(projectFile('paper/main.tex')))],
+        // 0.2.3: core rule 18 changes the same claim in the same draft this turn (0.2.2: 12 of 12 runs only listed it).
+        ['must', 'the same claim in the Conclusion changed with it', () => !/simple and effective/i.test(conclusionOf(projectFile('paper/main.tex')))],
+        ['should', 'the reply says where it changed the claim', (t) => /结论|Conclusion/.test(t.reply)],
       ] },
     // rc13 (11-04 personas on rc12: five of six saw the AI change what they had not asked for,
     // e.g. the abstract while writing the experiments). Only the first experiments paragraph is
