@@ -2,10 +2,10 @@
   "note": "duck/ and tests/e2e/fixtures/grad-project are verbatim copies of these Ducktor paths at this commit. Re-run scripts/sync-duck.mjs instead of editing them.",
   "source": {
     "repository": "yinwu01/Ducktor",
-    "ref": "8509f08",
-    "commit": "8509f0846ba91d247a56ac76c5ae3c578577b83c",
-    "committedAt": "2026-11-05T07:53:30-08:00",
-    "subject": "0.2.3 round 7: rule 18 says to read every part (abstract, intro, conclusion, captions, slide outline) when looking for the same claim"
+    "ref": "412f084",
+    "commit": "412f084a3a294d96098a480defef7d3e9a11ba14",
+    "committedAt": "2026-11-05T08:28:15-08:00",
+    "subject": "0.2.3: round-7 results (carry 6/6 on both hosts, p5 research-decision gate met), CHANGELOG and sizes"
   },
   "paths": [
     "bin",
