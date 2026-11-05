@@ -643,7 +643,7 @@ function moreStages() {
       ] },
     // 「直接讲，别先问我」 is recorded as the 讲法 line and /duck-why explains right away.
     { name: 'explain-direct', resume: true, prompt: `${cmd('duck-why')} 直接讲，别先问我。`, before: () => reports('why').length, checks: [
-      ['must', 'config records 讲法：直接讲', () => /讲法[^\n]*直接讲/.test(text('config.md'))],
+      ['must', 'config records 讲法：直接讲', () => /讲法[^\n]*(\n[ \t]*[-*][^\n]*)*直接讲/.test(text('config.md'))],
       ['must', 'wrote a why report', (t, before) => reports('why').length > before],
       ['should', 'explains right away (the reply has the explanation block)', (t) => WHY_BLOCK.test(t.reply)],
     ] },
