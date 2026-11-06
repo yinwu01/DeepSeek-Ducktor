@@ -1,6 +1,6 @@
 {
   "name": "deepseek-ducktor",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Ducktor, the research mentor that explains why, as a native DeepSeek Harness plugin.",
   "private": true,
   "type": "module",
