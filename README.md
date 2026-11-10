@@ -51,7 +51,7 @@
 2. **过程拆解与实时对齐**：在 Agent 推进研究的关键节点，Ducktor 主动暴露背后的学术取舍（Trade-offs），将隐性判断转化为可习得的显性原则。
 3. **能力与成果双重沉淀**：在打磨出高质量论文的同时，生成可溯源的决策日志与个人科研笔记，让研究者的学术直觉与 Agent 同步进化。
 
-**DeepSeek-Ducktor** 是我们为 DeepSeek Harness 做的原生插件：把 Ducktor 原样装进去，让你在 DeepSeek Harness 里也能用 `/duck-review` 这类命令；另外加了 Web 界面里的「Ducktor」页签和 11 张经验卡。
+**DeepSeek-Ducktor** 是我们为 DeepSeek Harness 做的原生插件：把 Ducktor 原样装进去，让你在 DeepSeek Harness 里也能用 `/duck-review` 这类命令；另外加了 Web 界面里的「Ducktor」页签和 10 张经验卡。
 
 <details>
 <summary><b>💡 为什么取名为 Ducktor？</b></summary>
@@ -107,7 +107,7 @@ DeepSeek-Ducktor 并不替换你现有的模型，而是作为一套规则、技
 
 规则要求 Ducktor：讲道理时，依据只从经验卡、名家文章的转述（`cards/MENTORS.md`）和科研手册（`handbook/`）的具体章节里取。对话里化成经验来讲，人名、文章和卡号写进报告，你问起时直接给；找不到依据，就直说这是它自己的判断。
 
-经验卡有两组。Ducktor 带 23 张。这个插件另带 11 张（`mentor/cards/`），讲读论文、进新方向、实验习惯、和导师开会、用 AI 做研究和审稿的规矩。每张写明出处，附原文链接。写卡时对过原文，发布前又让两个独立的模型会话当红队逐条复核过（不是人工审）。
+经验卡有两组。Ducktor 带 23 张。这个插件另带 10 张（`mentor/cards/`），讲读论文、进新方向、实验习惯、和导师开会、审稿时用 AI 的规矩。每张写明出处，附原文链接。写卡时对过原文，发布前又让两个独立的模型会话当红队逐条复核过（不是人工审）。
 
 ---
 
@@ -117,7 +117,7 @@ DeepSeek-Ducktor 并不替换你现有的模型，而是作为一套规则、技
 * `lib/duck.js`：和 dsh 无关的部分（找根目录、读 SKILL.md、生成和判断开场说明），单元测试直接用 Node 跑。开场说明后面那段 DeepSeek Harness 附注也在这里，附注里还写着另带的卡片在哪、参考文献要带链接、第一次摸方向时写 `background.md`。
 * `client/client.js`：「Ducktor」页签，手写的浏览器端插件，不用打包；React 用页面自带的那份，文件通过 dsh 的工作区文件接口读。
 * `lib/cards.js`：读卡片（Ducktor 的和 `mentor/cards/` 的），服务端读好后随网页一起发给页签。
-* `mentor/cards/`：本插件另带的 11 张经验卡片，格式和 Ducktor 的卡一样，卡号不重；`INDEX.md` 由 `node scripts/mentor-index.mjs` 生成。
+* `mentor/cards/`：本插件另带的 10 张经验卡片，格式和 Ducktor 的卡一样，卡号不重；`INDEX.md` 由 `node scripts/mentor-index.mjs` 生成。
 * `duck/`：Ducktor 原样拷贝，不手改。`duck.lock.json` 记着来自哪个提交和每个文件的 sha256。更新 Ducktor：
 
   ```sh
@@ -260,7 +260,7 @@ id 从 deepseek-doctor 或 deepseek-supervisor 换过来以后，插件页「配
 <details>
 <summary><b>1. 和 Ducktor 是什么关系？</b></summary>
 <br>
-<code>duck/</code> 是 Ducktor 的原样拷贝，<code>duck.lock.json</code> 记着它来自哪个提交。这个插件加的是 DeepSeek Harness 的接入、「Ducktor」页签和另带的 11 张卡。
+<code>duck/</code> 是 Ducktor 的原样拷贝，<code>duck.lock.json</code> 记着它来自哪个提交。这个插件加的是 DeepSeek Harness 的接入、「Ducktor」页签和另带的 10 张卡。
 </details>
 
 <details>
